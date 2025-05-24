@@ -54,20 +54,28 @@ export const navigation = [
   },
   {
     id: "3",
-    title: "Roadmap",
-    url: "#roadmap",
+    title: "Contact",
+    url: "#contact",
   },
   {
     id: "4",
     title: "New account",
-    url: "#signup",
+    url: null,
+    clerk: true,
     onlyMobile: true,
   },
   {
     id: "5",
     title: "Sign in",
-    url: "#login",
+    url: null,
+    clerk: true,
     onlyMobile: true,
+  },
+  {
+    id: "6",
+    title: "Seller dashboard",
+    url: "#dashboard",
+    admin: true,
   },
 ];
 

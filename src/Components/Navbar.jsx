@@ -9,6 +9,8 @@ import MenuSvg from "../assets/svg/MenuSvg";
 import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
 import { useRef } from "react";
 import Image from "next/image";
+import { SignInButton } from "@clerk/nextjs";
+import { bottle } from "../assets";
 
 const Navbar = () => {
   const navRef = useRef(null);
@@ -32,17 +34,23 @@ const Navbar = () => {
     if (!openNavigation) return;
 
     setopenNavigation(false);
-    enableBodyScroll();
+    enableBodyScroll(navRef.current);
   };
   return (
     <div
-      className={`fixed w-full top-0 left-0 right-0 border-b border-n-6 lg:backdrop-blur-sm lg:bg-n-8/90 ${
+      className={`fixed w-full top-0 left-0 right-0 border-b border-n-6 lg:backdrop-blur-sm lg:bg-n-8/90 z-50 ${
         openNavigation ? "bg-n-8" : "bg-n-8/90 backdrop-blur-sm"
       }`}
     >
       <div className="flex items-center px-5 xl:px-10 max-lg:py-4">
         <a className="block w-[12rem] xl:mr-8" href="#hero">
-          <Image src={brainwave} alt="Brainwave Logo" width={190} height={40} />
+          <Image
+            src={brainwave}
+            alt="Brainwave Logo"
+            width={190}
+            height={40}
+            priority
+          />
         </a>
         <nav
           ref={navRef}
@@ -56,7 +64,7 @@ const Navbar = () => {
                 key={item.id}
                 href={item.url}
                 onClick={handleClick}
-                className={`block uppercase relative font-code text-2xl text-n-1 transition-colors hover:text-color-1 ${
+                className={`block uppercase relative font-code text-2xl text-n-1 transition-colors hover:text-color-1 cursor-pointer ${
                   item.onlyMobile ? "lg:hidden" : ""
                 } ${
                   item.url === pathname.hash
@@ -65,6 +73,11 @@ const Navbar = () => {
                 } px-6 py-6 md:py-8 lg:-mr-0.25 lg:text-xs lg:font-semibold lg:leading-5 lg:hover:text-n-1 xl:px-12`}
               >
                 {item.title}
+                {item.clerk && (
+                  <SignInButton mode="modal">
+                    <span className="absolute top-0 left-0 w-full h-full"></span>
+                  </SignInButton>
+                )}
               </a>
             ))}
           </div>
@@ -76,7 +89,7 @@ const Navbar = () => {
         >
           New Account
         </a>
-        <Button className="hidden lg:flex" href={`#login`}>
+        <Button clerk className="hidden lg:flex">
           Sign IN
         </Button>
 
