@@ -1,12 +1,16 @@
 import Hero from "@/Components/Hero";
 import Navbar from "@/Components/Navbar";
+import ButtonGradient from "@/assets/svg/ButtonGradient";
 // import { hello } from "wall"
 export default function Home() {
   return (
-    <div className="pt-[4.75rem] lg:pt-[5.25rem] overflow-hidden">
-      <Navbar />
-      <Hero />
-    </div>
+    <>
+      <div className="pt-[4.75rem] lg:pt-[5.25rem] overflow-hidden">
+        <Navbar />
+        <Hero />
+      </div>
+      <ButtonGradient />
+    </>
   );
 }
 

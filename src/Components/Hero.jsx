@@ -2,8 +2,9 @@
 import { useClerk } from "@clerk/nextjs";
 import DefaultStyler from "./DefaultStyler";
 import { SignInButton } from "@clerk/nextjs";
+import Button from "./Button";
+
 const Hero = () => {
-  const { openSignin } = useClerk();
   return (
     <DefaultStyler
       className="pt-[12rem] -mt-[5.25rem]"
@@ -13,11 +14,7 @@ const Hero = () => {
       id="#hero"
     >
       <div className="container">
-        <SignInButton mode="modal">
-          <button onClick={openSignin} className="btn btn-primary">
-            Sign In
-          </button>
-        </SignInButton>
+        <Button href={`#login`}>Gradiant</Button>
       </div>
     </DefaultStyler>
   );

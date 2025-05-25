@@ -9,12 +9,14 @@ import MenuSvg from "../assets/svg/MenuSvg";
 import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
 import { useRef } from "react";
 import Image from "next/image";
-import { SignInButton } from "@clerk/nextjs";
-import { bottle } from "../assets";
+import { SignInButton, UserButton } from "@clerk/nextjs";
+import { useAppContext } from "@/Context/AppContext";
 
 const Navbar = () => {
   const navRef = useRef(null);
-  console.log(typeof disableBodyScroll); // Should return "function"
+  console.log(typeof disableBodyScroll);
+
+  const { isSeller, router, user } = useAppContext();
 
   const pathname = usePathname();
 
@@ -70,26 +72,32 @@ const Navbar = () => {
                   item.url === pathname.hash
                     ? "z-2 lg:text-n-1"
                     : "lg:text-n-1/50"
-                } px-6 py-6 md:py-8 lg:-mr-0.25 lg:text-xs lg:font-semibold lg:leading-5 lg:hover:text-n-1 xl:px-12`}
+                } px-6 py-6 md:py-8 lg:-mr-0.25 lg:text-xs lg:font-semibold lg:leading-5 lg:hover:bg-text-gradient lg:hover:bg-clip-text lg:hover:text-transparent xl:px-12`}
               >
                 {item.title}
                 {item.clerk && (
-                  <SignInButton mode="modal">
-                    <span className="absolute top-0 left-0 w-full h-full"></span>
-                  </SignInButton>
+                  <>
+                    {user ? (
+                      <UserButton />
+                    ) : (
+                      <SignInButton mode="modal">
+                        <span className="absolute top-0 left-0 w-full h-full"></span>
+                      </SignInButton>
+                    )}
+                  </>
                 )}
               </a>
             ))}
           </div>
           <HamburgerMenu />
         </nav>
-        <a
+        {/* <a
           href="#signup"
           className="button hidden mr-8 text-n-1/50 transition-colors hover:text-n-1 lg:block"
         >
           New Account
-        </a>
-        <Button clerk className="hidden lg:flex">
+        </a> */}
+        <Button clerk user={user} className="hidden lg:flex">
           Sign IN
         </Button>
 

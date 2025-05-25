@@ -81,6 +81,7 @@ export default {
         "benefit-card-5": "url(assets/benefits/card-5.svg)",
         "benefit-card-6": "url(assets/benefits/card-6.svg)",
         "main-background": "url(/wallp.jpg)",
+        "text-gradient": "linear-gradient(45deg, #FFFFFF ,#FF0000)",
       },
     },
   },
@@ -136,6 +137,12 @@ export default {
       addUtilities({
         ".tap-highlight-color": {
           "-webkit-tap-highlight-color": "rgba(0, 0, 0, 0)",
+        },
+        ".bg-clip-text": {
+          "-webkit-background-clip": "text",
+        },
+        ".text-transparent": {
+          "-webkit-text-fill-color": "transparent",
         },
       });
     }),

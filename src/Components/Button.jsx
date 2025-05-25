@@ -1,7 +1,16 @@
+import { SignInButton, UserButton } from "@clerk/nextjs";
 import ButtonSvg from "../assets/svg/ButtonSvg";
-import { SignInButton } from "@clerk/nextjs";
 
-const Button = ({ className, href, onclick, children, px, white, clerk }) => {
+const Button = ({
+  className,
+  href,
+  onclick,
+  children,
+  px,
+  white,
+  clerk,
+  user,
+}) => {
   const classes = `button h-11 relative inline-flex items-center justify-center transition-colors hover:text-color-1 
   ${px || "px-7"} 
   ${white ? "text-n-8" : "text-n-1"} 
@@ -18,10 +27,22 @@ const Button = ({ className, href, onclick, children, px, white, clerk }) => {
 
   const renderClerkButton = () => (
     <SignInButton mode="modal">
-      <button className={classes}>
-        <span className={spanClasses}>{children}</span>
-        {ButtonSvg(white)}
-      </button>
+      {user ? (
+        <button className="relative ml-5 inline-flex justify-center">
+          <UserButton
+            appearance={{
+              elements: {
+                userButtonAvatarBox: "w-9 h-9", // Adjust width & height
+              },
+            }}
+          />
+        </button>
+      ) : (
+        <button className={classes}>
+          <span className={spanClasses}>{children}</span>
+          {ButtonSvg(white)}
+        </button>
+      )}
     </SignInButton>
   );
   const renderLink = () => (
