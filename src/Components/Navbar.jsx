@@ -9,7 +9,7 @@ import MenuSvg from "../assets/svg/MenuSvg";
 import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
 import { useRef } from "react";
 import Image from "next/image";
-import { SignInButton, UserButton } from "@clerk/nextjs";
+import { SignInButton, SignOutButton, UserButton } from "@clerk/nextjs";
 import { useAppContext } from "@/Context/AppContext";
 
 const Navbar = () => {
@@ -74,17 +74,14 @@ const Navbar = () => {
                     : "lg:text-n-1/50"
                 } px-6 py-6 md:py-8 lg:-mr-0.25 lg:text-xs lg:font-semibold lg:leading-5 lg:hover:bg-text-gradient lg:hover:bg-clip-text lg:hover:text-transparent xl:px-12`}
               >
-                {item.title}
-                {item.clerk && (
-                  <>
-                    {user ? (
-                      <UserButton />
-                    ) : (
-                      <SignInButton mode="modal">
-                        <span className="absolute top-0 left-0 w-full h-full"></span>
-                      </SignInButton>
-                    )}
-                  </>
+                {item.clerk ? (
+                  user ? (
+                    <SignOutButton />
+                  ) : (
+                    <SignInButton mode="modal">{item.title}</SignInButton>
+                  )
+                ) : (
+                  item.title
                 )}
               </a>
             ))}

@@ -39,21 +39,26 @@ import {
 export const navigation = [
   {
     id: "0",
+    title: "Home",
+    url: "/",
+  },
+  {
+    id: "1",
     title: "Features",
     url: "/#features",
   },
   {
-    id: "1",
+    id: "2",
     title: "Pricing",
     url: "/#pricing",
   },
   {
-    id: "2",
-    title: "How to use",
-    url: "/#how-to-use",
+    id: "3",
+    title: "Products",
+    url: "/all-products",
   },
   {
-    id: "3",
+    id: "4",
     title: "Contact",
     url: "/#contact",
   },
@@ -65,14 +70,14 @@ export const navigation = [
   //   onlyMobile: true,
   // },
   {
-    id: "4",
+    id: "5",
     title: "Sign in",
     url: null,
     clerk: true,
     onlyMobile: true,
   },
   {
-    id: "5",
+    id: "6",
     title: "Seller dashboard",
     url: "/#dashboard",
     admin: true,

@@ -1,6 +1,6 @@
 import { SignInButton, UserButton } from "@clerk/nextjs";
 import ButtonSvg from "../assets/svg/ButtonSvg";
-import { CartIcon } from "@/assets/assets";
+import { BagIcon, CartIcon } from "@/assets/assets";
 
 const Button = ({
   className,
@@ -43,6 +43,11 @@ const Button = ({
                 label="Cart"
                 labelIcon={<CartIcon />}
                 onClick={() => router.push("/cart")}
+              />
+              <UserButton.Action
+                label="My Orders"
+                labelIcon={<BagIcon />}
+                onClick={() => router.push("/my-orders")}
               />
             </UserButton.MenuItems>
           </UserButton>

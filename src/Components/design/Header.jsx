@@ -1,4 +1,4 @@
-import backgroundImage from "../../assets/background.jpg";
+import backgroundImage from "../../../public/wallp.jpg";
 import Image from "next/image";
 export const Rings = () => {
   return (
@@ -31,7 +31,7 @@ export const BackgroundCircles = () => {
 export const HamburgerMenu = () => {
   return (
     <div className="absolute inset-0 pointer-events-none lg:hidden">
-      <div className="absolute inset-0 opacity-[.03]">
+      <div className="absolute inset-0 opacity-[0.09]">
         <Image
           className="w-full h-full object-cover"
           src={backgroundImage}
