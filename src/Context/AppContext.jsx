@@ -1,7 +1,7 @@
 "use client";
 
 import { useUser } from "@clerk/nextjs";
-// import { productsDummyData, userDummyData } from "@/assets/assets";
+import { productsDummyData, userDummyData } from "../assets/assets";
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 

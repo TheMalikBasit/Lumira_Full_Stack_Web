@@ -1,10 +1,14 @@
 "use client";
-import { useClerk } from "@clerk/nextjs";
 import DefaultStyler from "./DefaultStyler";
-import { SignInButton } from "@clerk/nextjs";
 import Button from "./Button";
-
+import { useRouter } from "next/navigation"; //This also works
+import { useAppContext } from "../Context/AppContext";
 const Hero = () => {
+  const { router } = useAppContext();
+
+  const handleClick = () => {
+    router.push("/cart");
+  };
   return (
     <DefaultStyler
       className="pt-[12rem] -mt-[5.25rem]"
@@ -14,7 +18,7 @@ const Hero = () => {
       id="#hero"
     >
       <div className="container">
-        <Button href={`#login`}>Gradiant</Button>
+        <Button onclick={handleClick}>Gradiant</Button>
       </div>
     </DefaultStyler>
   );

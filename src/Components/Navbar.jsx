@@ -45,7 +45,7 @@ const Navbar = () => {
       }`}
     >
       <div className="flex items-center px-5 xl:px-10 max-lg:py-4">
-        <a className="block w-[12rem]" href="#hero">
+        <a className="block w-[12rem]" href="/">
           <Image
             src={brainwave}
             alt="Brainwave Logo"
