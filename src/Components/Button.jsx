@@ -1,5 +1,6 @@
 import { SignInButton, UserButton } from "@clerk/nextjs";
 import ButtonSvg from "../assets/svg/ButtonSvg";
+import { CartIcon } from "@/assets/assets";
 
 const Button = ({
   className,
@@ -10,6 +11,7 @@ const Button = ({
   white,
   clerk,
   user,
+  router,
 }) => {
   const classes = `button h-11 relative inline-flex items-center justify-center transition-colors hover:text-color-1 
   ${px || "px-7"} 
@@ -35,7 +37,15 @@ const Button = ({
                 userButtonAvatarBox: "w-9 h-9", // Adjust width & height
               },
             }}
-          />
+          >
+            <UserButton.MenuItems>
+              <UserButton.Action
+                label="Cart"
+                labelIcon={<CartIcon />}
+                onClick={() => router.push("/cart")}
+              />
+            </UserButton.MenuItems>
+          </UserButton>
         </button>
       ) : (
         <button className={classes}>

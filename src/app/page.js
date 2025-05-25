@@ -1,7 +1,7 @@
 import Hero from "@/Components/Hero";
 import Navbar from "@/Components/Navbar";
 import ButtonGradient from "@/assets/svg/ButtonGradient";
-// import { hello } from "wall"
+
 export default function Home() {
   return (
     <>

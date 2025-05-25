@@ -45,7 +45,7 @@ const Navbar = () => {
       }`}
     >
       <div className="flex items-center px-5 xl:px-10 max-lg:py-4">
-        <a className="block w-[12rem] xl:mr-8" href="#hero">
+        <a className="block w-[12rem]" href="#hero">
           <Image
             src={brainwave}
             alt="Brainwave Logo"
@@ -97,7 +97,7 @@ const Navbar = () => {
         >
           New Account
         </a> */}
-        <Button clerk user={user} className="hidden lg:flex">
+        <Button clerk user={user} router={router} className="hidden lg:flex">
           Sign IN
         </Button>
 
