@@ -3,11 +3,17 @@ import DefaultStyler from "./DefaultStyler";
 import Button from "./Button";
 import { useRouter } from "next/navigation"; //This also works
 import { useAppContext } from "../Context/AppContext";
+import { useUser } from "@clerk/nextjs";
+
 const Hero = () => {
   const { router } = useAppContext();
 
+  const { user } = useUser();
   const handleClick = () => {
-    router.push("/cart");
+    console.log("ID = ", user.id);
+    console.log("Username = ", user.username);
+    console.log("Email = ", user.primaryEmailAddress.emailAddress);
+    console.log("Image = ", user.imageUrl);
   };
   return (
     <DefaultStyler
