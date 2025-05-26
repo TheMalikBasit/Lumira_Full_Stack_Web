@@ -11,9 +11,10 @@ const Hero = () => {
   const { user } = useUser();
   const handleClick = () => {
     console.log("ID = ", user.id);
-    console.log("Username = ", user.username);
+    console.log("Username = ", user.fullName);
     console.log("Email = ", user.primaryEmailAddress.emailAddress);
     console.log("Image = ", user.imageUrl);
+    // console.log(user);
   };
   return (
     <DefaultStyler

@@ -14,7 +14,6 @@ import { useAppContext } from "@/Context/AppContext";
 
 const Navbar = ({ relative }) => {
   const navRef = useRef(null);
-  console.log(typeof disableBodyScroll);
 
   const { isSeller, router, user } = useAppContext();
 

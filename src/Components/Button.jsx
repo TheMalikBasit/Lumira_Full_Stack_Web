@@ -1,6 +1,7 @@
 import { SignInButton, UserButton } from "@clerk/nextjs";
 import ButtonSvg from "../assets/svg/ButtonSvg";
 import { BagIcon, CartIcon } from "@/assets/assets";
+import { useUser } from "@clerk/nextjs";
 
 const Button = ({
   className,
@@ -20,6 +21,8 @@ const Button = ({
 
   const spanClasses = `relative z-10`;
 
+  const { isSignedIn } = useUser();
+
   const renderButton = () => (
     <button className={classes} onClick={onclick}>
       <span className={spanClasses}>{children}</span>
@@ -27,39 +30,70 @@ const Button = ({
     </button>
   );
 
-  const renderClerkButton = () => (
-    <SignInButton mode="modal">
-      {user ? (
-        <button className="relative ml-5 inline-flex justify-center">
-          <UserButton
-            appearance={{
-              elements: {
-                userButtonAvatarBox: "w-9 h-9", // Adjust width & height
-              },
-            }}
-          >
-            <UserButton.MenuItems>
-              <UserButton.Action
-                label="Cart"
-                labelIcon={<CartIcon />}
-                onClick={() => router.push("/cart")}
-              />
-              <UserButton.Action
-                label="My Orders"
-                labelIcon={<BagIcon />}
-                onClick={() => router.push("/my-orders")}
-              />
-            </UserButton.MenuItems>
-          </UserButton>
-        </button>
-      ) : (
+  const renderClerkButton = () =>
+    isSignedIn ? (
+      <button className="relative ml-5 inline-flex justify-center">
+        <UserButton
+          appearance={{
+            elements: {
+              userButtonAvatarBox: "w-9 h-9", // Adjust width & height
+            },
+          }}
+        >
+          <UserButton.MenuItems>
+            <UserButton.Action
+              label="Cart"
+              labelIcon={<CartIcon />}
+              onClick={() => router.push("/cart")}
+            />
+            <UserButton.Action
+              label="My Orders"
+              labelIcon={<BagIcon />}
+              onClick={() => router.push("/my-orders")}
+            />
+          </UserButton.MenuItems>
+        </UserButton>
+      </button>
+    ) : (
+      <SignInButton mode="modal">
         <button className={classes}>
           <span className={spanClasses}>{children}</span>
           {ButtonSvg(white)}
         </button>
-      )}
-    </SignInButton>
-  );
+      </SignInButton>
+    );
+
+  // <SignInButton mode="modal">
+  //   {user ? (
+  //     <button className="relative ml-5 inline-flex justify-center">
+  //       <UserButton
+  //         appearance={{
+  //           elements: {
+  //             userButtonAvatarBox: "w-9 h-9", // Adjust width & height
+  //           },
+  //         }}
+  //       >
+  //         <UserButton.MenuItems>
+  //           <UserButton.Action
+  //             label="Cart"
+  //             labelIcon={<CartIcon />}
+  //             onClick={() => router.push("/cart")}
+  //           />
+  //           <UserButton.Action
+  //             label="My Orders"
+  //             labelIcon={<BagIcon />}
+  //             onClick={() => router.push("/my-orders")}
+  //           />
+  //         </UserButton.MenuItems>
+  //       </UserButton>
+  //     </button>
+  //   ) : (
+  //     <button className={classes}>
+  //       <span className={spanClasses}>{children}</span>
+  //       {ButtonSvg(white)}
+  //     </button>
+  //   )}
+  // </SignInButton>
   const renderLink = () => (
     <a href={href} className={classes}>
       <span className={spanClasses}>{children}</span>

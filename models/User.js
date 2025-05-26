@@ -1,16 +1,24 @@
-import mongoose from "mongoose";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "./firebaseConfig";
+import { useUser } from "@clerk/nextjs";
 
-const userSchema = new mongoose.Schema(
-  {
-    _id: { type: String, required: true },
-    username: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    imageUrl: { type: String, required: true },
-    cartItem: { type: Object, default: {} },
-  },
-  { minimize: false }
-);
+function SaveUserInfo() {
+  const { user } = useUser();
 
-const User = mongoose.models.User || mongoose.model("User", userSchema);
+  const saveUserToFirestore = async () => {
+    const userRef = doc(db, "users", user.id); // Using Clerk ID as the doc ID
 
-export default User;
+    await setDoc(userRef, {
+      id: user.id,
+      username: user.username,
+      email: user.primaryEmailAddress.emailAddress,
+      imageUrl: user.imageUrl,
+      address: "User address here",
+      orders: [],
+    });
+
+    console.log("User info saved!");
+  };
+
+  return <button onClick={saveUserToFirestore}>Save User Info</button>;
+}
