@@ -12,7 +12,7 @@ import Image from "next/image";
 import { SignInButton, SignOutButton, UserButton } from "@clerk/nextjs";
 import { useAppContext } from "@/Context/AppContext";
 
-const Navbar = () => {
+const Navbar = ({ relative }) => {
   const navRef = useRef(null);
   console.log(typeof disableBodyScroll);
 
@@ -40,7 +40,9 @@ const Navbar = () => {
   };
   return (
     <div
-      className={`fixed w-full top-0 left-0 right-0 border-b border-n-6 lg:backdrop-blur-sm lg:bg-n-8/90 z-50 ${
+      className={`${
+        relative ? "relative" : "fixed"
+      } w-full top-0 left-0 right-0 border-b border-n-6 lg:backdrop-blur-sm lg:bg-n-8/90 z-50 ${
         openNavigation ? "bg-n-8" : "bg-n-8/90 backdrop-blur-sm"
       }`}
     >
