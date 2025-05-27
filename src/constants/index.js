@@ -79,7 +79,7 @@ export const navigation = [
   {
     id: "6",
     title: "Seller dashboard",
-    url: "/#dashboard",
+    url: "/admin",
     admin: true,
   },
 ];

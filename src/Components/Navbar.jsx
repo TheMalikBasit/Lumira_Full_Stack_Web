@@ -16,7 +16,6 @@ const Navbar = ({ relative }) => {
   const navRef = useRef(null);
 
   const { isSeller, router, user } = useAppContext();
-
   const pathname = usePathname();
 
   const [openNavigation, setopenNavigation] = useState(false);
@@ -81,6 +80,10 @@ const Navbar = ({ relative }) => {
                   ) : (
                     <SignInButton mode="modal">{item.title}</SignInButton>
                   )
+                ) : item.admin ? (
+                  isSeller ? (
+                    <span>{item.title}</span>
+                  ) : null
                 ) : (
                   item.title
                 )}

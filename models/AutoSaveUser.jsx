@@ -23,6 +23,7 @@ const AutoSaveUser = () => {
           imageUrl: user.imageUrl,
           address: "", // Placeholder (can be updated later)
           orders: [], // Start with empty order list
+          isAdmin: false,
         });
         console.log("User info stored in Firestore");
       } else {
@@ -33,7 +34,7 @@ const AutoSaveUser = () => {
     saveUserToFirestore();
   }, [isSignedIn, user]);
 
-  return null; // This component does not render anything
+  return null;
 };
 
 export default AutoSaveUser;
