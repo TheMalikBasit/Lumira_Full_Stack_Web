@@ -1,24 +1,31 @@
-import { doc, setDoc } from "firebase/firestore";
-import { db } from "./firebaseConfig";
-import { useUser } from "@clerk/nextjs";
+"use client";
+import { db } from "../Config/firebase";
+import { collection, addDoc } from "firebase/firestore";
 
-function StockUpdater() {
-  const { user } = useUser();
-
-  const saveUserToFirestore = async () => {
-    const userRef = doc(db, "users", user.id); // Using Clerk ID as the doc ID
-
-    await setDoc(userRef, {
-      id: user.id,
-      username: user.username,
-      email: user.primaryEmailAddress.emailAddress,
-      imageUrl: user.imageUrl,
-      address: "User address here",
-      orders: [],
+const UploadProduct = async ({
+  name,
+  price,
+  mainImage,
+  imageUrl,
+  availableStock,
+  description,
+}) => {
+  try {
+    await addDoc(collection(db, "products"), {
+      name,
+      price,
+      mainImage,
+      imageUrl,
+      availableStock,
+      description,
+      createdAt: new Date(),
     });
 
-    console.log("User info saved!");
-  };
+    alert("✅ Product uploaded successfully!");
+  } catch (error) {
+    console.error("❌ Upload failed:", error);
+    alert("Failed to upload product.");
+  }
+};
 
-  return <button onClick={saveUserToFirestore}>Save User Info</button>;
-}
+export default UploadProduct;
