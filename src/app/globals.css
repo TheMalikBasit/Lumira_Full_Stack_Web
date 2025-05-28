@@ -23,6 +23,84 @@
     }
 }
 
+@layer utilities {
+    @keyframes move {
+        0% {
+            left: 0;
+            opacity: 0;
+            transform: rotate(180deg);
+        }
+
+        35% {
+            left: 41%;
+            opacity: 1;
+            transform: rotate(0deg);
+        }
+
+        65% {
+            left: 59%;
+            opacity: 1;
+            transform: rotate(0deg);
+        }
+
+        100% {
+            left: 100%;
+            opacity: 0;
+            transform: rotate(-180deg);
+        }
+    }
+
+    .animate-move {
+        animation: move 1.5s linear infinite;
+    }
+
+    .perspective-\[800px\] {
+        perspective: 800px;
+    }
+
+    @keyframes rotate-one {
+        0% {
+            transform: rotateX(35deg) rotateY(-45deg) rotateZ(0deg);
+        }
+
+        100% {
+            transform: rotateX(35deg) rotateY(-45deg) rotateZ(360deg);
+        }
+    }
+
+    @keyframes rotate-two {
+        0% {
+            transform: rotateX(50deg) rotateY(10deg) rotateZ(0deg);
+        }
+
+        100% {
+            transform: rotateX(50deg) rotateY(10deg) rotateZ(360deg);
+        }
+    }
+
+    @keyframes rotate-three {
+        0% {
+            transform: rotateX(35deg) rotateY(55deg) rotateZ(0deg);
+        }
+
+        100% {
+            transform: rotateX(35deg) rotateY(55deg) rotateZ(360deg);
+        }
+    }
+
+    .animate-rotate-one {
+        animation: rotate-one 1s linear infinite;
+    }
+
+    .animate-rotate-two {
+        animation: rotate-two 1s linear infinite;
+    }
+
+    .animate-rotate-three {
+        animation: rotate-three 1s linear infinite;
+    }
+}
+
 .gradient-text {
     background: linear-gradient(45deg, #FFC876, #79FFF7, #9F53FF, #FF98E2, #FFC876);
     -webkit-background-clip: text;

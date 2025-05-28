@@ -19,8 +19,9 @@ export const AppContextProvider = (props) => {
 
   const [products, setProducts] = useState([]);
   const [userData, setUserData] = useState(false);
-  const [isSeller, setIsSeller] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(true);
   const [cartItems, setCartItems] = useState({});
+  const [adminLoading, setAdminLoading] = useState(true);
 
   const fetchProductData = async () => {
     setProducts(productsDummyData);
@@ -83,8 +84,10 @@ export const AppContextProvider = (props) => {
     user,
     currency,
     router,
-    isSeller,
-    setIsSeller,
+    isAdmin,
+    setIsAdmin,
+    adminLoading,
+    setAdminLoading,
     userData,
     fetchUserData,
     products,

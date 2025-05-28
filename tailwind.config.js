@@ -81,7 +81,7 @@ export default {
         "benefit-card-5": "url(assets/benefits/card-5.svg)",
         "benefit-card-6": "url(assets/benefits/card-6.svg)",
         "main-background": "url(/wallp.jpg)",
-        "text-gradient": "linear-gradient(45deg, #FFFFFF ,#FF0000)",
+        "text-gradient": "linear-gradient(45deg, #FF0000 ,#FF0000)",
       },
     },
   },

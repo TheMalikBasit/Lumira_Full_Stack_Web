@@ -2,7 +2,7 @@ import { doc, setDoc } from "firebase/firestore";
 import { db } from "./firebaseConfig";
 import { useUser } from "@clerk/nextjs";
 
-function SaveUserInfo() {
+function StockUpdater() {
   const { user } = useUser();
 
   const saveUserToFirestore = async () => {

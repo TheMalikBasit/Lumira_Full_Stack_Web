@@ -11,11 +11,12 @@ import { useRef } from "react";
 import Image from "next/image";
 import { SignInButton, SignOutButton, UserButton } from "@clerk/nextjs";
 import { useAppContext } from "@/Context/AppContext";
+import Loading from "./Loading";
 
 const Navbar = ({ relative }) => {
   const navRef = useRef(null);
 
-  const { isSeller, router, user } = useAppContext();
+  const { isAdmin, router, user, adminLoading } = useAppContext();
   const pathname = usePathname();
 
   const [openNavigation, setopenNavigation] = useState(false);
@@ -36,6 +37,10 @@ const Navbar = ({ relative }) => {
     setopenNavigation(false);
     enableBodyScroll(navRef.current);
   };
+
+  if (adminLoading) {
+    return <Loading />;
+  }
   return (
     <div
       className={`${
@@ -46,13 +51,7 @@ const Navbar = ({ relative }) => {
     >
       <div className="flex items-center px-5 xl:px-10 max-lg:py-4">
         <a className="block w-[12rem]" href="/">
-          <Image
-            src={brainwave}
-            alt="Brainwave Logo"
-            width={190}
-            height={40}
-            priority
-          />
+          <Image src={brainwave} alt="Brainwave Logo" width={190} height={40} />
         </a>
         <nav
           ref={navRef}
@@ -81,7 +80,7 @@ const Navbar = ({ relative }) => {
                     <SignInButton mode="modal">{item.title}</SignInButton>
                   )
                 ) : item.admin ? (
-                  isSeller ? (
+                  isAdmin ? (
                     <span>{item.title}</span>
                   ) : null
                 ) : (
