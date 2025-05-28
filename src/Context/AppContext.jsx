@@ -23,14 +23,6 @@ export const AppContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
   const [adminLoading, setAdminLoading] = useState(true);
 
-  const fetchProductData = async () => {
-    setProducts(productsDummyData);
-  };
-
-  const fetchUserData = async () => {
-    setUserData(userDummyData);
-  };
-
   const addToCart = async (itemId) => {
     let cartData = structuredClone(cartItems);
     if (cartData[itemId]) {
@@ -72,14 +64,6 @@ export const AppContextProvider = (props) => {
     return Math.floor(totalAmount * 100) / 100;
   };
 
-  useEffect(() => {
-    fetchProductData();
-  }, []);
-
-  useEffect(() => {
-    fetchUserData();
-  }, []);
-
   const value = {
     user,
     currency,
@@ -89,9 +73,9 @@ export const AppContextProvider = (props) => {
     adminLoading,
     setAdminLoading,
     userData,
-    fetchUserData,
+    setUserData,
     products,
-    fetchProductData,
+    setProducts,
     cartItems,
     setCartItems,
     addToCart,

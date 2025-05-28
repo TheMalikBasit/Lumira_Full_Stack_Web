@@ -4,14 +4,24 @@ import { useEffect } from "react";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "../Config/firebase";
 import { useUser } from "@clerk/nextjs";
-
+import { useAppContext } from "@/Context/AppContext";
 const AutoSaveUser = () => {
   const { isSignedIn, user } = useUser();
+  const { setUserData } = useAppContext();
 
   useEffect(() => {
     const saveUserToFirestore = async () => {
       if (!isSignedIn || !user) return;
 
+      if (isSignedIn && user) {
+        setUserData({
+          id: user.id,
+          username: user.fullName || "",
+          email: user.primaryEmailAddress.emailAddress,
+          imageUrl: user.imageUrl,
+        });
+        console.log("User data set in context...");
+      }
       const userRef = doc(db, "users", user.id);
       const userSnapshot = await getDoc(userRef);
 
@@ -30,7 +40,6 @@ const AutoSaveUser = () => {
         console.log("User already exists in Firestore");
       }
     };
-
     saveUserToFirestore();
   }, [isSignedIn, user]);
 

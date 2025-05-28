@@ -1,8 +1,17 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
+import { Poppins } from "next/font/google";
 import { AppContextProvider } from "@/Context/AppContext";
 import AutoSaveUser from "../../models/AutoSaveUser";
 import CheckAdmin from "../../models/CheckAdmin";
+import FetchProducts from "../../models/ProductsFetcher";
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-poppins", // Create CSS variable
+});
+
 export const metadata = {
   title: "The Forever Bottle",
   description: "A sustainable water bottle for all your adventures",
@@ -11,11 +20,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <ClerkProvider>
-      <html lang="en">
+      <html lang="en" className={poppins.variable}>
         <body className={`antialiased`}>
           <AppContextProvider>
             <AutoSaveUser />
             <CheckAdmin />
+            <FetchProducts />
             {children}
           </AppContextProvider>
         </body>

@@ -1,6 +1,7 @@
 "use client";
 import { db } from "../Config/firebase";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, getDoc, doc, updateDoc } from "firebase/firestore";
+import { useAppContext } from "@/Context/AppContext";
 
 const UploadProduct = async ({
   name,
