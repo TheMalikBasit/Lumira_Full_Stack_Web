@@ -167,9 +167,16 @@ const StockAddForm = () => {
           ></textarea>
         </div>
 
-        <div className="flex justify-between">
-          <Button type="submit">Upload Product</Button>
-          <Button type="button" white onclick={clearForm}>
+        <div className="flex flex-col xl:flex-row justify-between">
+          <Button className="mt-5 xl:mt-0" type="submit">
+            Upload Product
+          </Button>
+          <Button
+            className="mt-5 xl:mt-0"
+            type="button"
+            white
+            onclick={clearForm}
+          >
             Clear Form
           </Button>
         </div>

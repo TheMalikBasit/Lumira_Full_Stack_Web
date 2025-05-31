@@ -42,10 +42,10 @@ const page = () => {
           </h1>
         </div>
         <div className="container w-full border-t border-gray-700 mt-8 mb-8" />
-        <div className="flex flex-col lg:flex-row justify-start">
+        <div className="flex flex-col items-center xl:items-start xl:flex-row justify-start">
           <StockAddForm />
           <StockUpdateForm id={id} />
-          <div className="max-w-lg  mt-12 sm:mx-auto md:mx-2 w-full px-4">
+          <div className="max-w-2xl lg:max-w-lg mt-12 mx-auto md:mx-2 w-full px-4">
             <h2 className="text-3xl font-bold text-white mb-6">All Products</h2>
             <div className="rounded-xl border border-gray-700 overflow-y-auto h-[44.4rem] bg-[#111827]">
               <div className="bg-[#111827] p-6 shadow-lg   space-y-5 flex flex-col">

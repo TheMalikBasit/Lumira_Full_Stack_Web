@@ -209,12 +209,14 @@ const StockUpdateForm = ({ id }) => {
             required
           ></textarea>
         </div>
-        <div className="flex justify-between">
-          <Button type="submit">Update Product</Button>
-          <Button type="button" onclick={clearForm}>
+        <div className="flex flex-col xl:flex-row justify-between">
+          <Button className=" mt-5 xl:mt-0" type="submit">
+            Update Product
+          </Button>
+          <Button className=" mt-5 xl:mt-0" type="button" onclick={clearForm}>
             Clear Form
           </Button>
-          <Button white onclick={handleDelete}>
+          <Button className="mt-5 xl:mt-0" white onclick={handleDelete}>
             Delete Product
           </Button>
         </div>

@@ -9,14 +9,14 @@ const ProductCard = ({ product }) => {
   return (
     <div
       onClick={() => {
-        router.push("/product/" + product._id);
+        router.push("/product/" + product.id);
         scrollTo(0, 0);
       }}
       className="flex flex-col items-start gap-0.5 max-w-[200px] w-full cursor-pointer"
     >
       <div className="cursor-pointer group relative bg-gray-500/10 rounded-lg w-full h-52 flex items-center justify-center">
         <Image
-          src={product.image[0]}
+          src={product.mainImage}
           alt={product.name}
           className="group-hover:scale-105 transition object-cover w-4/5 h-4/5 md:w-full md:h-full"
           width={800}
@@ -52,7 +52,7 @@ const ProductCard = ({ product }) => {
       <div className="flex items-end justify-between w-full mt-1">
         <p className="text-base font-medium">
           {currency}
-          {product.offerPrice}
+          {product.price}
         </p>
         <button className=" max-sm:hidden px-4 py-1.5 text-gray-500 border border-gray-500/20 rounded-full text-xs hover:bg-slate-50 transition">
           Buy now

@@ -81,7 +81,9 @@ const Navbar = ({ relative }) => {
                   )
                 ) : item.admin ? (
                   isAdmin ? (
-                    <span>{item.title}</span>
+                    <span className="border border-orange-500 rounded-[1rem] p-2">
+                      {item.title}
+                    </span>
                   ) : null
                 ) : (
                   item.title
