@@ -63,7 +63,7 @@ const StockAddForm = () => {
     setDescription("");
   };
   return (
-    <div className="max-w-2xl mt-12 sm:mx-auto md:mx-2 w-full px-4">
+    <div className="max-w-2xl lg:max-w-[45%] mt-12 sm:mx-auto md:mx-2 w-full px-4">
       <h2 className="text-3xl font-bold mb-6 text-white">Upload New Product</h2>
       <form
         onSubmit={handleSubmit}

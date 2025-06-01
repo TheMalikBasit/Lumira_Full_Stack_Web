@@ -101,7 +101,7 @@ const StockUpdateForm = ({ id }) => {
     setDescription("");
   };
   return (
-    <div className="max-w-2xl mt-12 sm:mx-auto md:mx-2 w-full px-4">
+    <div className="max-w-2xl lg:max-w-[45%] mt-12 sm:mx-auto md:mx-2 w-full px-4">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-3xl font-bold text-white">Update Product</h2>
         <p className="font-bold text-orange-600">

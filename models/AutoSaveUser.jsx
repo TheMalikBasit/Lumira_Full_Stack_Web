@@ -7,7 +7,7 @@ import { useUser } from "@clerk/nextjs";
 import { useAppContext } from "@/Context/AppContext";
 const AutoSaveUser = () => {
   const { isSignedIn, user } = useUser();
-  const { setUserData } = useAppContext();
+  const { setUserData, setCartItems } = useAppContext();
 
   useEffect(() => {
     const saveUserToFirestore = async () => {
@@ -34,9 +34,15 @@ const AutoSaveUser = () => {
           address: "", // Placeholder (can be updated later)
           orders: [], // Start with empty order list
           isAdmin: false,
+          cart: {},
         });
+        setCartItems({});
         console.log("User info stored in Firestore");
       } else {
+        const userData = userSnapshot.data();
+        const cartData = userData.cart || [];
+        setCartItems(cartData);
+        console.log("From auto save user: ", cartData);
         console.log("User already exists in Firestore");
       }
     };

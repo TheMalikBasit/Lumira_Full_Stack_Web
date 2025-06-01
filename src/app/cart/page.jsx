@@ -15,7 +15,7 @@ const Cart = () => {
     updateCartQuantity,
     getCartCount,
   } = useAppContext();
-
+  console.log("CartItem in cart console", cartItems["9TLdAS3Y5YsnbHBrOvrS"]);
   return (
     <>
       <Navbar relative />
@@ -33,24 +33,24 @@ const Cart = () => {
             <table className="min-w-full table-auto">
               <thead className="text-left">
                 <tr>
-                  <th className="text-nowrap pb-6 md:px-4 px-1 text-gray-600 font-medium">
+                  <th className="text-nowrap pb-6 md:px-4 px-1 text-gray-400 font-medium">
                     Product Details
                   </th>
-                  <th className="pb-6 md:px-4 px-1 text-gray-600 font-medium">
+                  <th className="pb-6 md:px-4 px-1 text-gray-400 font-medium">
                     Price
                   </th>
-                  <th className="pb-6 md:px-4 px-1 text-gray-600 font-medium">
+                  <th className="pb-6 md:px-4 px-1 text-gray-400 font-medium">
                     Quantity
                   </th>
-                  <th className="pb-6 md:px-4 px-1 text-gray-600 font-medium">
+                  <th className="pb-6 md:px-4 px-1 text-gray-400 font-medium">
                     Subtotal
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="bg-[#111827] p-6 rounded-xl shadow-lg border border-gray-700 space-y-5">
                 {Object.keys(cartItems).map((itemId) => {
                   const product = products.find(
-                    (product) => product._id === itemId
+                    (product) => product.id === itemId
                   );
 
                   if (!product || cartItems[itemId] <= 0) return null;
@@ -59,41 +59,40 @@ const Cart = () => {
                     <tr key={itemId}>
                       <td className="flex items-center gap-4 py-4 md:px-4 px-1">
                         <div>
-                          <div className="rounded-lg overflow-hidden bg-gray-500/10 p-2">
-                            <Image
-                              src={product.image[0]}
-                              alt={product.name}
-                              className="w-16 h-auto object-cover mix-blend-multiply"
-                              width={1280}
-                              height={720}
-                            />
-                          </div>
+                          <Image
+                            src={product.mainImage}
+                            alt={product.name}
+                            className="object-cover rounded-md"
+                            width={100}
+                            height={100}
+                          />
+
                           <button
                             className="md:hidden text-xs text-orange-600 mt-1"
-                            onClick={() => updateCartQuantity(product._id, 0)}
+                            onClick={() => updateCartQuantity(product.id, 0)}
                           >
                             Remove
                           </button>
                         </div>
                         <div className="text-sm hidden md:block">
-                          <p className="text-gray-800">{product.name}</p>
+                          <h2 className="">{product.name}</h2>
                           <button
                             className="text-xs text-orange-600 mt-1"
-                            onClick={() => updateCartQuantity(product._id, 0)}
+                            onClick={() => updateCartQuantity(product.id, 0)}
                           >
                             Remove
                           </button>
                         </div>
                       </td>
-                      <td className="py-4 md:px-4 px-1 text-gray-600">
-                        ${product.offerPrice}
+                      <td className="py-4 md:px-4 px-1 ">
+                        {/* offerPrice */}${product.price}
                       </td>
                       <td className="py-4 md:px-4 px-1">
                         <div className="flex items-center md:gap-2 gap-1">
                           <button
                             onClick={() =>
                               updateCartQuantity(
-                                product._id,
+                                product.id,
                                 cartItems[itemId] - 1
                               )
                             }
@@ -107,7 +106,7 @@ const Cart = () => {
                           <input
                             onChange={(e) =>
                               updateCartQuantity(
-                                product._id,
+                                product.id,
                                 Number(e.target.value)
                               )
                             }
@@ -115,7 +114,7 @@ const Cart = () => {
                             value={cartItems[itemId]}
                             className="w-8 border text-center appearance-none"
                           ></input>
-                          <button onClick={() => addToCart(product._id)}>
+                          <button onClick={() => addToCart(product.id)}>
                             <Image
                               src={assets.increase_arrow}
                               alt="increase_arrow"
@@ -125,7 +124,8 @@ const Cart = () => {
                         </div>
                       </td>
                       <td className="py-4 md:px-4 px-1 text-gray-600">
-                        ${(product.offerPrice * cartItems[itemId]).toFixed(2)}
+                        {/* offerPrice */}$
+                        {(product.price * cartItems[itemId]).toFixed(2)}
                       </td>
                     </tr>
                   );
@@ -147,6 +147,7 @@ const Cart = () => {
         </div>
         <OrderSummary />
       </div>
+      <div></div>
     </>
   );
 };

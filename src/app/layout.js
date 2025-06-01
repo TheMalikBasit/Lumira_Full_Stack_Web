@@ -5,7 +5,7 @@ import { AppContextProvider } from "@/Context/AppContext";
 import AutoSaveUser from "../../models/AutoSaveUser";
 import CheckAdmin from "../../models/CheckAdmin";
 import FetchProducts from "../../models/ProductsFetcher";
-
+import { Toaster } from "react-hot-toast";
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -27,6 +27,7 @@ export default function RootLayout({ children }) {
             <CheckAdmin />
             <FetchProducts />
             {children}
+            <Toaster position="top-center" />
           </AppContextProvider>
         </body>
       </html>

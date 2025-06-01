@@ -34,42 +34,56 @@ const page = () => {
 
   return (
     <>
-      <Navbar relative />
-      <div className="px-4 py-5">
+      <Navbar />
+      <div className="px-4 py-5 mt-20">
         <div className="text-center mt-10">
           <h1 className="text-orange-500 text-2xl font-bold ">
             Welcome to admin dashboard
           </h1>
         </div>
-        <div className="container w-full border-t border-gray-700 mt-8 mb-8" />
-        <div className="flex flex-col items-center xl:items-start xl:flex-row justify-start">
+        <div className="container w-full border-t border-gray-700 my-8" />
+        <div className="flex flex-col items-center lg:justify-around lg:flex-row justify-start">
           <StockAddForm />
           <StockUpdateForm id={id} />
-          <div className="max-w-2xl lg:max-w-lg mt-12 mx-auto md:mx-2 w-full px-4">
-            <h2 className="text-3xl font-bold text-white mb-6">All Products</h2>
-            <div className="rounded-xl border border-gray-700 overflow-y-auto h-[44.4rem] bg-[#111827]">
-              <div className="bg-[#111827] p-6 shadow-lg   space-y-5 flex flex-col">
-                {Array.isArray(products) &&
-                  products.map((item, index) => (
-                    <div
-                      className="rounded-xl border border-gray-700 p-4 shadow-lg flex flex-row cursor-pointer"
-                      key={index}
-                      onClick={() => handleUpdateForm(item.id)}
-                    >
-                      <Image
-                        src={item.mainImage}
-                        alt={item.name}
-                        width={100}
-                        height={100}
-                        className="object-cover rounded-md"
-                      />
-                      <div className="ml-4 overflow-hidden">
+        </div>
+        <div className="max-w-[45%] mt-12 ml-11 w-full px-4">
+          <h2 className="text-3xl font-bold text-white mb-6">All Products</h2>
+          <div className="rounded-xl border border-gray-700 overflow-y-auto h-[44.4rem] bg-[#111827]">
+            <div className="bg-[#111827] p-6 shadow-lg   space-y-5 flex flex-col">
+              {Array.isArray(products) &&
+                products.map((item, index) => (
+                  <div
+                    className=" rounded-xl border border-gray-700 p-4 shadow-lg flex flex-row items-center cursor-pointer"
+                    key={index}
+                    onClick={() => handleUpdateForm(item.id)}
+                  >
+                    <Image
+                      src={item.mainImage}
+                      alt={item.name}
+                      width={100}
+                      height={100}
+                      className="object-cover rounded-md"
+                    />
+                    <div className="ml-4 overflow-hidden flex flex-row items-center justify-between w-full">
+                      <div className="flex flex-col items-center">
+                        <h2 className="font-bold text-orange-600">
+                          Product Name
+                        </h2>
                         <h2>{item.name}</h2>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <h2 className="font-bold text-orange-600">Price</h2>
+                        <h3>{item.price}</h3>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <h2 className="font-bold text-orange-600">
+                          Current Stock
+                        </h2>
                         <h3>{item.availableStock}</h3>
                       </div>
                     </div>
-                  ))}
-              </div>
+                  </div>
+                ))}
             </div>
           </div>
         </div>

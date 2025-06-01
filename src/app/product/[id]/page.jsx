@@ -3,12 +3,13 @@ import { useEffect, useState } from "react";
 import { assets } from "../../../assets/assets";
 import ProductCard from "../../../Components/ProductCard";
 import Navbar from "../../../components/Navbar";
-import Footer from "../../../components/Footer";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import Loading from "../../../components/Loading";
 import { useAppContext } from "../../../Context/AppContext";
 import React from "react";
+import FooterOne from "../../../components/Footer";
+import FooterTwo from "@/Components/FooterTwo";
 
 const Product = () => {
   const { id } = useParams();
@@ -25,7 +26,6 @@ const Product = () => {
 
   useEffect(() => {
     fetchProductData();
-    console.log("inside a product");
   }, [id, products.length]);
 
   return productData ? (
@@ -45,6 +45,18 @@ const Product = () => {
             </div>
 
             <div className="grid grid-cols-4 gap-4">
+              <div
+                onClick={() => setMainImage(productData.mainImage)}
+                className="cursor-pointer rounded-lg overflow-hidden bg-gray-500/10"
+              >
+                <Image
+                  src={productData.mainImage}
+                  alt="alt"
+                  className="w-full h-auto object-cover mix-blend-multiply"
+                  width={1280}
+                  height={720}
+                />
+              </div>
               {productData.imageUrl.map((image, index) => (
                 <div
                   key={index}
@@ -99,7 +111,7 @@ const Product = () => {
             </div>
             <p className="text-gray-600 mt-3">{productData.description}</p>
             <p className="text-3xl font-medium mt-6">
-              ${productData.price}
+              {/* offerPrice */}${productData.price}
               <span className="text-base font-normal text-gray-800/60 line-through ml-2">
                 ${productData.price}
               </span>
@@ -169,10 +181,11 @@ const Product = () => {
           </button>
         </div>
       </div>
-      <Footer />
+      <FooterOne />
+      <FooterTwo />
     </>
   ) : (
-    <Loading />
+    <div>Loading</div>
   );
 };
 

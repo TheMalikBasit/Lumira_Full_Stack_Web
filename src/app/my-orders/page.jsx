@@ -29,7 +29,7 @@ const MyOrders = () => {
         <div className="space-y-5">
           <h2 className="text-lg font-medium mt-6">My Orders</h2>
           {loading ? (
-            <Loading />
+            <div>Loading</div>
           ) : (
             <div className="max-w-5xl border-t border-gray-300 text-sm">
               {orders.map((order, index) => (

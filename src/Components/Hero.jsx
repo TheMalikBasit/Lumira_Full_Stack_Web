@@ -4,6 +4,7 @@ import Button from "./Button";
 import { useRouter } from "next/navigation"; //This also works
 import { useAppContext } from "../Context/AppContext";
 import { useUser } from "@clerk/nextjs";
+import AllProducts from "@/app/all-products/page";
 
 const Hero = () => {
   const { router } = useAppContext();
@@ -24,6 +25,7 @@ const Hero = () => {
       customPadding
       id="#hero"
     >
+      <AllProducts hidden />
       <div className="container">
         <Button onclick={handleClick}>Gradiant</Button>
       </div>

@@ -13,7 +13,7 @@ import { SignInButton, SignOutButton, UserButton } from "@clerk/nextjs";
 import { useAppContext } from "@/Context/AppContext";
 import Loading from "./Loading";
 
-const Navbar = ({ relative }) => {
+const Navbar = ({ relative, hidden }) => {
   const navRef = useRef(null);
 
   const { isAdmin, router, user, adminLoading } = useAppContext();
@@ -38,13 +38,13 @@ const Navbar = ({ relative }) => {
     enableBodyScroll(navRef.current);
   };
 
-  if (adminLoading) {
-    return <Loading />;
-  }
+  // if (adminLoading) {
+  //   return <Loading />
+  // }
   return (
     <div
-      className={`${
-        relative ? "relative" : "fixed"
+      className={`${relative ? "relative" : "fixed"} ${
+        hidden ? "hidden" : "block"
       } w-full top-0 left-0 right-0 border-b border-n-6 lg:backdrop-blur-sm lg:bg-n-8/90 z-50 ${
         openNavigation ? "bg-n-8" : "bg-n-8/90 backdrop-blur-sm"
       }`}
