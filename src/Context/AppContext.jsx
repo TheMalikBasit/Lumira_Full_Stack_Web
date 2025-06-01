@@ -28,11 +28,9 @@ export const AppContextProvider = (props) => {
   const addToCart = async (itemId) => {
     let cartData = structuredClone(cartItems);
     if (cartData[itemId]) {
-      console.log("Inside addToCART IF");
       cartData[itemId] += 1;
       console.log(cartData[itemId]);
     } else {
-      console.log("Inside addToCART ELSE");
       cartData[itemId] = 1;
       console.log(cartData[itemId]);
     }
@@ -42,7 +40,7 @@ export const AppContextProvider = (props) => {
       try {
         console.log(user.id);
         await UpdateCart({ userId: user.id, cartDataProp: cartData });
-        toast.success("Product dded to cart");
+        toast.success("Product added to cart");
       } catch (error) {
         toast.error("Failed to add product to cart");
       }

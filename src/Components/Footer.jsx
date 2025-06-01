@@ -1,10 +1,11 @@
 import { socials } from "../constants";
 import DefaultStyler from "./DefaultStyler";
 import Image from "next/image";
-const FooterOne = ({ hidden }) => {
+const FooterOne = ({ hidden, padLinesHide, crosses }) => {
   return (
     <DefaultStyler
-      crosses
+      crosses={crosses}
+      padLinesHide={padLinesHide}
       className={`!px-0 !py-10 ${hidden ? "hidden" : "relative"}`}
     >
       <div className="container flex justify-center sm:justify-between items-center gap-10 max-sm:flex-col">

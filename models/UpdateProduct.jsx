@@ -1,7 +1,7 @@
 "use client";
 import { db } from "../Config/firebase";
 import { collection, getDoc, doc, updateDoc } from "firebase/firestore";
-
+import toast from "react-hot-toast";
 const UpdateProduct = async ({
   id,
   name,
@@ -25,12 +25,12 @@ const UpdateProduct = async ({
         description,
         updatedAt: new Date(),
       });
-      alert("✅ Product updated successfully!");
+      toast.success("Product updated successfully!");
     } else {
-      alert("Product not found! Try adding this product.");
+      toast.error("Product not found! Try adding this product.");
     }
   } catch (error) {
-    alert("Failed to update product.");
+    toast.error("Failed to update product.");
   }
 };
 

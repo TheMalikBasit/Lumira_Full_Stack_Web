@@ -7,6 +7,7 @@ const DefaultStyler = ({
   crossesOffset,
   customPadding,
   children,
+  padLinesHide,
 }) => {
   return (
     <div
@@ -17,8 +18,16 @@ const DefaultStyler = ({
     ${className || ""}`}
     >
       {children}
-      <div className="hidden absolute bg-n-1 h-full w-0.25 top-0 pointer-events-none md:block left-5 lg:left-7.5 xl:left-10" />
-      <div className="hidden absolute bg-n-1 h-full w-0.25 top-0 pointer-events-none md:block right-5 lg:right-7.5 xl:right-10" />
+      <div
+        className={`hidden ${
+          padLinesHide ? "hidden" : "md:block"
+        } absolute bg-n-1 h-full w-0.25 top-0 pointer-events-none right-5 lg:right-7.5 xl:right-10`}
+      />
+      <div
+        className={`hidden ${
+          padLinesHide ? "hidden" : "md:block"
+        } absolute bg-n-1 h-full w-0.25 top-0 pointer-events-none left-5 lg:left-7.5 xl:left-10`}
+      />
       {crosses && (
         <>
           <div

@@ -46,7 +46,7 @@ const page = () => {
           <StockAddForm />
           <StockUpdateForm id={id} />
         </div>
-        <div className="max-w-[45%] mt-12 ml-11 w-full px-4">
+        <div className="max-w-2xl xl:max-w-[45%] mx-auto xl:mx-0 xl:ml-11 mt-12 lg:max-w-full px-4">
           <h2 className="text-3xl font-bold text-white mb-6">All Products</h2>
           <div className="rounded-xl border border-gray-700 overflow-y-auto h-[44.4rem] bg-[#111827]">
             <div className="bg-[#111827] p-6 shadow-lg   space-y-5 flex flex-col">
@@ -64,22 +64,24 @@ const page = () => {
                       height={100}
                       className="object-cover rounded-md"
                     />
-                    <div className="ml-4 overflow-hidden flex flex-row items-center justify-between w-full">
-                      <div className="flex flex-col items-center">
+                    <div className="ml-4 overflow-hidden flex flex-row items-baseline lg:items-center xl:items-baseline justify-between w-full">
+                      <div className="flex flex-col items-center w-full">
                         <h2 className="font-bold text-orange-600">
                           Product Name
                         </h2>
                         <h2>{item.name}</h2>
                       </div>
-                      <div className="flex flex-col items-center">
-                        <h2 className="font-bold text-orange-600">Price</h2>
-                        <h3>{item.price}</h3>
-                      </div>
-                      <div className="flex flex-col items-center">
-                        <h2 className="font-bold text-orange-600">
-                          Current Stock
-                        </h2>
-                        <h3>{item.availableStock}</h3>
+                      <div className="flex flex-row  w-full">
+                        <div className="hidden md:flex flex-col items-center mr-20">
+                          <h2 className="font-bold text-orange-600">Price</h2>
+                          <h3>{item.price}</h3>
+                        </div>
+                        <div className="flex flex-col items-center">
+                          <h2 className="font-bold text-orange-600">
+                            Current Stock
+                          </h2>
+                          <h3>{item.availableStock}</h3>
+                        </div>
                       </div>
                     </div>
                   </div>

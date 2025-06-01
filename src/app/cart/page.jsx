@@ -15,7 +15,6 @@ const Cart = () => {
     updateCartQuantity,
     getCartCount,
   } = useAppContext();
-  console.log("CartItem in cart console", cartItems["9TLdAS3Y5YsnbHBrOvrS"]);
   return (
     <>
       <Navbar relative />
