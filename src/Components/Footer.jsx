@@ -1,7 +1,7 @@
 import { socials } from "../constants";
 import DefaultStyler from "./DefaultStyler";
 import Image from "next/image";
-const FooterOne = ({ hidden, padLinesHide, crosses }) => {
+const FooterOne = ({ hidden, padLinesHide, crosses, white }) => {
   return (
     <DefaultStyler
       crosses={crosses}
@@ -9,7 +9,11 @@ const FooterOne = ({ hidden, padLinesHide, crosses }) => {
       className={`!px-0 !py-10 ${hidden ? "hidden" : "relative"}`}
     >
       <div className="container flex justify-center sm:justify-between items-center gap-10 max-sm:flex-col">
-        <p className="caption text-n-4 lg:block">
+        <p
+          className={`${
+            white ? "font-bold text-black text-lg" : "text-n-4"
+          } font-code caption lg:block`}
+        >
           © {new Date().getFullYear()}. All rights reserved
         </p>
         <ul className="flex flex-wrap gap-5">

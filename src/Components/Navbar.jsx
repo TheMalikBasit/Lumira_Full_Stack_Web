@@ -11,7 +11,6 @@ import { useRef } from "react";
 import Image from "next/image";
 import { SignInButton, SignOutButton, UserButton } from "@clerk/nextjs";
 import { useAppContext } from "@/Context/AppContext";
-import Loading from "./Loading";
 
 const Navbar = ({ relative, hidden, classic }) => {
   const navRef = useRef(null);
@@ -43,11 +42,10 @@ const Navbar = ({ relative, hidden, classic }) => {
   // }
   return (
     <div
-      className={`${relative ? "relative" : "fixed"} ${
-        hidden ? "hidden" : "block"
-      } ${
-        classic ? "border-black" : ""
-      } w-full top-0 left-0 right-0 border-b border-n-6 lg:backdrop-blur-sm lg:bg-n-8/90 z-50 ${
+      className={`
+        ${relative ? "relative" : "fixed"} ${hidden ? "hidden" : "block"} ${
+        classic ? "border-black bg-black" : "lg:backdrop-blur-sm"
+      } w-full top-0 left-0 right-0 border-b border-n-6 lg:bg-n-8/90 z-50 ${
         openNavigation ? "bg-n-8" : "bg-n-8/90 backdrop-blur-sm"
       }`}
     >
