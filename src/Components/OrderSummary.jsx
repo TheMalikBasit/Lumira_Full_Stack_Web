@@ -26,7 +26,7 @@ const OrderSummary = () => {
   }, []);
 
   return (
-    <div className="mt-20 w-full md:w-96 bg-gray-500/5 p-5">
+    <div className="mt-20 w-full md:w-96 p-5 border border-black">
       <h2 className="text-xl md:text-2xl font-medium text-gray-700">
         Order Summary
       </h2>
