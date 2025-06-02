@@ -11,41 +11,50 @@ const AutoSaveUser = () => {
 
   useEffect(() => {
     const saveUserToFirestore = async () => {
-      if (!isSignedIn || !user) return;
+      try {
+        if (!isSignedIn || !user) return;
 
-      if (isSignedIn && user) {
         setUserData({
           id: user.id,
           username: user.fullName || "",
           email: user.primaryEmailAddress.emailAddress,
           imageUrl: user.imageUrl,
         });
-        console.log("User data set in context...");
-      }
-      const userRef = doc(db, "users", user.id);
-      const userSnapshot = await getDoc(userRef);
 
-      if (!userSnapshot.exists()) {
-        await setDoc(userRef, {
-          id: user.id,
-          username: user.fullName || "",
-          email: user.primaryEmailAddress.emailAddress,
-          imageUrl: user.imageUrl,
-          address: "", // Placeholder (can be updated later)
-          orders: [], // Start with empty order list
-          isAdmin: false,
-          cart: {},
-        });
-        setCartItems({});
-        console.log("User info stored in Firestore");
-      } else {
-        const userData = userSnapshot.data();
-        const cartData = userData.cart || [];
-        setCartItems(cartData);
-        console.log("From auto save user: ", cartData);
-        console.log("User already exists in Firestore");
+        const userRef = doc(db, "users", user.id);
+        const userSnapshot = await getDoc(userRef);
+
+        if (!userSnapshot.exists()) {
+          await setDoc(userRef, {
+            id: user.id,
+            username: user.fullName || "",
+            email: user.primaryEmailAddress.emailAddress,
+            imageUrl: user.imageUrl,
+            address: "",
+            orders: [],
+            isAdmin: false,
+            cart: [],
+          });
+          setCartItems([]);
+          console.log("User info stored in Firestore");
+        } else {
+          const userData = userSnapshot.data();
+          let cartData = Array.isArray(userData.cart) ? userData.cart : [];
+
+          // Ensure each item has 'checked' field
+          cartData = cartData.map((item) => ({
+            ...item,
+            checked: item.checked ?? false,
+          }));
+
+          setCartItems(cartData);
+          console.log("Updated cart data: ", cartData);
+        }
+      } catch (error) {
+        console.error("Error saving user to Firestore:", error);
       }
     };
+
     saveUserToFirestore();
   }, [isSignedIn, user]);
 

@@ -43,6 +43,7 @@ export default {
         code: "var(--font-code)",
         grotesk: "var(--font-grotesk)",
         poppins: ["var(--font-poppins)", "sans-serif"],
+        pico: ["Pico", "sans-serif"],
       },
       letterSpacing: {
         tagline: ".15em",

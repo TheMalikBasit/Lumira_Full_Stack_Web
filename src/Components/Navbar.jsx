@@ -11,11 +11,12 @@ import { useRef } from "react";
 import Image from "next/image";
 import { SignInButton, SignOutButton, UserButton } from "@clerk/nextjs";
 import { useAppContext } from "@/Context/AppContext";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDroplet } from "@fortawesome/free-solid-svg-icons";
 const Navbar = ({ relative, hidden, classic }) => {
   const navRef = useRef(null);
 
-  const { isAdmin, router, user, adminLoading } = useAppContext();
+  const { isAdmin, router, user } = useAppContext();
   const pathname = usePathname();
 
   const [openNavigation, setopenNavigation] = useState(false);
@@ -51,7 +52,15 @@ const Navbar = ({ relative, hidden, classic }) => {
     >
       <div className="flex items-center px-5 xl:px-10 max-lg:py-4">
         <a className="block w-[12rem]" href="/">
-          <Image src={brainwave} alt="Brainwave Logo" width={190} height={40} />
+          {/* <Image src={brainwave} alt="Brainwave Logo" width={190} height={40} /> */}
+
+          <FontAwesomeIcon
+            icon={faDroplet}
+            className="mr-3 inline-block w-6 h-6 text-cyan-600"
+          />
+          <h1 className="inline-block tracking-wider text-2xl font-mono text-neutral-50">
+            VelvetDrop
+          </h1>
         </a>
         <nav
           ref={navRef}

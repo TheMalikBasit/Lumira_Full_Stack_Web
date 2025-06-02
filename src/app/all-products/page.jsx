@@ -6,14 +6,27 @@ import { useAppContext } from "../../Context/AppContext";
 import DefaultStyler from "@/Components/DefaultStyler";
 import FooterOne from "../../Components/Footer";
 import FooterTwo from "@/Components/FooterTwo";
+import { useEffect, useState } from "react";
+import Loading from "@/Components/Loading";
+
 const AllProducts = ({ hidden }) => {
   const { products } = useAppContext();
+  const [loading, setloading] = useState(true);
 
+  useEffect(() => {
+    if (products === undefined || products === null) {
+      setloading(true);
+    } else {
+      setloading(false);
+    }
+  }, [products]);
+
+  if (loading) return <Loading />;
   return (
     <>
       <Navbar relative hidden={hidden} />
       <DefaultStyler>
-        <div className="flex flex-col items-start px-6 md:px-16 lg:px-32">
+        <div className="flex flex-col items-start px-6 md:px-16 lg:px-32 min-h-[50rem]">
           <div className="flex flex-col items-end pt-12">
             <p className="text-2xl font-medium">All products</p>
             <div className="w-16 h-0.5 bg-orange-600 rounded-full"></div>
@@ -25,8 +38,10 @@ const AllProducts = ({ hidden }) => {
               ))}
           </div>
         </div>
-        <FooterOne hidden={hidden} />
-        <FooterTwo hidden={hidden} />
+
+        <FooterOne crosses hidden={hidden} />
+
+        <FooterTwo crosses hidden={hidden} />
       </DefaultStyler>
     </>
   );

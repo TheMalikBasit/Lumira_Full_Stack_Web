@@ -22,23 +22,24 @@ export const AppContextProvider = (props) => {
   const [products, setProducts] = useState([]);
   const [userData, setUserData] = useState(false);
   const [isAdmin, setIsAdmin] = useState(true);
-  const [cartItems, setCartItems] = useState({});
+  const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [adminLoading, setAdminLoading] = useState(true);
 
   const addToCart = async (itemId) => {
     let cartData = structuredClone(cartItems);
-    if (cartData[itemId]) {
-      cartData[itemId] += 1;
-      console.log(cartData[itemId]);
+
+    let itemIndex = cartData.findIndex((item) => item.itemId === itemId);
+    if (itemIndex !== -1) {
+      cartData[itemIndex].quantity += 1;
     } else {
-      cartData[itemId] = 1;
-      console.log(cartData[itemId]);
+      cartData.push({ itemId, quantity: 1, checked: false });
     }
+
     setCartItems(cartData);
 
     if (user) {
       try {
-        console.log(user.id);
         await UpdateCart({ userId: user.id, cartDataProp: cartData });
         toast.success("Product added to cart");
       } catch (error) {
@@ -49,16 +50,54 @@ export const AppContextProvider = (props) => {
 
   const updateCartQuantity = async (itemId, quantity) => {
     let cartData = structuredClone(cartItems);
+
     if (quantity === 0) {
-      delete cartData[itemId];
-      toast.success("Item Removed");
+      cartData = cartData.filter((item) => item.itemId !== itemId);
     } else {
-      cartData[itemId] = quantity;
+      cartData = cartData.map((item) =>
+        item.itemId === itemId ? { ...item, quantity } : item
+      );
     }
+
     setCartItems(cartData);
+
     if (user) {
       try {
-        console.log(user.id);
+        await UpdateCart({ userId: user.id, cartDataProp: cartData });
+        toast.success("Cart Updated");
+      } catch (error) {
+        toast.error("Failed to update cart");
+      }
+    }
+  };
+
+  const toggleItemChecked = async (itemId) => {
+    let cartData = structuredClone(cartItems);
+
+    cartData = cartData.map((item) =>
+      item.itemId === itemId ? { ...item, checked: !item.checked } : item
+    );
+
+    setCartItems(cartData);
+
+    if (user) {
+      try {
+        await UpdateCart({ userId: user.id, cartDataProp: cartData });
+
+        toast.success("Cart Updated");
+      } catch (error) {
+        toast.error("Failed to update cart");
+      }
+    }
+  };
+
+  const removeItemFromCart = async (itemId) => {
+    let cartData = cartItems.filter((item) => item.itemId !== itemId);
+
+    setCartItems(cartData);
+
+    if (user) {
+      try {
         await UpdateCart({ userId: user.id, cartDataProp: cartData });
         toast.success("Cart Updated");
       } catch (error) {
@@ -68,24 +107,18 @@ export const AppContextProvider = (props) => {
   };
 
   const getCartCount = () => {
-    let totalCount = 0;
-    for (const items in cartItems) {
-      if (cartItems[items] > 0) {
-        totalCount += cartItems[items];
-      }
-    }
-    return totalCount;
+    return cartItems
+      .filter((item) => item.checked)
+      .reduce((count, item) => count + item.quantity, 0);
   };
 
   const getCartAmount = () => {
-    let totalAmount = 0;
-    for (const items in cartItems) {
-      let itemInfo = products.find((product) => product.id === items);
-      if (cartItems[items] > 0) {
-        totalAmount += itemInfo.price * cartItems[items];
-      }
-    }
-    return Math.floor(totalAmount * 100) / 100;
+    return cartItems
+      .filter((item) => item.checked) // Only items marked as checked
+      .reduce((total, item) => {
+        let product = products.find((product) => product.id === item.itemId);
+        return total + product.price * item.quantity;
+      }, 0);
   };
 
   const value = {
@@ -106,6 +139,10 @@ export const AppContextProvider = (props) => {
     updateCartQuantity,
     getCartCount,
     getCartAmount,
+    toggleItemChecked,
+    removeItemFromCart,
+    setLoading,
+    loading,
   };
 
   return (

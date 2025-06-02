@@ -1,10 +1,8 @@
 "use client";
 import { db } from "../Config/firebase";
 import { doc, updateDoc } from "firebase/firestore";
-import toast from "react-hot-toast";
 
 const UpdateCart = async ({ userId, cartDataProp }) => {
-  console.log("console from updateCart", cartDataProp);
   try {
     const userRef = doc(db, "users", userId);
     await updateDoc(userRef, {
