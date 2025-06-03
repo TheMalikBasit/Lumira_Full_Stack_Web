@@ -9,6 +9,13 @@ const FooterTwo = ({ hidden, padLinesHide, crosses, white }) => {
       padLinesHide={padLinesHide}
       className={`!px-0 !py-10 ${hidden ? "hidden" : "relative"}`}
     >
+      <h1
+        className={`${
+          white ? "font-bold text-orange-500 text-lg" : "text-n-4"
+        } text-center mb-6 font-code caption lg:block`}
+      >
+        DEVELOPER CONTACTS
+      </h1>
       <div className="container flex flex-col sm:flex-row justify-center sm:justify-between items-center gap-6 text-white text-sm font-semibold">
         <a
           className="flex items-center space-x-3 hover:underline"
@@ -26,7 +33,7 @@ const FooterTwo = ({ hidden, padLinesHide, crosses, white }) => {
               white ? "font-bold text-black text-lg" : "text-n-4"
             } font-code caption lg:block`}
           >
-            github.com/TheMalikBasit
+            github.com/
           </span>
         </a>
 
@@ -46,7 +53,7 @@ const FooterTwo = ({ hidden, padLinesHide, crosses, white }) => {
               white ? "font-bold text-black text-lg" : "text-n-4"
             } font-code caption lg:block`}
           >
-            linkedin.com/in/malik-abdul-basit
+            linkedin.com/in/
           </span>
         </a>
       </div>

@@ -6,7 +6,7 @@ import OrderSummary from "@/components/OrderSummary";
 import Navbar from "@/components/Navbar";
 import { useAppContext } from "../../Context/AppContext";
 import Image from "next/image";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faXmark, faHeart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquare, faCheckSquare } from "@fortawesome/free-regular-svg-icons";
 import FooterOne from "@/Components/Footer";
@@ -50,20 +50,20 @@ const cart = () => {
     <>
       <Navbar relative classic />
       <div className="w-full min-h-[60rem] pb-10">
-        <h1 className="px-32 ml-10 h1 font-code text-neutral-950 pt-10">
+        <h1 className="text-center lg:text-start lg:px-32 lg:ml-10 h1 font-code text-neutral-950 pt-10">
           SHOPPING CART
         </h1>
         <div className="w-full border border-t border-black my-10" />
-        <div className="flex flex-col lg:flex-row w-full">
-          <div className="w-[75rem] px-32">
+        <div className="flex flex-col justify-center lg:justify-normal lg:flex-row w-full px-10 lg:px-20 overflow-hidden">
+          <div className="w-full max-w-[75rem] lg:pr-20">
             <button
               onClick={() => router.push("/all-products")}
-              className="hover:text-orange-500 group flex items-center ml-10 mb-5 gap-2 text-2xl font-poppins font-bold text-black underline"
+              className="hover:text-orange-500 group flex items-center mb-5 gap-2 text-sm  md:text-2xl font-poppins font-bold text-black underline"
             >
               Continue Shopping
             </button>
             {cartItems?.length > 0 ? (
-              <div className="">
+              <div className="border border-black">
                 <div className="overflow-y-auto max-h-[44.4rem] scrollbar-thin scrollbar-thumb-cyan-800 scrollbar-track-gray-300">
                   {cartItems.map((item) => {
                     const product = products.find(
@@ -77,11 +77,11 @@ const cart = () => {
                         key={item.itemId}
                         className="border-b border-black w-full"
                       >
-                        <div className="flex flex-row w-full p-10">
+                        <div className="flex items-center flex-row w-full p-5 md:p-10">
                           <button
                             type="button"
                             onClick={() => toggleItemChecked(item.itemId)}
-                            className="text-2xl md:text-4xl mr-5"
+                            className="text-2xl md:text-4xl mr-2 md:mr-5"
                             aria-pressed={item.checked}
                           >
                             <FontAwesomeIcon
@@ -91,25 +91,26 @@ const cart = () => {
                           </button>
 
                           <div
-                            className="border border-black p-8 mr-5 cursor-pointer"
+                            className="mr-2 md:mr-5"
                             onClick={() =>
                               router.push("/product/" + product.id)
                             }
                           >
                             <Image
                               src={product.mainImage}
-                              width={130}
-                              height={130}
+                              width={100}
+                              height={100}
                               alt={product.name}
+                              className="border border-black min-w-[100px] min-h-[100px] w-[200px] cursor-pointer object-contain"
                             />
                           </div>
                           <div className="flex flex-col w-full justify-around">
-                            <div className="flex w-full justify-between items-center mb-6">
+                            <div className="flex w-full justify-between items-center mb-2 md:mb-6">
                               <h2
                                 onClick={() =>
                                   router.push("/product/" + product.id)
                                 }
-                                className="font-mono font-bold text-black text-2xl cursor-pointer"
+                                className="font-mono font-bold text-black text-sm md:text-2xl cursor-pointer"
                               >
                                 {product.name}
                               </h2>
@@ -120,21 +121,21 @@ const cart = () => {
                               >
                                 <FontAwesomeIcon
                                   icon={faXmark}
-                                  className="text-black top-0 right-0"
-                                  size="xl"
+                                  className="text-black top-0 right-0 md:text-xl"
+                                  size="sm"
                                 />
                               </button>
                             </div>
-                            <div className="mb-6 flex flex-row justify-between">
-                              <div className="p-2 border border-black w-20">
-                                <h2 className="text-black">Hello</h2>
+                            <div className="flex flex-row justify-end md:justify-between mb-2 md:mb-6">
+                              <div className="hidden md:flex p-2 border border-black w-20">
+                                <h2 className=" text-black">Hello</h2>
                               </div>
-                              <div className="p-2 border border-black w-20">
-                                <h2 className="text-black">Hello</h2>
-                              </div>
+                              {/* <div className="hidden md:flex p-2 border border-black w-20">
+                                <h2 className=" text-black">Hello</h2>
+                              </div> */}
                               <div className="p-2 border border-black w-24 flex justify-between items-center">
                                 <button
-                                  className="text-black font-code text-lg font-bold"
+                                  className="text-black font-code text-sm md:text-lg font-bold"
                                   onClick={() =>
                                     updateCartQuantity(
                                       item.itemId,
@@ -144,11 +145,11 @@ const cart = () => {
                                 >
                                   -
                                 </button>
-                                <h1 className="font-poppins font-bold text-black">
+                                <h1 className="font-poppins text-sm md:text-lg font-bold text-black">
                                   {item.quantity}
                                 </h1>
                                 <button
-                                  className="text-black font-code text-lg font-bold"
+                                  className="text-black font-code text-sm md:text-lg font-bold"
                                   onClick={() =>
                                     updateCartQuantity(
                                       item.itemId,
@@ -161,10 +162,16 @@ const cart = () => {
                               </div>
                             </div>
                             <div className="flex flex-row justify-between items-center w-full">
-                              <h1 className="font-poppins font-bold text-black underline cursor-pointer">
+                              <h1 className=" hidden md:flex text-sm lg:text-lg font-poppins lg:font-bold text-black underline cursor-pointer">
                                 MOVE TO FAVOURITES
                               </h1>
-                              <h1 className="font-poppins font-bold text-black">
+                              <FontAwesomeIcon
+                                icon={faHeart}
+                                className={`flex md:hidden ${
+                                  item.checked ? "text-red-500" : "text-black"
+                                }  text-xl md:text-2xl`}
+                              />
+                              <h1 className="text-sm  lg:text-lg  font-poppins font-bold text-black">
                                 {currency} <span> </span>
                                 {(product.price * item.quantity).toFixed(2)}
                               </h1>
@@ -182,7 +189,7 @@ const cart = () => {
               </p>
             )}
           </div>
-          <div className="mt-15">
+          <div className="mt-[3.3rem] lg:pr-10">
             <OrderSummaryClassic />
           </div>
         </div>
