@@ -33,7 +33,7 @@ export const AppContextProvider = (props) => {
     if (itemIndex !== -1) {
       cartData[itemIndex].quantity += 1;
     } else {
-      cartData.push({ itemId, quantity: 1, checked: false });
+      cartData.push({ itemId, quantity: 1, checked: true });
     }
 
     setCartItems(cartData);

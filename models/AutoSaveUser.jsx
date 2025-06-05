@@ -7,11 +7,13 @@ import { useUser } from "@clerk/nextjs";
 import { useAppContext } from "@/Context/AppContext";
 const AutoSaveUser = () => {
   const { isSignedIn, user } = useUser();
-  const { setUserData, setCartItems } = useAppContext();
+  const { setUserData, setCartItems, setLoading } = useAppContext();
 
   useEffect(() => {
     const saveUserToFirestore = async () => {
       try {
+        setLoading(true);
+
         if (!isSignedIn || !user) return;
 
         setUserData({
@@ -37,6 +39,7 @@ const AutoSaveUser = () => {
           });
           setCartItems([]);
           console.log("User info stored in Firestore");
+          setLoading(false);
         } else {
           const userData = userSnapshot.data();
           let cartData = Array.isArray(userData.cart) ? userData.cart : [];
@@ -49,6 +52,7 @@ const AutoSaveUser = () => {
 
           setCartItems(cartData);
           console.log("Updated cart data: ", cartData);
+          setLoading(false);
         }
       } catch (error) {
         console.error("Error saving user to Firestore:", error);

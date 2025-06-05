@@ -14,10 +14,20 @@ import FooterTwo from "@/Components/FooterTwo";
 const Product = () => {
   const { id } = useParams();
 
-  const { products, router, addToCart, currency } = useAppContext();
+  const {
+    products,
+    router,
+    addToCart,
+    currency,
+    cartItems,
+    updateCartQuantity,
+    loading,
+  } = useAppContext();
 
   const [mainImage, setMainImage] = useState(null);
   const [productData, setProductData] = useState(null);
+  // const [cartQuantity, setcartQuantity] = useState(0);
+  // const [item, setitem] = useState([]);
 
   const fetchProductData = async () => {
     const product = products.find((product) => product.id === id);
@@ -27,8 +37,33 @@ const Product = () => {
   useEffect(() => {
     fetchProductData();
   }, [id, products.length]);
+  // const fetchedProduct = cartItems.find((cartItem) => cartItem.itemId === id);
+  // console.log("Fetched product: ", fetchedProduct);
+  // const quantity = fetchedProduct ? fetchedProduct.quantity : 0;
+  // console.log("Fetched product quantity", quantity);
 
-  return productData ? (
+  // useEffect(() => {
+  //   quantityChecker();
+  // }, [cartItems, id]);
+
+  // const quantityChecker = () => {
+  //   const cartProduct = cartItems.find((cartItem) => cartItem.itemId === id);
+  //   setcartQuantity(cartProduct ? cartProduct.quantity : 0);
+  //   setitem(cartProduct);
+  //   console.log("From quantity checker", item);
+  //   console.log("From quantity checker", cartProduct);
+  // };
+
+  console.log("loading state: ", loading);
+  if (loading || !productData || !cartItems) return <Loading />;
+  const cartProduct = cartItems.find((cartItem) => cartItem.itemId === id);
+  const cartQuantity = cartProduct ? cartProduct.quantity : 0;
+
+  console.log("Cart Items : ", cartItems);
+  console.log("Fetched product: ", cartProduct);
+  console.log("Fetched product quantity: ", cartQuantity);
+  console.log("Product Data: ", productData);
+  return (
     <>
       <Navbar relative />
       <div className="px-6 md:px-16 lg:px-32 pt-14 space-y-10 bg-neutral-300">
@@ -150,19 +185,51 @@ const Product = () => {
             <div className="flex items-center mt-10 gap-4">
               <button
                 onClick={() => addToCart(productData.id)}
-                className="w-full py-3.5 bg-gray-100 text-gray-800/80 hover:bg-gray-200 transition"
+                className={`${
+                  cartProduct ? "hidden" : "block"
+                } w-full py-3.5 bg-gray-100 text-gray-800/80 hover:bg-gray-200 transition`}
               >
                 Add to Cart
               </button>
-              <button
-                onClick={() => {
-                  addToCart(productData.id);
-                  router.push("/cart");
-                }}
-                className="w-full py-3.5 bg-orange-500 text-white hover:bg-orange-600 transition"
+              <div
+                className={`${cartProduct ? "block" : "hidden"} flex w-full `}
               >
-                Buy now
-              </button>
+                <div className="p-2 border border-black min-w-24 flex justify-between items-center mr-5">
+                  <button
+                    className="text-black font-code text-sm md:text-lg font-bold"
+                    onClick={() =>
+                      updateCartQuantity(
+                        cartProduct.itemId,
+                        cartProduct.quantity - 1
+                      )
+                    }
+                  >
+                    -
+                  </button>
+                  <h1 className="font-poppins text-sm md:text-lg font-bold text-black">
+                    {cartProduct ? cartProduct.quantity : 0}
+                  </h1>
+                  <button
+                    className="text-black font-code text-sm md:text-lg font-bold"
+                    onClick={() =>
+                      updateCartQuantity(
+                        cartProduct.itemId,
+                        cartProduct.quantity + 1
+                      )
+                    }
+                  >
+                    +
+                  </button>
+                </div>
+                <button
+                  onClick={() => {
+                    router.push("/cart");
+                  }}
+                  className={`w-full py-3.5 bg-orange-500 text-white hover:bg-orange-600 transition`}
+                >
+                  Buy now
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -187,8 +254,6 @@ const Product = () => {
       <FooterOne />
       <FooterTwo />
     </>
-  ) : (
-    <div>Loading</div>
   );
 };
 
