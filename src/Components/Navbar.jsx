@@ -13,6 +13,8 @@ import { SignInButton, SignOutButton, UserButton } from "@clerk/nextjs";
 import { useAppContext } from "@/Context/AppContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDroplet } from "@fortawesome/free-solid-svg-icons";
+import { assets } from "../assets/assets";
+
 import {
   faPiedPiper,
   faPiedPiperHat,
@@ -52,7 +54,7 @@ const Navbar = ({ relative, hidden, classic }) => {
         classic ? "border-black" : ""
       } w-full top-0 left-0 right-0   z-50`}
     >
-      <div className="flex items-center px-5 xl:px-10 max-lg:py-4">
+      <div className="flex items-center px-5 xl:px-40 max-lg:py-4">
         <a className="flex flex-row items-center w-[12rem]" href="/">
           {/* <Image src={brainwave} alt="Brainwave Logo" width={190} height={40} /> */}
 
@@ -62,6 +64,7 @@ const Navbar = ({ relative, hidden, classic }) => {
             size="2xl"
             style={{ color: "black" }}
           />
+
           {/* <FontAwesomeIcon
             icon={faDroplet}
             className="mr-3 inline-block w-6 h-6 text-cyan-600"
