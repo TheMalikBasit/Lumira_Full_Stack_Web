@@ -47,18 +47,18 @@ export const navigation = [
     title: "Features",
     url: "/#features",
   },
+  // {
+  //   id: "2",
+  //   title: "Pricing",
+  //   url: "/#pricing",
+  // },
   {
     id: "2",
-    title: "Pricing",
-    url: "/#pricing",
-  },
-  {
-    id: "3",
     title: "Products",
     url: "/all-products",
   },
   {
-    id: "4",
+    id: "3",
     title: "Cart",
     url: "/cart",
   },
@@ -70,14 +70,14 @@ export const navigation = [
   //   onlyMobile: true,
   // },
   {
-    id: "5",
+    id: "4",
     title: "Sign in",
     url: null,
     clerk: true,
     onlyMobile: true,
   },
   {
-    id: "6",
+    id: "5",
     title: "Seller dashboard",
     url: "/admin",
     admin: true,

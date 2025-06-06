@@ -18,18 +18,9 @@ const Hero = () => {
     // console.log(user);
   };
   return (
-    <DefaultStyler
-      className="pt-[12rem] -mt-[5.25rem]"
-      crosses
-      crossesOffset="lg:translate-y-[5.25rem]"
-      customPadding
-      id="#hero"
-    >
-      <AllProducts hidden />
-      <div className="container">
-        <Button onclick={handleClick}>Gradiant</Button>
-      </div>
-    </DefaultStyler>
+    <div className="container">
+      <Button onclick={handleClick}>Gradiant</Button>
+    </div>
   );
 };
 

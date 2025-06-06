@@ -50,7 +50,7 @@ const cart = () => {
     <>
       <Navbar relative classic />
       <div className="w-full min-h-[60rem] pb-10">
-        <h1 className="text-center lg:text-start lg:px-32 lg:ml-10 h1 font-code text-neutral-950 pt-10">
+        <h1 className="text-center lg:text-start lg:ml-20 h1 font-code text-neutral-950 pt-10">
           SHOPPING CART
         </h1>
         <div className="w-full border border-t border-black my-10" />

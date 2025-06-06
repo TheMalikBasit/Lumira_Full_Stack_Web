@@ -22,7 +22,8 @@
 
 @layer base {
     body {
-        @apply font-sans bg-n-8 text-n-1 text-base;
+        @apply font-sans bg-slate-400 text-n-1 text-base;
+
     }
 }
 

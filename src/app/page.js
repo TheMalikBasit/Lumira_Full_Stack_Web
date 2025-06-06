@@ -4,6 +4,8 @@ import Navbar from "@/Components/Navbar";
 import ButtonGradient from "@/assets/svg/ButtonGradient";
 import FooterOne from "@/Components/Footer";
 import FooterTwo from "@/Components/FooterTwo";
+import { useEffect } from "react";
+
 export default function Home() {
   return (
     <>

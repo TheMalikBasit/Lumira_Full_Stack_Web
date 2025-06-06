@@ -4,11 +4,7 @@ import { faGithub, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 
 const FooterTwo = ({ hidden, padLinesHide, crosses, white }) => {
   return (
-    <DefaultStyler
-      crosses={crosses}
-      padLinesHide={padLinesHide}
-      className={`!px-0 !py-10 ${hidden ? "hidden" : "relative"}`}
-    >
+    <div className="pt-10 pb-10">
       <h1
         className={`${
           white ? "font-bold text-orange-500 text-lg" : "text-n-4"
@@ -57,7 +53,7 @@ const FooterTwo = ({ hidden, padLinesHide, crosses, white }) => {
           </span>
         </a>
       </div>
-    </DefaultStyler>
+    </div>
   );
 };
 

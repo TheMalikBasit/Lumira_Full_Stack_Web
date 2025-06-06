@@ -13,6 +13,10 @@ import { SignInButton, SignOutButton, UserButton } from "@clerk/nextjs";
 import { useAppContext } from "@/Context/AppContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDroplet } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPiedPiper,
+  faPiedPiperHat,
+} from "@fortawesome/free-brands-svg-icons";
 const Navbar = ({ relative, hidden, classic }) => {
   const navRef = useRef(null);
 
@@ -45,21 +49,25 @@ const Navbar = ({ relative, hidden, classic }) => {
     <div
       className={`
         ${relative ? "relative" : "fixed"} ${hidden ? "hidden" : "block"} ${
-        classic ? "border-black bg-black" : "lg:backdrop-blur-sm"
-      } w-full top-0 left-0 right-0 border-b border-n-6 lg:bg-n-8/90 z-50 ${
-        openNavigation ? "bg-n-8" : "bg-n-8/90 backdrop-blur-sm"
-      }`}
+        classic ? "border-black" : ""
+      } w-full top-0 left-0 right-0   z-50`}
     >
       <div className="flex items-center px-5 xl:px-10 max-lg:py-4">
-        <a className="block w-[12rem]" href="/">
+        <a className="flex flex-row items-center w-[12rem]" href="/">
           {/* <Image src={brainwave} alt="Brainwave Logo" width={190} height={40} /> */}
 
           <FontAwesomeIcon
+            className="mr-3"
+            icon={faPiedPiperHat}
+            size="2xl"
+            style={{ color: "black" }}
+          />
+          {/* <FontAwesomeIcon
             icon={faDroplet}
             className="mr-3 inline-block w-6 h-6 text-cyan-600"
-          />
-          <h1 className="inline-block tracking-wider text-2xl font-mono text-neutral-50">
-            VelvetDrop
+          /> */}
+          <h1 className="tracking-wider text-2xl font-bold font-serif text-black">
+            Riwayat
           </h1>
         </a>
         <nav
@@ -79,7 +87,7 @@ const Navbar = ({ relative, hidden, classic }) => {
                 } ${
                   item.url === pathname
                     ? "z-2 lg:text-orange-500"
-                    : "lg:text-n-1"
+                    : "lg:text-neutral-950"
                 } font-poppins px-6 py-6 md:py-8 lg:-mr-0.25 lg:text-xs lg:font-semibold lg:leading-5  lg:hover:text-orange-500 xl:px-12`}
               >
                 {item.clerk ? (
