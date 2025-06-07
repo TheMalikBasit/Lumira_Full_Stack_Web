@@ -14,7 +14,7 @@ const Button = ({
   user,
   router,
 }) => {
-  const classes = `button h-11 relative inline-flex items-center justify-center transition-colors hover:text-color-1 
+  const classes = `button h-11 relative inline-flex items-center justify-center transition-colors text-neutral-950 hover:text-color-1 
   ${px || "px-7"} 
   ${white ? "text-n-8" : "text-n-1"} 
   ${className || ""}`;
@@ -32,7 +32,7 @@ const Button = ({
 
   const renderClerkButton = () =>
     isSignedIn ? (
-      <button className="relative ml-5 inline-flex justify-center">
+      <button className="relative ml-5 inline-flex justify-center border-2 border-orange-500 rounded-full p-[2px]">
         <UserButton
           appearance={{
             elements: {

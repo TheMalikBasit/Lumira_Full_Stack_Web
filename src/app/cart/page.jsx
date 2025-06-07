@@ -26,23 +26,25 @@ const cart = () => {
     toggleItemChecked,
     removeItemFromCart,
     currency,
+    darkMode,
   } = useAppContext();
 
   const [loading, setloading] = useState(true);
   useEffect(() => {
-    const original = document.body.style.backgroundColor;
-    document.body.style.backgroundColor = "#fff"; // Your desired color
-
     if (cartItems === undefined || cartItems === null) {
       setloading(true);
     } else {
       setloading(false);
     }
 
-    return () => {
-      document.body.style.backgroundColor = original; // Restore on unmount
-    };
-  }, [cartItems]);
+    if (darkMode) {
+      document.body.style.backgroundColor = "#000000";
+      console.log("From Cart darkMode: ", darkMode);
+    } else {
+      document.body.style.backgroundColor = "#fff";
+      console.log("From Cart !darkMode: ", darkMode);
+    }
+  }, [cartItems, darkMode]);
 
   if (loading) return <Loading />;
 

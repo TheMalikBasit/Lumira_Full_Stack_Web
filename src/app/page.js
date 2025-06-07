@@ -5,15 +5,17 @@ import ButtonGradient from "@/assets/svg/ButtonGradient";
 import FooterOne from "@/Components/Footer";
 import FooterTwo from "@/Components/FooterTwo";
 import { useEffect } from "react";
+import BackLights from "@/Components/BackLights";
 
 export default function Home() {
   return (
     <>
+      <BackLights />
       <div className="pt-[4.75rem] lg:pt-[5.25rem] overflow-hidden">
         <Navbar />
-        <Hero />
+        {/* <Hero />
         <FooterOne crosses />
-        <FooterTwo crosses />
+        <FooterTwo crosses /> */}
       </div>
       <ButtonGradient />
     </>

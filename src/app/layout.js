@@ -13,8 +13,8 @@ const poppins = Poppins({
 });
 
 export const metadata = {
-  title: "The Forever Bottle",
-  description: "A sustainable water bottle for all your adventures",
+  title: "Riwiyat",
+  description: "The ultimate clothing brand",
 };
 
 export default function RootLayout({ children }) {

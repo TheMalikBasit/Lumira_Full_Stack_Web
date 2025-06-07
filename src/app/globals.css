@@ -1,15 +1,15 @@
 @import url("https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300&display=swap");
-
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+
 :root {
     --font-poppins: "Poppins", sans-serif;
     --font-pico: "Pico", sans-serif;
-    /* Define Pico as well */
     --font-sora: "Sora", sans-serif;
     --font-code: "Source Code Pro", monospace;
     --font-grotesk: "Space Grotesk", sans-serif;
@@ -22,7 +22,7 @@
 
 @layer base {
     body {
-        @apply font-sans bg-slate-400 text-n-1 text-base;
+        @apply font-sans text-n-1 text-base;
 
     }
 }
@@ -128,6 +128,121 @@
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #555;
+}
+
+.text-fill-hover {
+    display: inline-block;
+    position: relative;
+    color: black;
+    /* Base color */
+    transition: color 0.4s ease;
+    z-index: 0;
+}
+
+.text-fill-hover::before {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: transparent;
+    background: linear-gradient(to right, #f97316 0%, #f97316 100%);
+    background-size: 0% 100%;
+    background-repeat: no-repeat;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: background-size 0.4s ease;
+    z-index: 1;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+    white-space: nowrap;
+}
+
+.text-fill-hover:hover::before {
+    background-size: 100% 100%;
+}
+
+.text-fill-hover:hover::after {
+    display: inline-block;
+    background: linear-gradient(90deg, #000000);
+    background-size: 100% 0%;
+    background-repeat: no-repeat;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: background-size 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.text-fill-hover-dark {
+    display: inline-block;
+    position: relative;
+    color: "#fff";
+    /* Base color */
+    transition: color 0.4s ease;
+    z-index: 0;
+}
+
+.text-fill-hover-dark::before {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: transparent;
+    background: linear-gradient(to right, #f97316 0%, #f97316 100%);
+    background-size: 0% 100%;
+    background-repeat: no-repeat;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: background-size 0.4s ease;
+    z-index: 1;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+    white-space: nowrap;
+}
+
+.text-fill-hover-dark:hover::before {
+    background-size: 100% 100%;
+}
+
+.text-fill-hover-dark:hover::after {
+    display: inline-block;
+    background: linear-gradient(90deg, #fff);
+    background-size: 100% 0%;
+    background-repeat: no-repeat;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: background-size 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.box::after {
+    position: absolute;
+    content: "";
+    height: 100%;
+    width: 100%;
+    transform: scale(0.9) translateZ(0);
+    background: linear-gradient(to bottom,
+            #ff5770,
+            #e4428d,
+            #c42da8,
+            #9e16c3,
+            #6501de,
+            #9e16c3,
+            #c42da8,
+            #e4428d,
+            #ff5770);
+    background-size: 100% 200%;
+    background-repeat: repeat-y;
+    animation: animateGlowTB 2.5s linear infinite;
+}
+
+@keyframes animateGlowTB {
+    0% {
+        background-position: 50% 0%;
+    }
+
+    100% {
+        background-position: 50% 200%;
+    }
 }
 
 .rotate-45 {

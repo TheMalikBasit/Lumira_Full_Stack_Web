@@ -1,6 +1,7 @@
 "use client";
+import { useToggleMode } from "../../models/ToggleMode";
 import { navigation } from "@/constants";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { HamburgerMenu } from "./design/Header";
 import { brainwave } from "../assets";
@@ -12,19 +13,25 @@ import Image from "next/image";
 import { SignInButton, SignOutButton, UserButton } from "@clerk/nextjs";
 import { useAppContext } from "@/Context/AppContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDroplet } from "@fortawesome/free-solid-svg-icons";
+import {
+  faMoon,
+  faSun,
+  faDroplet,
+  faLightbulb,
+  faFireFlameCurved,
+} from "@fortawesome/free-solid-svg-icons";
 import { assets } from "../assets/assets";
-
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 import {
   faPiedPiper,
   faPiedPiperHat,
 } from "@fortawesome/free-brands-svg-icons";
 const Navbar = ({ relative, hidden, classic }) => {
   const navRef = useRef(null);
-
-  const { isAdmin, router, user } = useAppContext();
   const pathname = usePathname();
-
+  const ToggleMode = useToggleMode();
+  const { isAdmin, router, user, darkMode } = useAppContext();
   const [openNavigation, setopenNavigation] = useState(false);
 
   const toggleNavigation = () => {
@@ -44,6 +51,16 @@ const Navbar = ({ relative, hidden, classic }) => {
     enableBodyScroll(navRef.current);
   };
 
+  useEffect(() => {
+    if (darkMode) {
+      document.body.style.backgroundColor = "#000000";
+      console.log("From Cart darkMode: ", darkMode);
+    } else {
+      document.body.style.backgroundColor = "#fff";
+      console.log("From Cart !darkMode: ", darkMode);
+    }
+  }, [darkMode]);
+
   // if (adminLoading) {
   //   return <Loading />
   // }
@@ -59,18 +76,17 @@ const Navbar = ({ relative, hidden, classic }) => {
           {/* <Image src={brainwave} alt="Brainwave Logo" width={190} height={40} /> */}
 
           <FontAwesomeIcon
-            className="mr-3"
-            icon={faPiedPiperHat}
+            className="mr-3 text-orange-400"
+            icon={faFireFlameCurved}
             size="2xl"
-            style={{ color: "black" }}
           />
-
-          {/* <FontAwesomeIcon
-            icon={faDroplet}
-            className="mr-3 inline-block w-6 h-6 text-cyan-600"
-          /> */}
-          <h1 className="tracking-wider text-2xl font-bold font-serif text-black">
-            Riwayat
+          <h1
+            className={`${
+              darkMode ? "text-fill-hover-dark" : "text-fill-hover"
+            } tracking-wider text-2xl font-bold font-serif`}
+            data-text="GlowNest"
+          >
+            GlowNest
           </h1>
         </a>
         <nav
@@ -85,13 +101,15 @@ const Navbar = ({ relative, hidden, classic }) => {
                 key={item.id}
                 href={item.url}
                 onClick={handleClick}
-                className={`block uppercase relative font-code text-2xl text-n-1 transition-colors cursor-pointer ${
+                className={`block uppercase relative font-ubuntu text-xl text-n-1 transition-colors cursor-pointer ${
                   item.onlyMobile ? "lg:hidden" : ""
                 } ${
                   item.url === pathname
                     ? "z-2 lg:text-orange-500"
+                    : darkMode
+                    ? "lg:text-n-1"
                     : "lg:text-neutral-950"
-                } font-poppins px-6 py-6 md:py-8 lg:-mr-0.25 lg:text-xs lg:font-semibold lg:leading-5  lg:hover:text-orange-500 xl:px-12`}
+                } px-6 py-6 md:py-8 lg:-mr-0.25 lg:text-sm lg:font-semibold lg:leading-5  lg:hover:text-orange-500 xl:px-12`}
               >
                 {item.clerk ? (
                   user ? (
@@ -101,9 +119,9 @@ const Navbar = ({ relative, hidden, classic }) => {
                   )
                 ) : item.admin ? (
                   isAdmin ? (
-                    <span className="border border-orange-500 rounded-[1rem] p-2">
+                    <p className="border border-orange-500 rounded-[1rem] p-2">
                       {item.title}
-                    </span>
+                    </p>
                   ) : null
                 ) : (
                   item.title
@@ -119,10 +137,26 @@ const Navbar = ({ relative, hidden, classic }) => {
         >
           New Account
         </a> */}
+        {darkMode ? (
+          <button onClick={ToggleMode} className="max-w-2xl">
+            <FontAwesomeIcon
+              className="mr-3 text-white cursor-pointer"
+              icon={faMoon}
+              size="2xl"
+            />
+          </button>
+        ) : (
+          <button onClick={ToggleMode} className="max-w-2xl">
+            <FontAwesomeIcon
+              className="mr-3 text-orange-500 cursor-pointer"
+              icon={faSun}
+              size="2xl"
+            />
+          </button>
+        )}
         <Button clerk user={user} router={router} className="hidden lg:flex">
           Sign IN
         </Button>
-
         <Button
           onclick={toggleNavigation}
           className="ml-auto lg:hidden"

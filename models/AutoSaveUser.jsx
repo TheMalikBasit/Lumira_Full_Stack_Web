@@ -7,7 +7,8 @@ import { useUser } from "@clerk/nextjs";
 import { useAppContext } from "@/Context/AppContext";
 const AutoSaveUser = () => {
   const { isSignedIn, user } = useUser();
-  const { setUserData, setCartItems, setLoading } = useAppContext();
+  const { setUserData, setCartItems, setLoading, setdarkMode } =
+    useAppContext();
 
   useEffect(() => {
     const saveUserToFirestore = async () => {
@@ -36,6 +37,7 @@ const AutoSaveUser = () => {
             orders: [],
             isAdmin: false,
             cart: [],
+            darkMode: false,
           });
           setCartItems([]);
           console.log("User info stored in Firestore");
@@ -43,7 +45,9 @@ const AutoSaveUser = () => {
         } else {
           const userData = userSnapshot.data();
           let cartData = Array.isArray(userData.cart) ? userData.cart : [];
+          let mode = userData.darkMode;
 
+          setdarkMode(mode);
           // Ensure each item has 'checked' field
           cartData = cartData.map((item) => ({
             ...item,

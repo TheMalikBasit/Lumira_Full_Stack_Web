@@ -44,6 +44,7 @@ export default {
         grotesk: "var(--font-grotesk)",
         poppins: ["var(--font-poppins)", "sans-serif"],
         pico: ["Pico", "sans-serif"],
+        ubuntu: ["Ubuntu", "sans-serif"],
       },
       letterSpacing: {
         tagline: ".15em",
