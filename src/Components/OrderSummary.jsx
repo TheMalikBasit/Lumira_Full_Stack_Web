@@ -4,7 +4,8 @@ import { useAppContext } from "../Context/AppContext";
 import React, { useEffect, useState } from "react";
 
 const OrderSummary = () => {
-  const { currency, router, getCartCount, getCartAmount } = useAppContext();
+  const { currency, router, getCartCount, getCartAmount, darkMode } =
+    useAppContext();
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -26,7 +27,11 @@ const OrderSummary = () => {
   }, []);
 
   return (
-    <div className="mt-20 w-full md:w-96 p-5 border border-black">
+    <div
+      className={`mt-20 w-full md:w-96 p-5 border ${
+        darkMode ? "border-white" : "border-black"
+      }`}
+    >
       <h2 className="text-xl md:text-2xl font-medium text-gray-700">
         Order Summary
       </h2>

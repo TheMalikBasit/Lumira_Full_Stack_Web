@@ -27,6 +27,7 @@ import {
   faPiedPiper,
   faPiedPiperHat,
 } from "@fortawesome/free-brands-svg-icons";
+import BackLights from "./BackLights";
 const Navbar = ({ relative, hidden, classic }) => {
   const navRef = useRef(null);
   const pathname = usePathname();
@@ -74,19 +75,20 @@ const Navbar = ({ relative, hidden, classic }) => {
       <div className="flex items-center px-5 xl:px-40 max-lg:py-4">
         <a className="flex flex-row items-center w-[12rem]" href="/">
           {/* <Image src={brainwave} alt="Brainwave Logo" width={190} height={40} /> */}
-
-          <FontAwesomeIcon
-            className="mr-3 text-orange-400"
-            icon={faFireFlameCurved}
-            size="2xl"
-          />
+          <div className="max-w-2xl">
+            <FontAwesomeIcon
+              className="mr-3 text-orange-400"
+              icon={faFireFlameCurved}
+              size="2xl"
+            />
+          </div>
           <h1
             className={`${
               darkMode ? "text-fill-hover-dark" : "text-fill-hover"
             } tracking-wider text-2xl font-bold font-serif`}
-            data-text="GlowNest"
+            data-text="Lumira"
           >
-            GlowNest
+            Lumira
           </h1>
         </a>
         <nav
@@ -138,17 +140,23 @@ const Navbar = ({ relative, hidden, classic }) => {
           New Account
         </a> */}
         {darkMode ? (
-          <button onClick={ToggleMode} className="max-w-2xl">
+          <button
+            onClick={ToggleMode}
+            className="max-w-2xl cursor-pointer Z-10"
+          >
             <FontAwesomeIcon
-              className="mr-3 text-white cursor-pointer"
+              className="mr-3 text-white"
               icon={faMoon}
               size="2xl"
             />
           </button>
         ) : (
-          <button onClick={ToggleMode} className="max-w-2xl">
+          <button
+            onClick={ToggleMode}
+            className="max-w-2xl cursor-pointer Z-10"
+          >
             <FontAwesomeIcon
-              className="mr-3 text-orange-500 cursor-pointer"
+              className="mr-3 text-orange-500"
               icon={faSun}
               size="2xl"
             />

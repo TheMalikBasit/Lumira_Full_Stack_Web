@@ -17,13 +17,6 @@ const AutoSaveUser = () => {
 
         if (!isSignedIn || !user) return;
 
-        setUserData({
-          id: user.id,
-          username: user.fullName || "",
-          email: user.primaryEmailAddress.emailAddress,
-          imageUrl: user.imageUrl,
-        });
-
         const userRef = doc(db, "users", user.id);
         const userSnapshot = await getDoc(userRef);
 
@@ -33,7 +26,7 @@ const AutoSaveUser = () => {
             username: user.fullName || "",
             email: user.primaryEmailAddress.emailAddress,
             imageUrl: user.imageUrl,
-            address: "",
+            address: [],
             orders: [],
             isAdmin: false,
             cart: [],
@@ -45,6 +38,9 @@ const AutoSaveUser = () => {
         } else {
           const userData = userSnapshot.data();
           let cartData = Array.isArray(userData.cart) ? userData.cart : [];
+          let userAddress = Array.isArray(userData.address)
+            ? userData.address
+            : [];
           let mode = userData.darkMode;
 
           setdarkMode(mode);
@@ -54,8 +50,17 @@ const AutoSaveUser = () => {
             checked: item.checked ?? false,
           }));
 
+          setUserData({
+            id: user.id,
+            username: user.fullName || "",
+            email: user.primaryEmailAddress.emailAddress,
+            imageUrl: user.imageUrl,
+            address: userAddress,
+          });
+
           setCartItems(cartData);
           console.log("Updated cart data: ", cartData);
+          console.log("user Address: ", userAddress);
           setLoading(false);
         }
       } catch (error) {
