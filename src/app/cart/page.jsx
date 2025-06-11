@@ -18,6 +18,7 @@ import BackLights from "@/Components/BackLights";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import UserDetails from "@/Components/UserDetails";
+import AddAddressComponent from "@/Components/AddAddressComponent";
 const cart = () => {
   const {
     products,
@@ -34,6 +35,7 @@ const cart = () => {
   } = useAppContext();
 
   const [loading, setloading] = useState(true);
+  const [addAddressPopUp, setaddAddressPopUp] = useState(false);
   useEffect(() => {
     if (cartItems === undefined || cartItems === null) {
       setloading(true);
@@ -68,6 +70,11 @@ const cart = () => {
     <>
       <BackLights L1 L2 />
       <Navbar relative classic />
+
+      {addAddressPopUp && (
+        <AddAddressComponent onClose={() => setaddAddressPopUp(false)} />
+      )}
+
       <div className="w-full min-h-[60rem] pb-10">
         <h1
           className={`${
@@ -266,10 +273,9 @@ const cart = () => {
               </p>
             )}
           </div>
+
           <div className="mt-[3.3rem] lg:pr-10">
-            <UserDetails />
-          </div>
-          <div className="mt-[3.3rem] lg:pr-10">
+            <UserDetails openAddAddress={() => setaddAddressPopUp(true)} />
             <OrderSummaryClassic />
           </div>
         </div>

@@ -5,40 +5,71 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useAppContext } from "@/Context/AppContext";
 import { useUser } from "@clerk/nextjs";
 import toast from "react-hot-toast";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSquare, faCheckSquare } from "@fortawesome/free-regular-svg-icons";
+import AddAddressComponent from "./AddAddressComponent";
 
-const UserDetails = () => {
-  const { userData } = useAppContext();
+const UserDetails = ({ openAddAddress }) => {
+  const { userData, darkMode } = useAppContext();
   const { user, isSignedIn } = useUser();
   const [Address, setAddress] = useState();
-
+  const [checked, setchecked] = useState(false);
+  const [addressIndex, setaddressIndex] = useState();
   console.log("user data from app context", userData.address);
   console.log("user data from clerk", user);
 
+  const dropdownHandler = () => {
+    if (checked) {
+      setchecked(false);
+    } else {
+      setchecked(true);
+    }
+  };
+
   const allAddress = userData.address;
-  useEffect(() => {
-    const updateAddress = async () => {
-      try {
-        if (!user) return;
-
-        const userRef = doc(db, "users", user.id);
-        const userSnapshot = await getDoc(userRef);
-
-        if (userSnapshot.exists() && isSignedIn) {
-          await updateDoc(userRef, {
-            address: Address,
-          });
-        }
-        toast.success("Address updated successfully");
-      } catch (error) {
-        toast.error("Failed to add address");
-      }
-    };
-  }, [Address]);
+  //   <div>
+  //   {Array.isArray(allAddress) &&
+  //     allAddress.map((item, idx) => (
+  //       <div key={idx}>{item}</div>
+  //     ))}
+  // </div>
   return (
-    <div className="border border-black p-5">
-      <div>
+    <div
+      className={`border p-5 mb-5 ${
+        darkMode ? "border-white" : "border-black"
+      }`}
+    >
+      {/* <div>
         {Array.isArray(allAddress) &&
           allAddress.map((item, idx) => <div key={idx}>{item.City}</div>)}
+      </div> */}
+
+      <div
+        className={`border p-5 mb-5 ${
+          darkMode ? "border-white" : "border-black"
+        }`}
+      >
+        <div className={`flex flex-row`}>
+          <div className="w-full">
+            <div className="text-black">
+              {Array.isArray(allAddress) &&
+                allAddress.map((item, idx) => (
+                  <div className="text-black" key={idx}>
+                    {item.City}
+                  </div>
+                ))}
+            </div>
+          </div>
+          <button
+            onClick={openAddAddress}
+            className="text-end text-2xl md:text-4xl"
+          >
+            <FontAwesomeIcon
+              icon={checked ? faCheckSquare : faSquare}
+              className={`${darkMode ? "text-white" : "text-black"}`}
+            />
+          </button>
+        </div>
       </div>
     </div>
   );
