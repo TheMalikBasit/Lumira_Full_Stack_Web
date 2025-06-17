@@ -49,15 +49,18 @@ const UserDetails = ({ openAddAddress }) => {
           darkMode ? "border-white" : "border-black"
         }`}
       >
-        <div className={`flex flex-row`}>
-          <div className="w-full">
+        <div className={`flex flex-row items-center`}>
+          <div className="w-full border border-n-11 mr-8 p-2">
             <div className="text-black">
-              {Array.isArray(allAddress) &&
+              {/* {Array.isArray(allAddress) &&
                 allAddress.map((item, idx) => (
                   <div className="text-black" key={idx}>
                     {item.City}
                   </div>
-                ))}
+                ))} */}
+              <h1 className="text-black">
+                {Array.isArray(allAddress) && allAddress[0].City}
+              </h1>
             </div>
           </div>
           <button

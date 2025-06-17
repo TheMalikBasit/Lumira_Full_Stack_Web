@@ -34,7 +34,7 @@ const page = () => {
 
   return (
     <>
-      <Navbar />
+      <Navbar bgBlur />
       <div className="px-4 py-5 mt-20">
         <div className="text-center mt-10">
           <h1 className="text-orange-500 text-2xl font-bold ">

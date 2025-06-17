@@ -28,7 +28,7 @@ import {
   faPiedPiperHat,
 } from "@fortawesome/free-brands-svg-icons";
 import BackLights from "./BackLights";
-const Navbar = ({ relative, hidden, classic }) => {
+const Navbar = ({ relative, hidden, classic, bgBlur }) => {
   const navRef = useRef(null);
   const pathname = usePathname();
   const ToggleMode = useToggleMode();
@@ -70,6 +70,8 @@ const Navbar = ({ relative, hidden, classic }) => {
       className={`
         ${relative ? "relative" : "fixed"} ${hidden ? "hidden" : "block"} ${
         classic ? "border-black" : ""
+      } ${
+        bgBlur ? "backdrop-blur-xl border-b border-black" : ""
       } w-full top-0 left-0 right-0   z-50`}
     >
       <div className="flex items-center px-5 xl:px-40 max-lg:py-4">
