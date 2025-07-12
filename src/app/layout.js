@@ -1,3 +1,4 @@
+import ClerkFirebaseBridge from "../../Config/ClerkFirebaseBridge";
 import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import { Poppins } from "next/font/google";
@@ -23,6 +24,7 @@ export default function RootLayout({ children }) {
       <html lang="en" className={poppins.variable}>
         <body className={`antialiased`}>
           <AppContextProvider>
+            <ClerkFirebaseBridge />
             <AutoSaveUser />
             <CheckAdmin />
             <FetchProducts />
