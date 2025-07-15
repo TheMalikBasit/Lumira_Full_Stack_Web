@@ -6,6 +6,7 @@ import FooterOne from "@/Components/Footer";
 import FooterTwo from "@/Components/FooterTwo";
 import { useEffect, useState } from "react";
 import BackLights from "@/Components/BackLights";
+import SplineFile from "@/Components/Spline";
 
 export default function Home() {
   const [showVideo, setShowVideo] = useState(true);
@@ -36,12 +37,14 @@ export default function Home() {
           />
         </div>
       )}
-      <BackLights L1 L2 L3 />
+      <BackLights L1 />
       <div className="pt-[4.75rem] lg:pt-[5.25rem] overflow-hidden">
-        <Navbar />
-        {/* <Hero />
+        <Navbar bgBlur />
+
+        <Hero />
+
         <FooterOne crosses />
-        <FooterTwo crosses /> */}
+        <FooterTwo crosses />
       </div>
       <ButtonGradient />
     </>

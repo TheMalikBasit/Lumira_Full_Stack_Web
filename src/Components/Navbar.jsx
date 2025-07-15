@@ -57,7 +57,7 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
       document.body.style.backgroundColor = "#000000";
       console.log("From Cart darkMode: ", darkMode);
     } else {
-      document.body.style.backgroundColor = "#fff";
+      document.body.style.backgroundColor = "#FFFFF4";
       console.log("From Cart !darkMode: ", darkMode);
     }
   }, [darkMode]);
@@ -71,10 +71,12 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
         ${relative ? "relative" : "fixed"} ${hidden ? "hidden" : "block"} ${
         classic ? "border-black" : ""
       } ${
-        bgBlur ? "backdrop-blur-xl border-b border-black" : ""
-      } w-full top-0 left-0 right-0   z-50`}
+        bgBlur
+          ? "backdrop-blur-xl border-b border-black        npm cache clean --force"
+          : ""
+      } w-full top-0 left-0 right-0  z-50`}
     >
-      <div className="flex items-center px-5 xl:px-40 max-lg:py-4">
+      <div className="flex items-center px-5 lg:px-[75px] xl:px-40 max-lg:py-4">
         <a className="flex flex-row items-center w-[12rem]" href="/">
           {/* <Image src={brainwave} alt="Brainwave Logo" width={190} height={40} /> */}
           <div className="max-w-2xl">
@@ -113,7 +115,7 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
                     : darkMode
                     ? "lg:text-n-1"
                     : "lg:text-neutral-950"
-                } px-6 py-6 md:py-8 lg:-mr-0.25 lg:text-sm lg:font-semibold lg:leading-5  lg:hover:text-orange-500 xl:px-12`}
+                } px-6 py-6 md:py-8 lg:mr-2 lg:text-sm lg:font-semibold lg:leading-5  lg:hover:text-orange-500 xl:px-10`}
               >
                 {item.clerk ? (
                   user ? (

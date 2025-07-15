@@ -25,7 +25,9 @@ const Button = ({
 
   const renderButton = () => (
     <button className={classes} onClick={onclick}>
-      <span className={spanClasses}>{children}</span>
+      <span className="flex flex-row items-center gap-2 relative z-10">
+        {children}
+      </span>
       {ButtonSvg(white)}
     </button>
   );

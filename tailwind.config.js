@@ -23,7 +23,7 @@ export default {
           1: "#26242C",
         },
         n: {
-          1: "#FFFFFF",
+          1: "#FFFFF4	",
           2: "#CAC6DD",
           3: "#ADA8C3",
           4: "#757185",
@@ -36,6 +36,10 @@ export default {
           11: "#1B1B2E",
           12: "#2E2A41",
           13: "#6C7275",
+          14: "#99382a",
+          card: "#FFFFF4",
+          mutedforeground: "#C57A64",
+          spaceGradient: "#F59CA9",
         },
       },
       fontFamily: {
@@ -94,7 +98,7 @@ export default {
       addBase({});
       addComponents({
         ".container": {
-          "@apply max-w-[77.5rem] mx-auto px-5 md:px-10 lg:px-15 xl:max-w-[87.5rem]":
+          "@apply max-w-[77.5rem] mx-auto px-5 md:px-10 lg:px-15 xl:max-w-[92rem]":
             {},
         },
         ".h1": {

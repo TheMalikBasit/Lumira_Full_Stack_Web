@@ -47,7 +47,7 @@ const cart = () => {
       document.body.style.backgroundColor = "#000000";
       console.log("From Cart darkMode: ", darkMode);
     } else {
-      document.body.style.backgroundColor = "#fff";
+      document.body.style.backgroundColor = "#FFFFF4";
       console.log("From Cart !darkMode: ", darkMode);
     }
   }, [cartItems, darkMode]);

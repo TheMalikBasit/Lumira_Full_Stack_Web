@@ -42,7 +42,7 @@ const BackLights = ({ L1, L2, L3 }) => {
       <div
         ref={lightRef}
         className={`${L1 ? "lg:flex" : "hidden"} 
-        mt-8 w-16 h-16 rounded-full bg-orange-300 opacity-100 blur-lg -z-10`}
+        mt-8 fixed w-16 h-16 rounded-full bg-orange-300 opacity-100 blur-lg -z-10`}
       />
       <div
         ref={lightRef2}
