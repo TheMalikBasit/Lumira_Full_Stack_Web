@@ -9,7 +9,7 @@ import BackLights from "@/Components/BackLights";
 import SplineFile from "@/Components/Spline";
 import Collections from "@/Components/Collections";
 import Footer from "@/Components/LumiraFooter";
-
+import ProductHighlights from "@/Components/ProductsHighlights";
 export default function Home() {
   const [showVideo, setShowVideo] = useState(true);
   const [fade, setFade] = useState(false);
@@ -43,6 +43,8 @@ export default function Home() {
       <div className="pt-[4.75rem] lg:pt-[5.25rem] overflow-hidden">
         <Navbar bgBlur />
         <Hero />
+        <Collections />
+        <ProductHighlights />
         {/* <FooterOne crosses />
         <FooterTwo crosses /> */}
         <Footer />

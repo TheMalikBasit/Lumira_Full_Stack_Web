@@ -55,6 +55,7 @@ import heroLamp from "./herolamp-study.jpg";
 import lumiraLogo from "./Lumira Logo.svg";
 import LumiraLogoWhite from "./LumiraLogoWhite.svg";
 import LumiraLogoBlack from "./LumiraLogoBlack.svg";
+
 export const assets = {
   logo,
   search_icon,
