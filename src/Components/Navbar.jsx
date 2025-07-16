@@ -71,12 +71,10 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
         ${relative ? "relative" : "fixed"} ${hidden ? "hidden" : "block"} ${
         classic ? "border-black" : ""
       } ${
-        bgBlur
-          ? "backdrop-blur-xl border-b border-black        npm cache clean --force"
-          : ""
-      } w-full top-0 left-0 right-0  z-50`}
+        bgBlur ? "backdrop-blur-xl border-b border-black" : ""
+      } w-full top-0 left-0 right-0 z-50`}
     >
-      <div className="flex items-center px-5 lg:px-[75px] xl:px-40 max-lg:py-4">
+      <div className="flex items-center px-5 sm:px-10 lg:px-[75px] xl:px-40 max-lg:py-4">
         <a className="flex flex-row items-center w-[12rem]" href="/">
           {/* <Image src={brainwave} alt="Brainwave Logo" width={190} height={40} /> */}
           <div className="max-w-2xl">

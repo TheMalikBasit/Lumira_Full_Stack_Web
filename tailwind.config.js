@@ -36,11 +36,60 @@ export default {
           11: "#1B1B2E",
           12: "#2E2A41",
           13: "#6C7275",
-          14: "#99382a",
+          foreground: "#99382a",
           card: "#FFFFF4",
-          mutedforeground: "#C57A64",
           spaceGradient: "#F59CA9",
+          popover: "#FFFFF4",
+          popover_foreground: "#863C2B",
+          primary: "#863C2B",
+          primary_foreground: "#FFFFF4",
+          secondary: "#DDE9DD",
+          secondary_foreground: "#863C2B",
+          muted: "#DDE9DD",
+          muted_foreground: "#C57A64",
+
+          accent: "#FFA4AA",
+          accent_foreground: "#863C2B",
+
+          destructive: "#F24747",
+          destructive_foreground: "#FFFFF4",
+
+          border: "#DDE9DD",
+          input: "#DDE9DD",
+          ring: "#863C2B",
+
+          lumira_coral: "#F78E9A",
+          lumira_salmon: "#FFA4AA",
+          lumira_auburn: "#863C2B",
+          lumira_platinum: "#DDE9DD",
+          lumira_baby_powder: "#FFFFF4",
+
+          background: "#FFFFF4",
+          card_foreground: "#863C2B",
+
+          sidebar_background: "#FAFAFA",
+          sidebar_foreground: "#3A3A4C",
+          sidebar_primary: "#12121A",
+          sidebar_primary_foreground: "#FAFAFA",
+          sidebar_accent: "#F1F1F8",
+          sidebar_accent_foreground: "#12121A",
+          sidebar_border: "#E2E7F0",
+          sidebar_ring: "#528BFF",
         },
+      },
+      boxShadow: {
+        warm: "0 10px 30px -10px #99382a33", // #99382a with 20% opacity
+        glow: "0 0 40px #f78e9a4d", // #f78e9a with 30% opacity
+        card: "0 4px 20px #99382a1a", // #99382a with 10% opacity
+      },
+      transitionTimingFunction: {
+        smooth: "cubic-bezier(0.4, 0, 0.2, 1)",
+        bounce: "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+        DEFAULT: "linear",
+      },
+      transitionDuration: {
+        300: "300ms",
+        DEFAULT: "200ms",
       },
       fontFamily: {
         sans: ["var(--font-sora)", ...fontFamily.sans],
@@ -60,12 +109,6 @@ export default {
       },
       opacity: {
         15: ".15",
-      },
-      transitionDuration: {
-        DEFAULT: "200ms",
-      },
-      transitionTimingFunction: {
-        DEFAULT: "linear",
       },
       zIndex: {
         1: "1",
@@ -90,6 +133,8 @@ export default {
         "main-background": "url(/wallp.jpg)",
         "main-background2": "url(/wallp3.jpg)",
         "text-gradient": "linear-gradient(45deg, #FF0000 ,#FF0000)",
+        "gradient-warm": "linear-gradient(135deg, #FFA4AA, #F78E9A)",
+        "gradient-hero": "linear-gradient(135deg, #FFFFF4, #DDE9DD)",
       },
     },
   },

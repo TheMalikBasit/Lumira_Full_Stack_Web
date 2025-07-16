@@ -7,6 +7,8 @@ import FooterTwo from "@/Components/FooterTwo";
 import { useEffect, useState } from "react";
 import BackLights from "@/Components/BackLights";
 import SplineFile from "@/Components/Spline";
+import Collections from "@/Components/Collections";
+import Footer from "@/Components/LumiraFooter";
 
 export default function Home() {
   const [showVideo, setShowVideo] = useState(true);
@@ -24,7 +26,7 @@ export default function Home() {
     <>
       {showVideo && (
         <div
-          className={`pointer-events-none fixed inset-0 flex items-center justify-center bg-black -z-5 transition-opacity duration-1000 ${
+          className={`pointer-events-none fixed inset-0 flex items-center justify-center bg-black transition-opacity z-20 duration-1000 ${
             fade ? "opacity-0" : "opacity-100"
           }`}
         >
@@ -40,11 +42,10 @@ export default function Home() {
       <BackLights L1 />
       <div className="pt-[4.75rem] lg:pt-[5.25rem] overflow-hidden">
         <Navbar bgBlur />
-
         <Hero />
-
-        <FooterOne crosses />
-        <FooterTwo crosses />
+        {/* <FooterOne crosses />
+        <FooterTwo crosses /> */}
+        <Footer />
       </div>
       <ButtonGradient />
     </>

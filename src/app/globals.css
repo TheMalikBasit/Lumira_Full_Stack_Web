@@ -22,104 +22,86 @@
 
 @layer base {
     body {
-        @apply font-sans bg-n-1 text-n-1 text-base;
-
-    }
-
-    :root {
-        /* LUMIRA Brand Colors */
-        --background: 60 100% 98%;
-        /* Baby Powder */
-        --foreground: hsl(5, 65%, 38%);
-        /* Auburn */
-
-        --card: 60 100% 98%;
-        /* Baby Powder */
-        --card-foreground: 5 65% 38%;
-        /* Auburn */
-
-        --popover: 60 100% 98%;
-        /* Baby Powder */
-        --popover-foreground: 5 65% 38%;
-        /* Auburn */
-
-        --primary: 5 65% 38%;
-        /* Auburn */
-        --primary-foreground: 60 100% 98%;
-        /* Baby Powder */
-
-        --secondary: 85 14% 85%;
-        /* Platinum */
-        --secondary-foreground: 5 65% 38%;
-        /* Auburn */
-
-        --muted: 85 14% 85%;
-        /* Platinum */
-        --muted-foreground: 5 45% 55%;
-        /* Muted Auburn */
-
-        --accent: 349 85% 80%;
-        /* Salmon Pink */
-        --accent-foreground: 5 65% 38%;
-        /* Auburn */
-
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 60 100% 98%;
-
-        --border: 85 14% 85%;
-        /* Platinum */
-        --input: 85 14% 85%;
-        /* Platinum */
-        --ring: 5 65% 38%;
-        /* Auburn */
-
-        /* LUMIRA Custom Design Tokens */
-        --lumira-coral: 351 86% 75%;
-        /* Light Coral */
-        --lumira-salmon: 349 85% 80%;
-        /* Salmon Pink */
-        --lumira-auburn: 5 65% 38%;
-        /* Auburn */
-        --lumira-platinum: 85 14% 85%;
-        /* Platinum */
-        --lumira-baby-powder: 60 100% 98%;
-        /* Baby Powder */
-
-        /* Gradients */
-        --gradient-warm: linear-gradient(135deg, hsl(var(--lumira-salmon)), hsl(var(--lumira-coral)));
-        --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(var(--lumira-platinum)));
-        --gradient-hero: linear-gradient(135deg, hsl(var(--lumira-baby-powder)), hsl(var(--lumira-platinum)));
-
-        /* Shadows */
-        --shadow-warm: 0 10px 30px -10px hsl(var(--lumira-auburn) / 0.2);
-        --shadow-glow: 0 0 40px hsl(var(--lumira-coral) / 0.3);
-        --shadow-card: 0 4px 20px hsl(var(--lumira-auburn) / 0.1);
-
-        /* Animations */
-        --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-
-        --radius: 0.5rem;
-
-        --sidebar-background: 0 0% 98%;
-
-        --sidebar-foreground: 240 5.3% 26.1%;
-
-        --sidebar-primary: 240 5.9% 10%;
-
-        --sidebar-primary-foreground: 0 0% 98%;
-
-        --sidebar-accent: 240 4.8% 95.9%;
-
-        --sidebar-accent-foreground: 240 5.9% 10%;
-
-        --sidebar-border: 220 13% 91%;
-
-        --sidebar-ring: 217.2 91.2% 59.8%;
+        @apply font-sans bg-n-1 text-n-foreground text-base;
     }
 }
 
+@layer components {
+    .btn-lumira-primary {
+        @apply bg-n-primary text-n-primary_foreground hover:bg-n-primary/90 shadow-warm;
+        @apply transition-all duration-300 ease-smooth;
+    }
+
+    .btn-lumira-coral {
+        @apply bg-n-lumira_coral text-n-primary_foreground hover:bg-n-lumira_coral/90 shadow-warm;
+        @apply transition-all duration-300 ease-smooth;
+    }
+
+    .card-lumira {
+        @apply bg-n-card border border-n-border rounded-lg shadow-card hover:shadow-glow;
+        @apply transition-all duration-300 ease-smooth;
+    }
+
+    .gradient-warm {
+        @apply bg-gradient-warm
+    }
+
+    .gradient-hero {
+        @apply bg-gradient-hero
+    }
+
+    .text-gradient {
+        @apply bg-gradient-warm;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .glow-effect {
+        filter: drop-shadow(0 0 20px #f78e9a80);
+    }
+
+    .hover-lift {
+        @apply hover:-translate-y-1 hover:shadow-glow;
+        @apply transition-all duration-300 ease-bounce;
+    }
+}
+
+
 @layer utilities {
+
+    .animate-glow {
+        animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+        from {
+            filter: drop-shadow(0 0 10px #f78e9a4d);
+            /* #f78e9a, 30% opacity */
+        }
+
+        to {
+            filter: drop-shadow(0 0 25px #f78e9a99);
+            /* #f78e9a, 60% opacity */
+        }
+    }
+
+    .animate-float {
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+
+        0%,
+        100% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
     @keyframes move {
         0% {
             left: 0;
@@ -400,3 +382,95 @@
 .-rotate-360 {
     @apply rotate-[-360deg];
 }
+
+/*   :root {
+        LUMIRA Brand Colors 
+        --background: 60 100% 98%;
+        Baby Powder
+        --foreground: hsl(5, 65%, 38%);
+        Auburn
+
+        --card: 60 100% 98%;
+        Baby Powder
+        --card-foreground: 5 65% 38%;
+        Auburn
+
+        --popover: 60 100% 98%;
+        Baby Powder
+        --popover-foreground: 5 65% 38%;
+        Auburn
+
+        --primary: 5 65% 38%;
+        Auburn
+        --primary-foreground: 60 100% 98%;
+        Baby Powder
+
+        --secondary: 85 14% 85%;
+        Platinum
+        --secondary-foreground: 5 65% 38%;
+        Auburn
+
+        --muted: 85 14% 85%;
+        Platinum
+        --muted-foreground: 5 45% 55%;
+        Muted Auburn
+
+        --accent: 349 85% 80%;
+        Salmon Pink
+        --accent-foreground: 5 65% 38%;
+        Auburn
+
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 60 100% 98%;
+
+        --border: 85 14% 85%;
+        Platinum
+        --input: 85 14% 85%;
+        Platinum
+        --ring: 5 65% 38%;
+        Auburn
+
+        LUMIRA Custom Design Tokens
+        --lumira-coral: 351 86% 75%;
+        Light Coral
+        --lumira-salmon: 349 85% 80%;
+        Salmon Pink
+        --lumira-auburn: 5 65% 38%;
+        Auburn
+        --lumira-platinum: 85 14% 85%;
+        Platinum
+        --lumira-baby-powder: 60 100% 98%;
+        Baby Powder
+
+        Gradients
+        --gradient-warm: linear-gradient(135deg, hsl(var(--lumira-salmon)), hsl(var(--lumira-coral)));
+        --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(var(--lumira-platinum)));
+        --gradient-hero: linear-gradient(135deg, hsl(var(--lumira-baby-powder)), hsl(var(--lumira-platinum)));
+    
+        Shadows
+        --shadow-warm: 0 10px 30px -10px hsl(var(--lumira-auburn) / 0.2);
+        --shadow-glow: 0 0 40px hsl(var(--lumira-coral) / 0.3);
+        --shadow-card: 0 4px 20px hsl(var(--lumira-auburn) / 0.1);
+
+            
+        --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+        --radius: 0.5rem;
+
+        --sidebar-background: 0 0% 98%;
+
+        --sidebar-foreground: 240 5.3% 26.1%;
+
+        --sidebar-primary: 240 5.9% 10%;
+
+        --sidebar-primary-foreground: 0 0% 98%;
+
+        --sidebar-accent: 240 4.8% 95.9%;
+
+        --sidebar-accent-foreground: 240 5.9% 10%;
+
+        --sidebar-border: 220 13% 91%;
+
+        --sidebar-ring: 217.2 91.2% 59.8%;
+} */

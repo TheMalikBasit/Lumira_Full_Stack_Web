@@ -3,7 +3,7 @@ import DefaultStyler from "./DefaultStyler";
 import Image from "next/image";
 const FooterOne = ({ hidden, padLinesHide, crosses, white }) => {
   return (
-    <div className="container flex justify-center sm:justify-between items-center gap-10 max-sm:flex-col pt-10 pb-10">
+    <div className="mt-20 container flex justify-center sm:justify-between items-center gap-10 max-sm:flex-col pt-10 pb-10">
       <p
         className={`${
           white ? "font-bold text-black text-lg" : "text-n-4"
