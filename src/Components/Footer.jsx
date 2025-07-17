@@ -9,7 +9,7 @@ const FooterOne = ({ hidden, padLinesHide, crosses, white }) => {
           white ? "font-bold text-black text-lg" : "text-n-4"
         } font-code caption lg:block`}
       >
-        © {new Date().getFullYear()}. Riwayat All rights reserved
+        © {new Date().getFullYear()}. Lumira All rights reserved
       </p>
       <ul className="flex flex-wrap gap-5">
         {socials.map((item) => (

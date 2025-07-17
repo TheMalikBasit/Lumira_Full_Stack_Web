@@ -5,27 +5,53 @@ import { useAppContext } from "../Context/AppContext";
 import { useEffect, useState } from "react";
 import ButtonGradient from "@/assets/svg/ButtonGradient";
 import UploadProduct from "../../models/StockUpdater";
+
+// Sanitize full Google Drive links
+const sanitizeImageUrl = (url) => {
+  const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)\/view/);
+  if (driveMatch && driveMatch[1]) {
+    return `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
+  }
+
+  const shareMatch = url.match(/drive\.google\.com\/open\?id=([^&]+)/);
+  if (shareMatch && shareMatch[1]) {
+    return `https://drive.google.com/uc?export=view&id=${shareMatch[1]}`;
+  }
+
+  return url;
+};
+
+// Format Drive ID or sanitize full link
+const formatMainImage = (url) => {
+  const isDriveIdOnly = /^[a-zA-Z0-9_-]{25,}$/.test(url);
+  if (isDriveIdOnly) {
+    return `https://drive.google.com/uc?export=view&id=${url}`;
+  }
+  return sanitizeImageUrl(url);
+};
+
 const StockAddForm = () => {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [mainImage, setMainImage] = useState("");
-  const [imageUrl, setImageUrl] = useState([]); // Array of URLs
-  const [currentImageUrl, setCurrentImageUrl] = useState(""); // For input field
+  const [imageUrl, setImageUrl] = useState([]);
+  const [currentImageUrl, setCurrentImageUrl] = useState("");
   const [availableStock, setAvailableStock] = useState("");
   const [description, setDescription] = useState("");
   const { products } = useAppContext();
 
-  const handleAddImageUrl = (e) => {
-    e.preventDefault();
-    if (currentImageUrl.trim() !== "") {
-      setImageUrl((prev) => [...prev, currentImageUrl.trim()]);
-      setCurrentImageUrl("");
-    }
-  };
-
   useEffect(() => {
     products;
   });
+
+  const handleAddImageUrl = (e) => {
+    e.preventDefault();
+    if (currentImageUrl.trim() !== "") {
+      const sanitized = sanitizeImageUrl(currentImageUrl.trim());
+      setImageUrl((prev) => [...prev, sanitized]);
+      setCurrentImageUrl("");
+    }
+  };
 
   const handleRemoveImageUrl = (idx) => {
     setImageUrl((prev) => prev.filter((_, i) => i !== idx));
@@ -37,20 +63,13 @@ const StockAddForm = () => {
     await UploadProduct({
       name,
       price: Number(price),
-      mainImage,
-      imageUrl, // Pass the array
+      mainImage: formatMainImage(mainImage),
+      imageUrl: imageUrl.map(sanitizeImageUrl),
       availableStock: Number(availableStock),
       description,
     });
 
-    // Optional: clear fields
-    setName("");
-    setPrice("");
-    setMainImage("");
-    setImageUrl([]);
-    setCurrentImageUrl("");
-    setAvailableStock("");
-    setDescription("");
+    clearForm();
   };
 
   const clearForm = () => {
@@ -62,9 +81,10 @@ const StockAddForm = () => {
     setAvailableStock("");
     setDescription("");
   };
+
   return (
     <div className="max-w-2xl lg:max-w-[45%] mt-12 sm:mx-auto md:mx-2 w-full px-4">
-      <h2 className="text-3xl font-bold mb-6 text-white">Upload New Product</h2>
+      <h2 className="text-3xl font-bold mb-6 text-black">Upload New Product</h2>
       <form
         onSubmit={handleSubmit}
         className="bg-[#111827] p-6 rounded-xl shadow-lg border border-gray-700 space-y-5"
@@ -94,13 +114,15 @@ const StockAddForm = () => {
         </div>
 
         <div>
-          <label className="text-sm text-gray-400">Main Image URL</label>
+          <label className="text-sm text-gray-400">
+            Main Image URL or Drive ID
+          </label>
           <input
             className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
             type="text"
             value={mainImage}
             onChange={(e) => setMainImage(e.target.value)}
-            placeholder="https://..."
+            placeholder="Drive ID or full image URL"
             required
           />
         </div>
@@ -113,7 +135,7 @@ const StockAddForm = () => {
               type="text"
               value={currentImageUrl}
               onChange={(e) => setCurrentImageUrl(e.target.value)}
-              placeholder="https://..."
+              placeholder="Drive link or image URL"
             />
             <button
               type="button"
@@ -123,7 +145,6 @@ const StockAddForm = () => {
               OK
             </button>
           </div>
-          {/* Show added URLs */}
           <ul className="mt-2 space-y-1">
             {imageUrl.map((url, idx) => (
               <li

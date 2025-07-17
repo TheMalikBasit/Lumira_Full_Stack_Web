@@ -30,7 +30,7 @@ const categories = [
 
 const Collections = () => {
   return (
-    <section id="features" className="py-24 bg-n-1">
+    <section id="collections" className="py-24 bg-n-1">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">

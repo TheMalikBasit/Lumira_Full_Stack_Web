@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/Components/UI/card";
 import { Badge } from "@/Components/UI/badge";
 import { assets } from "@/assets/assets";
 import Image from "next/image";
+import { useAppContext } from "@/Context/AppContext";
 const products = [
   {
     id: 1,
@@ -48,6 +49,8 @@ const products = [
 ];
 
 const ProductHighlights = () => {
+  const { router } = useAppContext();
+
   return (
     <section className="py-24 bg-muted/30">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -165,7 +168,11 @@ const ProductHighlights = () => {
 
         {/* CTA */}
         <div className="text-center mt-12">
-          <Button size="lg" variant="outline">
+          <Button
+            size="lg"
+            variant="outline"
+            onClick={() => router.push("/all-products")}
+          >
             View All Products
           </Button>
         </div>

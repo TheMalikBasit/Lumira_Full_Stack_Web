@@ -2,7 +2,7 @@
 import { db } from "../Config/firebase";
 import { collection, addDoc, getDoc, doc, updateDoc } from "firebase/firestore";
 import { useAppContext } from "@/Context/AppContext";
-
+import toast from "react-hot-toast";
 const UploadProduct = async ({
   name,
   price,
@@ -22,10 +22,10 @@ const UploadProduct = async ({
       createdAt: new Date(),
     });
 
-    alert("✅ Product uploaded successfully!");
+    toast.success("Product uploaded successfully!");
   } catch (error) {
-    console.error("❌ Upload failed:", error);
-    alert("Failed to upload product.");
+    console.error("Upload failed:", error);
+    toast.error("Failed to upload product.");
   }
 };
 

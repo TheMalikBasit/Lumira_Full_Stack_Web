@@ -10,6 +10,30 @@ import { db } from "../../Config/firebase";
 import { collection, getDoc, doc, updateDoc } from "firebase/firestore";
 import DeleteProduct from "../../models/DeleteProduct";
 
+// Sanitize full Google Drive links
+const sanitizeImageUrl = (url) => {
+  const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)\/view/);
+  if (driveMatch && driveMatch[1]) {
+    return `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
+  }
+
+  const shareMatch = url.match(/drive\.google\.com\/open\?id=([^&]+)/);
+  if (shareMatch && shareMatch[1]) {
+    return `https://drive.google.com/uc?export=view&id=${shareMatch[1]}`;
+  }
+
+  return url;
+};
+
+// Format Drive ID or sanitize full link
+const formatMainImage = (url) => {
+  const isDriveIdOnly = /^[a-zA-Z0-9_-]{25,}$/.test(url);
+  if (isDriveIdOnly) {
+    return `https://drive.google.com/uc?export=view&id=${url}`;
+  }
+  return sanitizeImageUrl(url);
+};
+
 const StockUpdateForm = ({ id }) => {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
@@ -46,7 +70,8 @@ const StockUpdateForm = ({ id }) => {
   const handleAddImageUrl = (e) => {
     e.preventDefault();
     if (currentImageUrl.trim() !== "") {
-      setImageUrl((prev) => [...prev, currentImageUrl.trim()]);
+      const sanitized = sanitizeImageUrl(currentImageUrl.trim());
+      setImageUrl((prev) => [...prev, sanitized]);
       setCurrentImageUrl("");
     }
   };
@@ -75,8 +100,8 @@ const StockUpdateForm = ({ id }) => {
       id,
       name,
       price: Number(price),
-      mainImage,
-      imageUrl, // Pass the array
+      mainImage: formatMainImage(mainImage),
+      imageUrl: imageUrl.map(sanitizeImageUrl),
       availableStock: Number(availableStock),
       description,
     });
@@ -103,7 +128,7 @@ const StockUpdateForm = ({ id }) => {
   return (
     <div className="max-w-2xl lg:max-w-[45%] mt-12 sm:mx-auto md:mx-2 w-full px-4">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-3xl font-bold text-white">Update Product</h2>
+        <h2 className="text-3xl font-bold text-black">Update Product</h2>
         <p className="font-bold text-orange-600">
           (Select a product from All Products)
         </p>
@@ -137,13 +162,15 @@ const StockUpdateForm = ({ id }) => {
         </div>
 
         <div>
-          <label className="text-sm text-gray-400">Main Image URL</label>
+          <label className="text-sm text-gray-400">
+            Main Image URL or Drive ID
+          </label>
           <input
             className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
             type="text"
             value={mainImage}
             onChange={(e) => setMainImage(e.target.value)}
-            placeholder="https://..."
+            placeholder="Drive ID or full image URL"
             required
           />
         </div>
@@ -156,7 +183,7 @@ const StockUpdateForm = ({ id }) => {
               type="text"
               value={currentImageUrl}
               onChange={(e) => setCurrentImageUrl(e.target.value)}
-              placeholder="https://..."
+              placeholder="Drive link or image URL"
             />
             <button
               type="button"
