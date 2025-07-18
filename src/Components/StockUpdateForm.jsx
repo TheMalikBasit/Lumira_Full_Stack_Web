@@ -42,6 +42,12 @@ const StockUpdateForm = ({ id }) => {
   const [currentImageUrl, setCurrentImageUrl] = useState("");
   const [availableStock, setAvailableStock] = useState("");
   const [description, setDescription] = useState("");
+  const [rating, setRating] = useState("");
+  const [reviews, setReviews] = useState("");
+  const [badges, setBadges] = useState("");
+  const [features, setFeatures] = useState([]);
+  const [originalPrice, setOriginalPrice] = useState(0);
+  const [category, setCategory] = useState("");
 
   const fetchProduct = async () => {
     const productId = id;
@@ -56,6 +62,12 @@ const StockUpdateForm = ({ id }) => {
       setImageUrl(productData.imageUrl || []);
       setAvailableStock(productData.availableStock || "");
       setDescription(productData.description || "");
+      setRating(productData.rating || "");
+      setReviews(productData.reviews || "");
+      setBadges(productData.badges || "");
+      setFeatures(productData.features || []);
+      setOriginalPrice(productData.originalPrice || "");
+      setCategory(productData.category || "");
     }
     console.log("Product ID:", productId);
     console.log("Fetched product:", productSnap.data());
@@ -91,6 +103,12 @@ const StockUpdateForm = ({ id }) => {
     setCurrentImageUrl("");
     setAvailableStock("");
     setDescription("");
+    setRating("");
+    setReviews("");
+    setBadges("");
+    setFeatures([]);
+    setOriginalPrice("");
+    setCategory("");
   };
 
   const handleSubmit = async (e) => {
@@ -104,6 +122,12 @@ const StockUpdateForm = ({ id }) => {
       imageUrl: imageUrl.map(sanitizeImageUrl),
       availableStock: Number(availableStock),
       description,
+      rating: Number(rating),
+      reviews: Number(reviews),
+      badges,
+      features,
+      originalPrice: Number(originalPrice),
+      category,
     });
 
     // Optional: clear fields
@@ -114,6 +138,12 @@ const StockUpdateForm = ({ id }) => {
     setCurrentImageUrl("");
     setAvailableStock("");
     setDescription("");
+    setRating("");
+    setReviews("");
+    setBadges("");
+    setFeatures([]);
+    setOriginalPrice("");
+    setCategory("");
   };
 
   const clearForm = () => {
@@ -124,11 +154,17 @@ const StockUpdateForm = ({ id }) => {
     setCurrentImageUrl("");
     setAvailableStock("");
     setDescription("");
+    setRating("");
+    setReviews("");
+    setBadges("");
+    setFeatures([]);
+    setOriginalPrice("");
+    setCategory("");
   };
   return (
     <div className="max-w-2xl lg:max-w-[45%] mt-12 sm:mx-auto md:mx-2 w-full px-4">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-3xl font-bold text-black">Update Product</h2>
+        <h2 className="text-3xl font-bold text-orange-600">Update Product</h2>
         <p className="font-bold text-orange-600">
           (Select a product from All Products)
         </p>
@@ -137,30 +173,54 @@ const StockUpdateForm = ({ id }) => {
         onSubmit={handleSubmit}
         className="bg-[#111827] p-6 rounded-xl shadow-lg border border-gray-700 space-y-5"
       >
-        <div>
-          <label className="text-sm text-gray-400">Product Name</label>
-          <input
-            className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter product name"
-            required
-          />
+        <div className="flex flex-row gap-4 w-full">
+          <div className="w-full">
+            <label className="text-sm text-gray-400">Product Name</label>
+            <input
+              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter product name"
+              required
+            />
+          </div>
+          <div className="w-full">
+            <label className="text-sm text-gray-400">Product Category</label>
+            <input
+              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="text"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              placeholder="Enter category"
+              required
+            />
+          </div>
         </div>
-
-        <div>
-          <label className="text-sm text-gray-400">Price</label>
-          <input
-            className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            type="number"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            placeholder="Enter price"
-            required
-          />
+        <div className="flex flex-row gap-4 w-full">
+          <div className="w-full">
+            <label className="text-sm text-gray-400">Price</label>
+            <input
+              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="number"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              placeholder="Enter price"
+              required
+            />
+          </div>
+          <div className="w-full">
+            <label className="text-sm text-gray-400">Original Price</label>
+            <input
+              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="number"
+              value={originalPrice}
+              onChange={(e) => setOriginalPrice(e.target.value)}
+              placeholder="Enter original price"
+              required
+            />
+          </div>
         </div>
-
         <div>
           <label className="text-sm text-gray-400">
             Main Image URL or Drive ID
@@ -193,7 +253,6 @@ const StockUpdateForm = ({ id }) => {
               OK
             </button>
           </div>
-          {/* Show added URLs */}
           <ul className="mt-2 space-y-1">
             {imageUrl.map((url, idx) => (
               <li
@@ -212,19 +271,70 @@ const StockUpdateForm = ({ id }) => {
             ))}
           </ul>
         </div>
+        <div className="flex flex-row gap-4 w-full">
+          <div className="w-full">
+            <label className="text-sm text-gray-400">Available Stock</label>
+            <input
+              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="number"
+              value={availableStock}
+              onChange={(e) => setAvailableStock(e.target.value)}
+              placeholder="Enter stock quantity"
+              required
+            />
+          </div>
 
-        <div>
-          <label className="text-sm text-gray-400">Available Stock</label>
-          <input
-            className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            type="number"
-            value={availableStock}
-            onChange={(e) => setAvailableStock(e.target.value)}
-            placeholder="Enter stock quantity"
-            required
-          />
+          <div className="w-full">
+            <label className="text-sm text-gray-400">Ratings</label>
+            <input
+              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="number"
+              value={rating}
+              onChange={(e) => setRating(e.target.value)}
+              placeholder="Enter Product Rating"
+              required
+            />
+          </div>
+          <div className="w-full">
+            <label className="text-sm text-gray-400">Set Reviews</label>
+            <input
+              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="number"
+              value={reviews}
+              onChange={(e) => setReviews(e.target.value)}
+              placeholder="Enter Number Of Reviews"
+              required
+            />
+          </div>
         </div>
+        <div className="w-full flex flex-row gap-4">
+          <div className="w-full">
+            <label className="text-sm text-gray-400">
+              Enter Special Badges
+            </label>
+            <input
+              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="text"
+              value={badges}
+              onChange={(e) => setBadges(e.target.value)}
+              placeholder="Enter A Special Badge"
+            />
+          </div>
 
+          <div className="w-full">
+            <label className="text-sm text-gray-400">
+              Enter Product Features
+            </label>
+            <input
+              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="text"
+              value={features}
+              onChange={(e) => setFeatures(e.target.value)}
+              placeholder="Product Features"
+              required
+            />
+          </div>
+        </div>
         <div>
           <label className="text-sm text-gray-400">Description</label>
           <textarea

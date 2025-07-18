@@ -35,6 +35,11 @@ const AllProducts = ({ hidden }) => {
 
   if (loading) return <Loading />;
 
+  const saveOffer = (price, originalPrice) => {
+    if (originalPrice - price > 0) {
+      return true;
+    }
+  };
   return (
     <div className="min-h-screen bg-n-background">
       <Navbar relative hidden={hidden} />
@@ -121,9 +126,9 @@ const AllProducts = ({ hidden }) => {
                       className="w-full object-cover h-48 transition-transform duration-500 group-hover:scale-110"
                     />
 
-                    {product.badge && (
+                    {product.badges && (
                       <Badge className="absolute top-3 left-3 bg-n-primary text-n-primary_foreground">
-                        {product.badge}
+                        {product.badges}
                       </Badge>
                     )}
 
@@ -135,7 +140,7 @@ const AllProducts = ({ hidden }) => {
                       <Heart className="h-4 w-4" />
                     </Button>
 
-                    {product.originalPrice && (
+                    {saveOffer(product.price, product.originalPrice) && (
                       <Badge
                         variant="destructive"
                         className="absolute bottom-3 left-3 bg-n-lumira_coral text-white"
@@ -172,7 +177,7 @@ const AllProducts = ({ hidden }) => {
                     </div>
 
                     <div className="flex flex-wrap gap-1 mb-3">
-                      {(product.features || [])
+                      {/* {(product.features || [])
                         .slice(0, 2)
                         .map((feature, index) => (
                           <Badge
@@ -182,7 +187,10 @@ const AllProducts = ({ hidden }) => {
                           >
                             {feature}
                           </Badge>
-                        ))}
+                        ))} */}
+                      <Badge variant="secondary" className="text-xs">
+                        {product.features}
+                      </Badge>
                     </div>
 
                     <div className="flex items-center gap-2 mb-4">

@@ -10,6 +10,12 @@ const UpdateProduct = async ({
   imageUrl,
   availableStock,
   description,
+  originalPrice,
+  rating,
+  reviews,
+  badges,
+  features,
+  category,
 }) => {
   try {
     const productRef = doc(db, "products", id);
@@ -23,6 +29,12 @@ const UpdateProduct = async ({
         imageUrl,
         availableStock,
         description,
+        originalPrice,
+        rating,
+        reviews,
+        badges,
+        features,
+        category,
         updatedAt: new Date(),
       });
       toast.success("Product updated successfully!");

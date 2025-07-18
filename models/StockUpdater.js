@@ -6,19 +6,31 @@ import toast from "react-hot-toast";
 const UploadProduct = async ({
   name,
   price,
+  originalPrice,
+  rating,
+  reviews,
+  badges,
+  features,
   mainImage,
   imageUrl,
   availableStock,
+  category,
   description,
 }) => {
   try {
     await addDoc(collection(db, "products"), {
       name,
       price,
+      originalPrice,
       mainImage,
       imageUrl,
       availableStock,
       description,
+      rating,
+      reviews,
+      badges,
+      features,
+      category,
       createdAt: new Date(),
     });
 

@@ -13,9 +13,7 @@ import ProductHighlights from "@/Components/ProductsHighlights";
 export default function Home() {
   const [showVideo, setShowVideo] = useState(true);
   const [fade, setFade] = useState(false);
-  alert(
-    "First Update your products information then do further things. This alert is in main page file"
-  );
+
   useEffect(() => {
     const timer = setTimeout(() => setFade(true), 4000); // Start fade after 5s
     const removeTimer = setTimeout(() => setShowVideo(false), 6000); // Remove after fade

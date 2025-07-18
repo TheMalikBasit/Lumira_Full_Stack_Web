@@ -38,6 +38,12 @@ const StockAddForm = () => {
   const [currentImageUrl, setCurrentImageUrl] = useState("");
   const [availableStock, setAvailableStock] = useState("");
   const [description, setDescription] = useState("");
+  const [rating, setRating] = useState("");
+  const [reviews, setReviews] = useState("");
+  const [badges, setBadges] = useState("");
+  const [features, setFeatures] = useState([]);
+  const [originalPrice, setOriginalPrice] = useState("");
+  const [category, setCategory] = useState("");
   const { products } = useAppContext();
 
   useEffect(() => {
@@ -63,10 +69,16 @@ const StockAddForm = () => {
     await UploadProduct({
       name,
       price: Number(price),
+      originalPrice: originalPrice ? Number(originalPrice) : null,
       mainImage: formatMainImage(mainImage),
       imageUrl: imageUrl.map(sanitizeImageUrl),
       availableStock: Number(availableStock),
       description,
+      rating: rating ? Number(rating) : null,
+      reviews: reviews ? Number(reviews) : null,
+      badges,
+      features,
+      category,
     });
 
     clearForm();
@@ -75,44 +87,76 @@ const StockAddForm = () => {
   const clearForm = () => {
     setName("");
     setPrice("");
+    setOriginalPrice("");
     setMainImage("");
     setImageUrl([]);
     setCurrentImageUrl("");
     setAvailableStock("");
     setDescription("");
+    setRating("");
+    setReviews("");
+    setBadges("");
+    setFeatures([]);
+    setCategory("");
   };
 
   return (
     <div className="max-w-2xl lg:max-w-[45%] mt-12 sm:mx-auto md:mx-2 w-full px-4">
-      <h2 className="text-3xl font-bold mb-6 text-black">Upload New Product</h2>
+      <h2 className="text-3xl font-bold mb-6 text-orange-600">
+        Upload New Product
+      </h2>
       <form
         onSubmit={handleSubmit}
         className="bg-[#111827] p-6 rounded-xl shadow-lg border border-gray-700 space-y-5"
       >
-        <div>
-          <label className="text-sm text-gray-400">Product Name</label>
-          <input
-            className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter product name"
-            required
-          />
+        <div className="flex flex-row gap-4 w-full">
+          <div className="w-full">
+            <label className="text-sm text-gray-400">Product Name</label>
+            <input
+              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter product name"
+              required
+            />
+          </div>
+          <div className="w-full">
+            <label className="text-sm text-gray-400">Product Category</label>
+            <input
+              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="text"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              placeholder="Enter category"
+              required
+            />
+          </div>
         </div>
-
-        <div>
-          <label className="text-sm text-gray-400">Price</label>
-          <input
-            className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            type="number"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            placeholder="Enter price"
-            required
-          />
+        <div className="flex flex-row gap-4 w-full">
+          <div className="w-full">
+            <label className="text-sm text-gray-400">Price</label>
+            <input
+              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="number"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              placeholder="Enter price"
+              required
+            />
+          </div>
+          <div className="w-full">
+            <label className="text-sm text-gray-400">Original Price</label>
+            <input
+              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="number"
+              value={originalPrice}
+              onChange={(e) => setOriginalPrice(e.target.value)}
+              placeholder="Enter original price"
+              required
+            />
+          </div>
         </div>
-
         <div>
           <label className="text-sm text-gray-400">
             Main Image URL or Drive ID
@@ -163,19 +207,71 @@ const StockAddForm = () => {
             ))}
           </ul>
         </div>
+        <div className="flex flex-row gap-4 w-full">
+          <div className="w-full">
+            <label className="text-sm text-gray-400">Available Stock</label>
+            <input
+              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="number"
+              value={availableStock}
+              onChange={(e) => setAvailableStock(e.target.value)}
+              placeholder="Enter stock quantity"
+              required
+            />
+          </div>
 
-        <div>
-          <label className="text-sm text-gray-400">Available Stock</label>
-          <input
-            className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            type="number"
-            value={availableStock}
-            onChange={(e) => setAvailableStock(e.target.value)}
-            placeholder="Enter stock quantity"
-            required
-          />
+          <div className="w-full">
+            <label className="text-sm text-gray-400">Ratings</label>
+            <input
+              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="number"
+              value={rating}
+              onChange={(e) => setRating(e.target.value)}
+              placeholder="Enter Product Rating"
+              required
+            />
+          </div>
+          <div className="w-full">
+            <label className="text-sm text-gray-400">Set Reviews</label>
+            <input
+              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="number"
+              value={reviews}
+              onChange={(e) => setReviews(e.target.value)}
+              placeholder="Enter Number Of Reviews"
+              required
+            />
+          </div>
         </div>
+        <div className="w-full flex flex-row gap-4">
+          <div className="w-full">
+            <label className="text-sm text-gray-400">
+              Enter Special Badges
+            </label>
+            <input
+              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="text"
+              value={badges}
+              onChange={(e) => setBadges(e.target.value)}
+              placeholder="Enter A Special Badge"
+              required
+            />
+          </div>
 
+          <div className="w-full">
+            <label className="text-sm text-gray-400">
+              Enter Product Features
+            </label>
+            <input
+              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="text"
+              value={features}
+              onChange={(e) => setFeatures(e.target.value)}
+              placeholder="Product Features"
+              required
+            />
+          </div>
+        </div>
         <div>
           <label className="text-sm text-gray-400">Description</label>
           <textarea

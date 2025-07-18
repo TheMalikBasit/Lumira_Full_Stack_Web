@@ -47,7 +47,9 @@ const page = () => {
           <StockUpdateForm id={id} />
         </div>
         <div className="max-w-2xl xl:max-w-[45%] mx-auto xl:mx-0 xl:ml-11 mt-12 lg:max-w-full px-4">
-          <h2 className="text-3xl font-bold text-white mb-6">All Products</h2>
+          <h2 className="text-3xl font-bold text-orange-600 mb-6">
+            All Products
+          </h2>
           <div className="rounded-xl border border-gray-700 overflow-y-auto h-[44.4rem] bg-[#111827]">
             <div className="bg-[#111827] p-6 shadow-lg   space-y-5 flex flex-col">
               {Array.isArray(products) &&
@@ -55,7 +57,10 @@ const page = () => {
                   <div
                     className=" rounded-xl border border-gray-700 p-4 shadow-lg flex flex-row items-center cursor-pointer"
                     key={index}
-                    onClick={() => handleUpdateForm(item.id)}
+                    onClick={() => {
+                      handleUpdateForm(item.id);
+                      scrollTo(0, 0);
+                    }}
                   >
                     <Image
                       src={item.mainImage}

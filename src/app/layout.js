@@ -14,8 +14,8 @@ const poppins = Poppins({
 });
 
 export const metadata = {
-  title: "Riwiyat",
-  description: "The ultimate clothing brand",
+  title: "Lumira",
+  description: "The Luxurious Lamps and Lighting Store",
 };
 
 export default function RootLayout({ children }) {
