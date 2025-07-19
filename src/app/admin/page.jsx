@@ -50,42 +50,47 @@ const page = () => {
           <h2 className="text-3xl font-bold text-orange-600 mb-6">
             All Products
           </h2>
-          <div className="rounded-xl border border-gray-700 overflow-y-auto h-[44.4rem] bg-[#111827]">
-            <div className="bg-[#111827] p-6 shadow-lg   space-y-5 flex flex-col">
+          <div className="rounded-xl border border-gray-700 overflow-y-auto max-h-[44.4rem] bg-[#111827]">
+            <div className="bg-[#111827] p-6 shadow-lg  space-y-5 flex flex-col">
               {Array.isArray(products) &&
                 products.map((item, index) => (
                   <div
-                    className=" rounded-xl border border-gray-700 p-4 shadow-lg flex flex-row items-center cursor-pointer"
+                    className="flex flex-row items-center"
                     key={index}
                     onClick={() => {
                       handleUpdateForm(item.id);
                       scrollTo(0, 0);
                     }}
                   >
-                    <Image
-                      src={item.mainImage}
-                      alt={item.name}
-                      width={100}
-                      height={100}
-                      className="object-cover rounded-md"
-                    />
-                    <div className="ml-4 overflow-hidden flex flex-row items-baseline lg:items-center xl:items-baseline justify-between w-full">
-                      <div className="flex flex-col items-center w-full">
-                        <h2 className="font-bold text-orange-600">
-                          Product Name
-                        </h2>
-                        <h2>{item.name}</h2>
-                      </div>
-                      <div className="flex flex-row  w-full">
-                        <div className="hidden md:flex flex-col items-center mr-20">
-                          <h2 className="font-bold text-orange-600">Price</h2>
-                          <h3>{item.price}</h3>
-                        </div>
-                        <div className="flex flex-col items-center">
+                    <h1 className="text-lg font-bold text-orange-600 pr-2">
+                      {index + 1}
+                    </h1>
+                    <div className="w-full rounded-xl border border-gray-700 p-4 shadow-lg flex flex-row items-center cursor-pointer">
+                      <Image
+                        src={item.mainImage}
+                        alt={item.name}
+                        width={100}
+                        height={100}
+                        className="object-cover rounded-md"
+                      />
+                      <div className="ml-4 overflow-hidden flex flex-row items-baseline lg:items-center xl:items-baseline justify-between w-full">
+                        <div className="flex flex-col items-center w-full">
                           <h2 className="font-bold text-orange-600">
-                            Current Stock
+                            Product Name
                           </h2>
-                          <h3>{item.availableStock}</h3>
+                          <h2>{item.name}</h2>
+                        </div>
+                        <div className="flex flex-row  w-full">
+                          <div className="hidden md:flex flex-col items-center mr-20">
+                            <h2 className="font-bold text-orange-600">Price</h2>
+                            <h3>{item.price}</h3>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <h2 className="font-bold text-orange-600">
+                              Current Stock
+                            </h2>
+                            <h3>{item.availableStock}</h3>
+                          </div>
                         </div>
                       </div>
                     </div>
