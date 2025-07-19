@@ -44,8 +44,10 @@ const StockUpdateForm = ({ id }) => {
   const [description, setDescription] = useState("");
   const [rating, setRating] = useState("");
   const [reviews, setReviews] = useState("");
-  const [badges, setBadges] = useState("");
+  const [badges, setBadges] = useState([]);
+  const [currentBadge, setCurrentBadge] = useState("");
   const [features, setFeatures] = useState([]);
+  const [currentFeature, setCurrentFeature] = useState("");
   const [originalPrice, setOriginalPrice] = useState(0);
   const [category, setCategory] = useState("");
 
@@ -64,7 +66,7 @@ const StockUpdateForm = ({ id }) => {
       setDescription(productData.description || "");
       setRating(productData.rating || "");
       setReviews(productData.reviews || "");
-      setBadges(productData.badges || "");
+      setBadges(productData.badges || []);
       setFeatures(productData.features || []);
       setOriginalPrice(productData.originalPrice || "");
       setCategory(productData.category || "");
@@ -91,6 +93,28 @@ const StockUpdateForm = ({ id }) => {
   const handleRemoveImageUrl = (idx) => {
     setImageUrl((prev) => prev.filter((_, i) => i !== idx));
   };
+  const handleAddFeature = (e) => {
+    e.preventDefault();
+    if (currentFeature.trim() !== "") {
+      setFeatures((prev) => [...prev, currentFeature.trim()]);
+      setCurrentFeature("");
+    }
+  };
+
+  const handleRemoveFeature = (idx) => {
+    setFeatures((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const handleAddBadge = () => {
+    if (currentBadge.trim()) {
+      setBadges((prev) => [...prev, currentBadge.trim()]);
+      setCurrentBadge("");
+    }
+  };
+
+  const handleRemoveBadge = (idx) => {
+    setBadges((prev) => prev.filter((_, i) => i !== idx));
+  };
 
   const handleDelete = async (e) => {
     e.preventDefault();
@@ -98,6 +122,7 @@ const StockUpdateForm = ({ id }) => {
     // Optional: clear fields
     setName("");
     setPrice("");
+    setOriginalPrice("");
     setMainImage("");
     setImageUrl([]);
     setCurrentImageUrl("");
@@ -105,10 +130,11 @@ const StockUpdateForm = ({ id }) => {
     setDescription("");
     setRating("");
     setReviews("");
-    setBadges("");
+    setBadges([]);
     setFeatures([]);
-    setOriginalPrice("");
     setCategory("");
+    setCurrentBadge("");
+    setCurrentFeature("");
   };
 
   const handleSubmit = async (e) => {
@@ -133,6 +159,7 @@ const StockUpdateForm = ({ id }) => {
     // Optional: clear fields
     setName("");
     setPrice("");
+    setOriginalPrice("");
     setMainImage("");
     setImageUrl([]);
     setCurrentImageUrl("");
@@ -140,10 +167,11 @@ const StockUpdateForm = ({ id }) => {
     setDescription("");
     setRating("");
     setReviews("");
-    setBadges("");
+    setBadges([]);
     setFeatures([]);
-    setOriginalPrice("");
     setCategory("");
+    setCurrentBadge("");
+    setCurrentFeature("");
   };
 
   const clearForm = () => {
@@ -156,7 +184,7 @@ const StockUpdateForm = ({ id }) => {
     setDescription("");
     setRating("");
     setReviews("");
-    setBadges("");
+    setBadges([]);
     setFeatures([]);
     setOriginalPrice("");
     setCategory("");
@@ -308,31 +336,80 @@ const StockUpdateForm = ({ id }) => {
           </div>
         </div>
         <div className="w-full flex flex-row gap-4">
+          {/* Special Badges Input */}
           <div className="w-full">
             <label className="text-sm text-gray-400">
               Enter Special Badges
             </label>
-            <input
-              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              type="text"
-              value={badges}
-              onChange={(e) => setBadges(e.target.value)}
-              placeholder="Enter A Special Badge"
-            />
+            <div className="flex mt-1 gap-1">
+              <input
+                className="flex-1 p-2 bg-gray-800 text-white rounded-l-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                type="text"
+                value={currentBadge}
+                onChange={(e) => setCurrentBadge(e.target.value)}
+                placeholder="Enter A Special Badge"
+              />
+              <button
+                className="px-4 bg-blue-500 text-white rounded-r-md"
+                onClick={handleAddBadge}
+              >
+                OK
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {badges.map((badge, index) => (
+                <div
+                  key={index}
+                  className="flex items-center bg-gray-700 text-white px-3 py-1 rounded-full"
+                >
+                  <span>{badge}</span>
+                  <button
+                    className="ml-2 text-red-400 hover:text-red-600"
+                    onClick={() => handleRemoveBadge(index)}
+                  >
+                    &times;
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
 
+          {/* Product Features Input */}
           <div className="w-full">
             <label className="text-sm text-gray-400">
               Enter Product Features
             </label>
-            <input
-              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              type="text"
-              value={features}
-              onChange={(e) => setFeatures(e.target.value)}
-              placeholder="Product Features"
-              required
-            />
+            <div className="flex mt-1 gap-1">
+              <input
+                className="flex-1 p-2 bg-gray-800 text-white rounded-l-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                type="text"
+                value={currentFeature}
+                onChange={(e) => setCurrentFeature(e.target.value)}
+                placeholder="Product Features"
+              />
+              <button
+                className="px-4 bg-blue-500 text-white rounded-r-md"
+                onClick={handleAddFeature}
+              >
+                OK
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {features.map((feature, index) => (
+                <div
+                  key={index}
+                  className="flex items-center bg-gray-700 text-white px-3 py-1 rounded-full"
+                >
+                  <span>{feature}</span>
+                  <button
+                    className="ml-2 text-red-400 hover:text-red-600"
+                    onClick={() => handleRemoveFeature(index)}
+                  >
+                    &times;
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
         <div>

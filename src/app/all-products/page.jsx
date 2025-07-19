@@ -126,12 +126,27 @@ const AllProducts = ({ hidden }) => {
                       className="w-full object-cover h-48 transition-transform duration-500 group-hover:scale-110"
                     />
 
-                    {product.badges && (
-                      <Badge className="absolute top-3 left-3 bg-n-primary text-n-primary_foreground">
-                        {product.badges}
+                    {/* Badge */}
+                    <div className="absolute top-3 left-3 w-full">
+                      {(product.badges || []).map((badge, index) => (
+                        <Badge
+                          key={index}
+                          className="mr-1 bg-n-primary text-n-primary_foreground"
+                        >
+                          {badge}
+                        </Badge>
+                      ))}
+                    </div>
+                    {/* {(product.badges || []).map((badge, index) => (
+                      <Badge
+                        key={index}
+                        className={`absolute top-3 ${
+                          index && `left-${3 + index + 1}`
+                        } bg-n-primary text-n-primary_foreground`}
+                      >
+                        {badge}
                       </Badge>
-                    )}
-
+                    ))} */}
                     <Button
                       size="icon"
                       variant="ghost"
@@ -177,7 +192,7 @@ const AllProducts = ({ hidden }) => {
                     </div>
 
                     <div className="flex flex-wrap gap-1 mb-3">
-                      {/* {(product.features || [])
+                      {(product.features || [])
                         .slice(0, 2)
                         .map((feature, index) => (
                           <Badge
@@ -187,10 +202,10 @@ const AllProducts = ({ hidden }) => {
                           >
                             {feature}
                           </Badge>
-                        ))} */}
-                      <Badge variant="secondary" className="text-xs">
+                        ))}
+                      {/* <Badge variant="secondary" className="text-xs">
                         {product.features}
-                      </Badge>
+                      </Badge> */}
                     </div>
 
                     <div className="flex items-center gap-2 mb-4">

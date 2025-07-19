@@ -5,6 +5,8 @@ import { Badge } from "@/Components/UI/badge";
 import { assets } from "@/assets/assets";
 import Image from "next/image";
 import { useAppContext } from "@/Context/AppContext";
+import { useEffect, useState } from "react";
+import Loading from "./Loading";
 const products = [
   {
     id: 1,
@@ -49,7 +51,25 @@ const products = [
 ];
 
 const ProductHighlights = () => {
-  const { router } = useAppContext();
+  const { products, router } = useAppContext();
+  const [loading, setloading] = useState(true);
+
+  useEffect(() => {
+    if (!products || !Array.isArray(products)) {
+      setloading(true);
+    } else {
+      setloading(false);
+    }
+  }, [products]);
+  console.log("From Highlights", products.badges);
+
+  if (loading) return <Loading />;
+
+  const saveOffer = (price, originalPrice) => {
+    if (originalPrice - price > 0) {
+      return true;
+    }
+  };
 
   return (
     <section className="py-24 bg-muted/30">
@@ -68,22 +88,33 @@ const ProductHighlights = () => {
 
         {/* Products Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <Card key={product.id} className="card-lumira hover-lift group">
+          {products.map((product, index) => (
+            <Card
+              key={index}
+              className="card-lumira hover-lift group cursor-pointer"
+              onClick={() => router.push(`/product/${product.id}`)}
+            >
               <CardContent className="p-0">
                 <div className="relative overflow-hidden rounded-t-lg">
                   <Image
-                    src={product.image}
+                    src={product.mainImage}
                     alt={product.name}
+                    width={800}
+                    height={800}
                     className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
                   />
 
                   {/* Badge */}
-                  {product.badge && (
-                    <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground">
-                      {product.badge}
-                    </Badge>
-                  )}
+                  <div className="absolute top-3 left-3 w-full">
+                    {(product.badges || []).map((badge, index) => (
+                      <Badge
+                        key={index}
+                        className="mr-1 bg-n-primary text-n-primary_foreground"
+                      >
+                        {badge}
+                      </Badge>
+                    ))}
+                  </div>
 
                   {/* Wishlist Button */}
                   <Button
@@ -95,10 +126,10 @@ const ProductHighlights = () => {
                   </Button>
 
                   {/* Sale Badge */}
-                  {product.originalPrice && (
+                  {saveOffer(product.price, product.originalPrice) && (
                     <Badge
                       variant="destructive"
-                      className="absolute bottom-3 left-3 bg-lumira-coral text-white"
+                      className="absolute bottom-3 left-3 bg-n-lumira_coral text-white"
                     >
                       Save ${product.originalPrice - product.price}
                     </Badge>
@@ -132,15 +163,17 @@ const ProductHighlights = () => {
 
                   {/* Features */}
                   <div className="flex flex-wrap gap-1 mb-3">
-                    {product.features.slice(0, 2).map((feature, index) => (
-                      <Badge
-                        key={index}
-                        variant="secondary"
-                        className="text-xs"
-                      >
-                        {feature}
-                      </Badge>
-                    ))}
+                    {(product.features || [])
+                      .slice(0, 2)
+                      .map((feature, index) => (
+                        <Badge
+                          key={index}
+                          variant="secondary"
+                          className="text-xs"
+                        >
+                          {feature}
+                        </Badge>
+                      ))}
                   </div>
 
                   {/* Price */}
