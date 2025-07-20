@@ -61,7 +61,6 @@ const ProductHighlights = () => {
       setloading(false);
     }
   }, [products]);
-  console.log("From Highlights", products.badges);
 
   if (loading) return <Loading />;
 

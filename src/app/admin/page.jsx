@@ -42,7 +42,7 @@ const page = () => {
           </h1>
         </div>
         <div className="container w-full border-t border-gray-700 my-8" />
-        <div className="flex flex-col items-center lg:justify-around lg:flex-row justify-start">
+        <div className="flex flex-col lg:justify-around lg:flex-row justify-start">
           <StockAddForm />
           <StockUpdateForm id={id} />
         </div>

@@ -32,6 +32,14 @@ import { Badge } from "@/Components/UI/badge";
 import { Button } from "@/Components/UI/lumiraButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/UI/card";
 import ProductCard from "../../../Components/ProductCard";
+import { useUser } from "@clerk/nextjs";
+import {
+  fetchLocalCart,
+  addLocalProducts,
+  removeLocalProducts,
+  deleteLocalProducts,
+  clearLocalCart,
+} from "../../../../models/OfflineModules";
 
 // Placeholder reviews
 const sampleReviews = [
@@ -69,6 +77,8 @@ const Product = () => {
 
   const [productData, setProductData] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const { isSignedIn } = useUser();
+  const [localCartData, setLocalCartData] = useState(fetchLocalCart());
 
   useEffect(() => {
     if (Array.isArray(products)) {
@@ -77,7 +87,8 @@ const Product = () => {
     }
   }, [id, products]);
 
-  if (loading || !productData) return <Loading />;
+  if (!productData) return <Loading />;
+
   const cartProduct = cartItems.find((item) => item.itemId === id);
   const cartQuantity = cartProduct?.quantity || 0;
 
@@ -92,10 +103,24 @@ const Product = () => {
     );
   };
 
+  const localCartProduct = localCartData.find((item) => item.id === id);
+  const localCartQuantity = localCartProduct?.quantity || 0;
+
+  console.log("Local cart product:", localCartProduct);
   const saveOffer = (price, originalPrice) => {
     if (originalPrice - price > 0) {
       return true;
     }
+  };
+
+  const handleAddLocalProduct = () => {
+    addLocalProducts({ ID: productData.id });
+    setLocalCartData(fetchLocalCart());
+  };
+
+  const handleRemoveLocalProduct = () => {
+    removeLocalProducts({ ID: productData.id });
+    setLocalCartData(fetchLocalCart());
   };
 
   return (
@@ -275,31 +300,57 @@ const Product = () => {
 
             {/* Cart Actions */}
             <div className="flex items-center gap-3">
-              {!cartProduct ? (
-                <Button
-                  className="flex-1"
-                  onClick={() => addToCart(productData.id)}
-                >
+              {isSignedIn ? (
+                !cartProduct ? (
+                  <Button
+                    className="flex-1"
+                    onClick={() => addToCart(productData.id)}
+                  >
+                    <ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart
+                  </Button>
+                ) : (
+                  <>
+                    <div className="flex items-center border rounded min-w-[120px] py-2 px-2 justify-between">
+                      <button
+                        onClick={() =>
+                          updateCartQuantity(
+                            cartProduct.itemId,
+                            cartQuantity - 1
+                          )
+                        }
+                      >
+                        -
+                      </button>
+                      <span>{cartQuantity}</span>
+                      <button
+                        onClick={() =>
+                          updateCartQuantity(
+                            cartProduct.itemId,
+                            cartQuantity + 1
+                          )
+                        }
+                      >
+                        +
+                      </button>
+                    </div>
+                    <Button
+                      className="flex-1 bg-orange-500 text-white hover:bg-orange-600"
+                      onClick={() => router.push("/cart")}
+                    >
+                      Buy Now
+                    </Button>
+                  </>
+                )
+              ) : !localCartProduct ? (
+                <Button className="flex-1" onClick={handleAddLocalProduct}>
                   <ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart
                 </Button>
               ) : (
                 <>
                   <div className="flex items-center border rounded min-w-[120px] py-2 px-2 justify-between">
-                    <button
-                      onClick={() =>
-                        updateCartQuantity(cartProduct.itemId, cartQuantity - 1)
-                      }
-                    >
-                      -
-                    </button>
-                    <span>{cartQuantity}</span>
-                    <button
-                      onClick={() =>
-                        updateCartQuantity(cartProduct.itemId, cartQuantity + 1)
-                      }
-                    >
-                      +
-                    </button>
+                    <button onClick={handleRemoveLocalProduct}>-</button>
+                    <span>{localCartQuantity}</span>
+                    <button onClick={handleAddLocalProduct}>+</button>
                   </div>
                   <Button
                     className="flex-1 bg-orange-500 text-white hover:bg-orange-600"
@@ -309,6 +360,7 @@ const Product = () => {
                   </Button>
                 </>
               )}
+
               <Button variant="outline">
                 <Heart className="w-5 h-5" />
               </Button>

@@ -3,7 +3,7 @@ import { assets } from "@/assets/assets";
 import { Card, CardContent } from "@/Components/UI/card";
 import { Button } from "@/Components/UI/lumiraButton";
 import Image from "next/image";
-console.log("Pendant Lamp: ", assets.pendantLamp);
+
 const categories = [
   {
     id: 1,
