@@ -10,23 +10,35 @@ import SplineFile from "@/Components/Spline";
 import Collections from "@/Components/Collections";
 import Footer from "@/Components/LumiraFooter";
 import ProductHighlights from "@/Components/ProductsHighlights";
+import { useAppContext } from "@/Context/AppContext";
 export default function Home() {
-  const [showVideo, setShowVideo] = useState(true);
+  const [showVideo, setShowVideo] = useState(false);
   const [fade, setFade] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setFade(true), 4000); // Start fade after 5s
-    const removeTimer = setTimeout(() => setShowVideo(false), 6000); // Remove after fade
-    return () => {
-      clearTimeout(timer);
-      clearTimeout(removeTimer);
-    };
+    const hasPlayed = sessionStorage.getItem("introPlayed");
+
+    if (!hasPlayed) {
+      setShowVideo(true);
+
+      const fadeTimer = setTimeout(() => setFade(true), 4000);
+      const removeTimer = setTimeout(() => {
+        setShowVideo(false);
+        sessionStorage.setItem("introPlayed", "true");
+      }, 6000);
+
+      return () => {
+        clearTimeout(fadeTimer);
+        clearTimeout(removeTimer);
+      };
+    }
   }, []);
+
   return (
     <>
       {showVideo && (
         <div
-          className={`pointer-events-none fixed inset-0 flex items-center justify-center bg-black transition-opacity z-20 duration-1000 ${
+          className={`pointer-events-none fixed inset-0 flex items-center justify-center bg-black transition-opacity duration-1000 z-50 ${
             fade ? "opacity-0" : "opacity-100"
           }`}
         >
@@ -34,11 +46,14 @@ export default function Home() {
             src="/GradientVideo.mp4"
             autoPlay
             muted
+            playsInline
             className="w-full h-full object-cover"
             style={{ pointerEvents: "none" }}
+            onEnded={() => setFade(true)} // fallback in case fadeTimer fails
           />
         </div>
       )}
+
       <BackLights L1 />
       <div className="pt-[4.75rem] lg:pt-[5.25rem] overflow-hidden">
         <Navbar bgBlur />

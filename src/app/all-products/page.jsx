@@ -137,16 +137,8 @@ const AllProducts = ({ hidden }) => {
                         </Badge>
                       ))}
                     </div>
-                    {/* {(product.badges || []).map((badge, index) => (
-                      <Badge
-                        key={index}
-                        className={`absolute top-3 ${
-                          index && `left-${3 + index + 1}`
-                        } bg-n-primary text-n-primary_foreground`}
-                      >
-                        {badge}
-                      </Badge>
-                    ))} */}
+
+                    {/* Wishlist Button */}
                     <Button
                       size="icon"
                       variant="ghost"

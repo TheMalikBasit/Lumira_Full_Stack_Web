@@ -26,7 +26,6 @@ export const AppContextProvider = (props) => {
   const [loading, setLoading] = useState(true);
   const [adminLoading, setAdminLoading] = useState(true);
   const [darkMode, setdarkMode] = useState(false);
-
   const addToCart = async (itemId) => {
     let cartData = structuredClone(cartItems);
 
