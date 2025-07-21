@@ -1,5 +1,7 @@
 // utils/localCart.ts
 
+import { check } from "@/assets";
+
 const CART_KEY = "local_cart";
 
 export const fetchLocalCart = () => {
@@ -18,7 +20,7 @@ export const addLocalProducts = ({ ID }) => {
   if (index !== -1) {
     cart[index].quantity += 1;
   } else {
-    cart.push({ id: ID, quantity: 1 });
+    cart.push({ id: ID, quantity: 1, checked: true });
   }
 
   localStorage.setItem(CART_KEY, JSON.stringify(cart));

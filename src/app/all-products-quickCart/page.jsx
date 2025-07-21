@@ -7,7 +7,7 @@ import DefaultStyler from "@/Components/DefaultStyler";
 import FooterOne from "../../Components/Footer";
 import FooterTwo from "@/Components/FooterTwo";
 import { useEffect, useState } from "react";
-import Loading from "@/Components/Loading";
+import { Loading } from "@/Components/Loading";
 
 const AllProducts = ({ hidden }) => {
   const { products } = useAppContext();

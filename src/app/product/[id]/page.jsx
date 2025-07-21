@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useAppContext } from "@/Context/AppContext";
 import Navbar from "../../../components/Navbar";
 import Footer from "@/Components/LumiraFooter";
-import Loading from "@/Components/Loading";
+import { Loading } from "@/Components/Loading";
 import Image from "next/image";
 import {
   ArrowLeft,
@@ -33,13 +33,13 @@ import { Button } from "@/Components/UI/lumiraButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/UI/card";
 import ProductCard from "../../../Components/ProductCard";
 import { useUser } from "@clerk/nextjs";
-import {
-  fetchLocalCart,
-  addLocalProducts,
-  removeLocalProducts,
-  deleteLocalProducts,
-  clearLocalCart,
-} from "../../../../models/OfflineModules";
+// import {
+//   fetchLocalCart,
+//   addLocalProducts,
+//   removeLocalProducts,
+//   deleteLocalProducts,
+//   clearLocalCart,
+// } from "../../../../models/OfflineModules";
 
 // Placeholder reviews
 const sampleReviews = [
@@ -73,12 +73,15 @@ const Product = () => {
     currency,
     router,
     loading,
+    localCart,
+    addToLocalCart,
+    removeFromLocalCart,
+    deleteFromLocalCart,
   } = useAppContext();
 
   const [productData, setProductData] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { isSignedIn } = useUser();
-  const [localCartData, setLocalCartData] = useState(fetchLocalCart());
 
   useEffect(() => {
     if (Array.isArray(products)) {
@@ -103,7 +106,7 @@ const Product = () => {
     );
   };
 
-  const localCartProduct = localCartData.find((item) => item.id === id);
+  const localCartProduct = localCart.find((item) => item.id === id);
   const localCartQuantity = localCartProduct?.quantity || 0;
 
   console.log("Local cart product:", localCartProduct);
@@ -113,15 +116,15 @@ const Product = () => {
     }
   };
 
-  const handleAddLocalProduct = () => {
-    addLocalProducts({ ID: productData.id });
-    setLocalCartData(fetchLocalCart());
-  };
+  // const handleAddLocalProduct = () => {
+  //   addLocalProducts({ ID: productData.id });
+  //   setLocalCartData(fetchLocalCart());
+  // };
 
-  const handleRemoveLocalProduct = () => {
-    removeLocalProducts({ ID: productData.id });
-    setLocalCartData(fetchLocalCart());
-  };
+  // const handleRemoveLocalProduct = () => {
+  //   removeLocalProducts({ ID: productData.id });
+  //   setLocalCartData(fetchLocalCart());
+  // };
 
   return (
     <>
@@ -342,15 +345,22 @@ const Product = () => {
                   </>
                 )
               ) : !localCartProduct ? (
-                <Button className="flex-1" onClick={handleAddLocalProduct}>
+                <Button
+                  className="flex-1"
+                  onClick={() => addToLocalCart(productData.id)}
+                >
                   <ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart
                 </Button>
               ) : (
                 <>
                   <div className="flex items-center border rounded min-w-[120px] py-2 px-2 justify-between">
-                    <button onClick={handleRemoveLocalProduct}>-</button>
+                    <button onClick={() => removeFromLocalCart(productData.id)}>
+                      -
+                    </button>
                     <span>{localCartQuantity}</span>
-                    <button onClick={handleAddLocalProduct}>+</button>
+                    <button onClick={() => addToLocalCart(productData.id)}>
+                      +
+                    </button>
                   </div>
                   <Button
                     className="flex-1 bg-orange-500 text-white hover:bg-orange-600"

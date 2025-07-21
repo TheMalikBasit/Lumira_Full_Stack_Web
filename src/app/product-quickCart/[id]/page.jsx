@@ -5,7 +5,7 @@ import ProductCard from "../../../Components/ProductCard";
 import Navbar from "../../../components/Navbar";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import Loading from "../../../components/Loading";
+import { Loading } from "../../../components/Loading";
 import { useAppContext } from "../../../Context/AppContext";
 import React from "react";
 import FooterOne from "../../../components/Footer";

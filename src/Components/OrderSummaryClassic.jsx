@@ -1,16 +1,18 @@
 import { useAppContext } from "@/Context/AppContext";
 import { useState, useEffect } from "react";
+import { useUser } from "@clerk/nextjs";
 const OrderSummaryClassic = () => {
-  const { getCartAmount, currency, darkMode } = useAppContext();
+  const { getCartAmount, currency, darkMode, getLocalCartAmount, products } =
+    useAppContext();
   const [shipmentCharges, setshipmentCharges] = useState(0);
-
+  const { isSignedIn } = useUser();
   useEffect(() => {
-    if (getCartAmount() > 0) {
+    if (getCartAmount() > 0 || getLocalCartAmount() > 0) {
       setshipmentCharges(200);
     } else {
       setshipmentCharges(0);
     }
-  }, [getCartAmount]);
+  }, [getCartAmount, getLocalCartAmount, products]);
 
   return (
     <div
@@ -33,7 +35,8 @@ const OrderSummaryClassic = () => {
               darkMode ? "text-white" : "text-black"
             } text-sm font-bold`}
           >
-            {currency} <span> </span> {getCartAmount()}
+            {currency} <span> </span>{" "}
+            {isSignedIn ? getCartAmount() : getLocalCartAmount()}
           </h2>
         </div>
         <div className="flex flex-row w-full justify-between mt-3">
@@ -46,7 +49,9 @@ const OrderSummaryClassic = () => {
             } text-sm font-bold`}
           >
             {currency} <span> </span>
-            {Math.floor(getCartAmount() * 0.02)}
+            {Math.floor(
+              isSignedIn ? getCartAmount() * 0.02 : getLocalCartAmount() * 0.02
+            )}
           </h2>
         </div>
         <div className="flex flex-row w-full justify-between mt-3">
@@ -67,9 +72,13 @@ const OrderSummaryClassic = () => {
             } text-sm font-bold`}
           >
             {currency} <span> </span>
-            {getCartAmount() +
-              Math.floor(getCartAmount() * 0.02) +
-              shipmentCharges}
+            {isSignedIn
+              ? getCartAmount() +
+                Math.floor(getCartAmount() * 0.02) +
+                shipmentCharges
+              : getLocalCartAmount() +
+                Math.floor(getLocalCartAmount() * 0.02) +
+                shipmentCharges}
           </h2>
         </div>
       </div>

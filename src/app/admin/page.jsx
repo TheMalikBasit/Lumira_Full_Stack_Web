@@ -1,6 +1,6 @@
 "use client";
 
-import Loading from "@/Components/Loading";
+import { Loading } from "@/Components/Loading";
 import Navbar from "@/Components/Navbar";
 import { useAppContext } from "@/Context/AppContext";
 import Image from "next/image";

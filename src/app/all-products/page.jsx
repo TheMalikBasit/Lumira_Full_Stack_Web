@@ -4,7 +4,7 @@ import Navbar from "@/Components/Navbar";
 import Footer from "@/Components/LumiraFooter";
 import { useAppContext } from "@/Context/AppContext";
 import { useEffect, useState } from "react";
-import Loading from "@/Components/Loading";
+import { Loading } from "@/Components/Loading";
 import Image from "next/image";
 // UI components from File 2
 import {

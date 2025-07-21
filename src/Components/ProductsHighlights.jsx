@@ -6,7 +6,7 @@ import { assets } from "@/assets/assets";
 import Image from "next/image";
 import { useAppContext } from "@/Context/AppContext";
 import { useEffect, useState } from "react";
-import Loading from "./Loading";
+import { Loading } from "./Loading";
 const products = [
   {
     id: 1,

@@ -137,6 +137,9 @@ export default {
         "gradient-warm": "linear-gradient(135deg, #FFA4AA, #F78E9A)",
         "gradient-hero": "linear-gradient(135deg, #FFFFF4, #DDE9DD)",
       },
+      animation: {
+        "spin-slow": "spin 1s linear infinite",
+      },
     },
   },
   plugins: [
