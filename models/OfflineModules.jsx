@@ -1,7 +1,4 @@
-// utils/localCart.ts
-
-import { check } from "@/assets";
-
+import toast from "react-hot-toast";
 const CART_KEY = "local_cart";
 
 export const fetchLocalCart = () => {
@@ -19,8 +16,10 @@ export const addLocalProducts = ({ ID }) => {
 
   if (index !== -1) {
     cart[index].quantity += 1;
+    toast.success("Cart updated");
   } else {
     cart.push({ id: ID, quantity: 1, checked: true });
+    toast.success("Cart updated");
   }
 
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
@@ -35,8 +34,10 @@ export const removeLocalProducts = ({ ID }) => {
   if (index !== -1) {
     if (cart[index].quantity > 1) {
       cart[index].quantity -= 1;
+      toast.success("Cart updated");
     } else {
       deleteLocalProducts({ ID });
+      toast.success("Cart updated");
       return;
     }
 
@@ -49,7 +50,7 @@ export const deleteLocalProducts = ({ ID }) => {
 
   const cart = fetchLocalCart();
   const updatedCart = cart.filter((item) => item.id !== ID);
-
+  toast.success("Cart updated");
   localStorage.setItem(CART_KEY, JSON.stringify(updatedCart));
 };
 

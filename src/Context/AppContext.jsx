@@ -159,7 +159,9 @@ export const AppContextProvider = (props) => {
       item.id === id ? { ...item, checked: !item.checked } : item
     );
     setLocalCart(updatedCart);
+
     localStorage.setItem("local_cart", JSON.stringify(updatedCart)); // <-- persist changes
+    toast.success("Cart updated");
   };
 
   const getLocalCartAmount = () => {
