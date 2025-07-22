@@ -132,7 +132,7 @@ export const AppContextProvider = (props) => {
     const syncCart = () => setLocalCart(fetchLocalCart());
     window.addEventListener("storage", syncCart);
     return () => window.removeEventListener("storage", syncCart);
-  }, []);
+  }, [products]);
 
   const addToLocalCart = (id) => {
     addLocalProducts({ ID: id });

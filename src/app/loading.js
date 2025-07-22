@@ -1,7 +1,6 @@
-import { Loading } from "@/Components/Loading";
-
+import { Loading, LottieLoading } from "@/Components/Loading";
 const loading = () => {
-  return <Loading />;
+  return <LottieLoading />;
 };
 
 export default loading;

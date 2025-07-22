@@ -1,5 +1,11 @@
+"use client";
 import React from "react";
-
+// import LottieAnimation from "../../public/LottieLoading.json";
+// import { LottiePlayer } from "lottie-react";
+// import Lottie from "lottie-react";
+import Lottie from "lottie-react";
+import ComponentLoadingAnimation from "../../public/ComponentLoadingAnimation.json";
+import LottieLoadingAnimation from "../../public/LottieLoadingAnimation.json";
 export const Loading = () => {
   return (
     <div className="h-full bg-gradient-radial from-[#3C4B57] to-[#1C262B] bg-[radial-gradient(circle_farthest-corner_at_center,_#3C4B57_0%,_#1C262B_100%)]">
@@ -20,5 +26,36 @@ export const LoadingDiv = () => {
       </span>
       Loading
     </section>
+  );
+};
+
+export const LottieLoading1 = () => {
+  return (
+    <div className="h-full w-full flex items-center justify-center">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <Lottie
+          animationData={LottieLoadingAnimation}
+          loop
+          autoplay
+          aria-label="Loading animation"
+        />
+      </div>
+    </div>
+  );
+};
+
+export const LottieLoading = () => {
+  return (
+    <div className="h-full w-full flex items-center justify-center">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <Lottie
+          animationData={ComponentLoadingAnimation}
+          loop
+          autoplay
+          aria-label="Loading animation"
+          style={{ width: "500px", height: "500px" }}
+        />
+      </div>
+    </div>
   );
 };

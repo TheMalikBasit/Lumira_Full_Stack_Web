@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+import { gradient } from "@/assets";
 import { fontFamily } from "tailwindcss/defaultTheme";
 import plugin from "tailwindcss/plugin";
 
@@ -136,9 +137,16 @@ export default {
         "text-gradient": "linear-gradient(45deg, #FF0000 ,#FF0000)",
         "gradient-warm": "linear-gradient(135deg, #FFA4AA, #F78E9A)",
         "gradient-hero": "linear-gradient(135deg, #FFFFF4, #DDE9DD)",
+        "gradient-subtle": "linear-gradient(180deg, #FFFFF4, #DDE9DD)",
       },
       animation: {
         "spin-slow": "spin 1s linear infinite",
+      },
+      gradient: {
+        "text-gradient": "linear-gradient(45deg, #FF0000 ,#FF0000)",
+        "gradient-warm": "linear-gradient(135deg, #FFA4AA, #F78E9A)",
+        "gradient-hero": "linear-gradient(135deg, #FFFFF4, #DDE9DD)",
+        "gradient-subtle": "linear-gradient(180deg, #FFFFF4, #DDE9DD)",
       },
     },
   },

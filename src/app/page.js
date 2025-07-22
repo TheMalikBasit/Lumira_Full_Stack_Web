@@ -6,11 +6,11 @@ import FooterOne from "@/Components/Footer";
 import FooterTwo from "@/Components/FooterTwo";
 import { useEffect, useState } from "react";
 import BackLights from "@/Components/BackLights";
-import SplineFile from "@/Components/Spline";
 import Collections from "@/Components/Collections";
 import Footer from "@/Components/LumiraFooter";
 import ProductHighlights from "@/Components/ProductsHighlights";
 import { useAppContext } from "@/Context/AppContext";
+import { LottieLoading } from "@/Components/Loading";
 export default function Home() {
   const [showVideo, setShowVideo] = useState(false);
   const [fade, setFade] = useState(false);

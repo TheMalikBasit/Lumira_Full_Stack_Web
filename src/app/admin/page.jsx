@@ -1,6 +1,6 @@
 "use client";
 
-import { Loading } from "@/Components/Loading";
+import { Loading, LottieLoading } from "@/Components/Loading";
 import Navbar from "@/Components/Navbar";
 import { useAppContext } from "@/Context/AppContext";
 import Image from "next/image";
@@ -18,7 +18,7 @@ const page = () => {
     console.log("Selected product ID:", id);
   };
 
-  if (adminLoading) return <Loading />;
+  if (adminLoading) return <LottieLoading />;
 
   if (!isAdmin) {
     return (

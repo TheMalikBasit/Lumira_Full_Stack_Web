@@ -5,7 +5,7 @@ import ProductCard from "../../../Components/ProductCard";
 import Navbar from "../../../components/Navbar";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { Loading } from "../../../components/Loading";
+import { Loading, LottieLoading } from "../../../components/Loading";
 import { useAppContext } from "../../../Context/AppContext";
 import React from "react";
 import FooterOne from "../../../components/Footer";
@@ -54,8 +54,7 @@ const Product = () => {
   //   console.log("From quantity checker", cartProduct);
   // };
 
-  console.log("loading state: ", loading);
-  if (loading || !productData || !cartItems) return <Loading />;
+  if (loading || !productData || !cartItems) return <LottieLoading />;
   const cartProduct = cartItems.find((cartItem) => cartItem.itemId === id);
   const cartQuantity = cartProduct ? cartProduct.quantity : 0;
 

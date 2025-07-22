@@ -1,11 +1,12 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { useAppContext } from "@/Context/AppContext";
 import { useUser } from "@clerk/nextjs";
 import { LoadingDiv } from "@/Components/Loading";
-import { useEffect } from "react";
 import Image from "next/image";
-import { faXmark, faHeart } from "@fortawesome/free-solid-svg-icons";
+import { Card, CardContent } from "@/Components/UI/card";
+import { Button } from "@/Components/UI/lumiraButton";
+import { Trash2, Minus, Plus } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquare, faCheckSquare } from "@fortawesome/free-regular-svg-icons";
 
@@ -13,7 +14,6 @@ const RenderCart = () => {
   const {
     products,
     cartItems,
-    addToCart,
     updateCartQuantity,
     currency,
     router,
@@ -25,12 +25,11 @@ const RenderCart = () => {
     addToLocalCart,
     removeFromLocalCart,
     deleteFromLocalCart,
-    getCartCount,
-    setCartItems,
     toggleItemChecked,
     toggleLocalItemCheck,
   } = useAppContext();
   const { isSignedIn } = useUser();
+
   useEffect(() => {
     if (isSignedIn) {
       if (cartItems === undefined || cartItems === null) {
@@ -41,335 +40,179 @@ const RenderCart = () => {
     } else {
       setLoading(false);
     }
-    console.log("From RenderCart isSignedIn: ", isSignedIn);
-    if (darkMode) {
-      document.body.style.backgroundColor = "#000000";
-      console.log("From Cart darkMode: ", darkMode);
-    } else {
-      document.body.style.backgroundColor = "#FFFFF4";
-      console.log("From Cart !darkMode: ", darkMode);
-    }
+    document.body.style.backgroundColor = darkMode ? "#000000" : "#FFFFF4";
   }, [cartItems, isSignedIn, localCart]);
-
-  console.log("From RenderCart localCart: ", localCart);
-  console.log("From RenderCart products: ", products);
 
   if (loading) return <LoadingDiv />;
 
-  return (
-    <div>
-      {isSignedIn ? (
-        cartItems?.length > 0 ? (
-          <div
-            className={`border ${darkMode ? "border-white" : "border-black"} `}
-          >
-            <div className="overflow-y-auto max-h-[44.4rem] scrollbar-thin scrollbar-thumb-cyan-800 scrollbar-track-gray-300">
-              {cartItems.map((item) => {
-                const product = products.find(
-                  (product) => product.id === item.itemId
-                );
+  // ✅ Only the updated portion of renderProductCard is shown
+  const renderProductCard = (item, product, isLocal = false) => {
+    const quantity = item.quantity;
+    const handleDecrease = () =>
+      isLocal
+        ? removeFromLocalCart(item.id)
+        : updateCartQuantity(item.itemId, quantity - 1);
+    const handleIncrease = () =>
+      isLocal
+        ? addToLocalCart(item.id)
+        : updateCartQuantity(item.itemId, quantity + 1);
+    const handleRemove = () =>
+      isLocal
+        ? deleteFromLocalCart(item.id)
+        : updateCartQuantity(item.itemId, 0);
+    const toggleCheck = () =>
+      isLocal ? toggleLocalItemCheck(item.id) : toggleItemChecked(item.itemId);
 
-                if (!product) return null;
+    const itemId = isLocal ? item.id : item.itemId;
+    const features = product.features?.slice(0, 2) || [];
 
-                return (
-                  <div
-                    key={item.itemId}
-                    className={`border-b w-full ${
-                      darkMode ? "border-white" : "border-black"
-                    }`}
-                  >
-                    <div className="flex items-center flex-row w-full p-5 md:p-10">
-                      <button
-                        type="button"
-                        onClick={() => toggleItemChecked(item.itemId)}
-                        className="text-2xl md:text-4xl mr-2 md:mr-5"
-                        aria-pressed={item.checked}
-                      >
-                        <FontAwesomeIcon
-                          icon={item.checked ? faCheckSquare : faSquare}
-                          className={`${
-                            darkMode ? "text-white" : "text-black"
-                          }`}
-                        />
-                      </button>
-
-                      <div
-                        className="mr-2 md:mr-5"
-                        onClick={() => router.push("/product/" + product.id)}
-                      >
-                        <Image
-                          src={product.mainImage}
-                          width={100}
-                          height={100}
-                          alt={product.name}
-                          className={`border ${
-                            darkMode ? "border-white" : "border-black"
-                          } min-w-[100px] min-h-[100px] w-[200px] cursor-pointer object-contain`}
-                        />
-                      </div>
-                      <div className="flex flex-col w-full justify-around">
-                        <div className="flex w-full justify-between items-center mb-2 md:mb-6">
-                          <h2
-                            onClick={() =>
-                              router.push("/product/" + product.id)
-                            }
-                            className={`font-mono font-bold ${
-                              darkMode ? "text-white" : "text-black"
-                            } text-sm md:text-2xl cursor-pointer`}
-                          >
-                            {product.name}
-                          </h2>
-                          <button
-                            onClick={() => updateCartQuantity(product.id, 0)}
-                          >
-                            <FontAwesomeIcon
-                              icon={faXmark}
-                              className={`${
-                                darkMode ? "text-white" : "text-black"
-                              } top-0 right-0 md:text-xl`}
-                              size="sm"
-                            />
-                          </button>
-                        </div>
-                        <div className="flex flex-row justify-end md:justify-between mb-2 md:mb-6">
-                          <div
-                            className={`hidden md:flex p-2 border ${
-                              darkMode ? "border-white" : "border-black"
-                            } w-20`}
-                          >
-                            <h2
-                              className={`${
-                                darkMode ? "text-white" : "text-black"
-                              }`}
-                            >
-                              Hello
-                            </h2>
-                          </div>
-                          {/* <div className="hidden md:flex p-2 border border-black w-20">
-                                    <h2 className=" text-black">Hello</h2>
-                                  </div> */}
-                          <div
-                            className={`p-2 border ${
-                              darkMode ? "border-white" : "border-black"
-                            } w-24 flex justify-between items-center`}
-                          >
-                            <button
-                              className={`${
-                                darkMode ? "text-white" : "text-black"
-                              } font-code text-sm md:text-lg font-bold`}
-                              onClick={() =>
-                                updateCartQuantity(
-                                  item.itemId,
-                                  item.quantity - 1
-                                )
-                              }
-                            >
-                              -
-                            </button>
-                            <h1
-                              className={`font-poppins text-sm md:text-lg font-bold ${
-                                darkMode ? "text-white" : "text-black"
-                              }`}
-                            >
-                              {item.quantity}
-                            </h1>
-                            <button
-                              className={`${
-                                darkMode ? "text-white" : "text-black"
-                              } font-code text-sm md:text-lg font-bold`}
-                              onClick={() =>
-                                updateCartQuantity(
-                                  item.itemId,
-                                  item.quantity + 1
-                                )
-                              }
-                            >
-                              +
-                            </button>
-                          </div>
-                        </div>
-                        <div className="flex flex-row justify-between items-center w-full">
-                          <h1
-                            className={`hidden md:flex text-sm lg:text-lg font-poppins lg:font-bold ${
-                              darkMode ? "text-white" : "text-black"
-                            } underline cursor-pointer`}
-                          >
-                            MOVE TO FAVOURITES
-                          </h1>
-                          <FontAwesomeIcon
-                            icon={faHeart}
-                            className={`flex md:hidden ${
-                              item.checked ? "text-red-500" : "text-black"
-                            }  text-xl md:text-2xl`}
-                          />
-                          <h1 className="text-sm  lg:text-lg  font-poppins font-bold text-black">
-                            {currency} <span> </span>
-                            {(product.price * item.quantity).toFixed(2)}
-                          </h1>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+    const isInStock = product.availableStock > 0;
+    console.log("From RenderCart inStock: ", isInStock);
+    return (
+      <Card
+        key={itemId}
+        className="border-n-border/50 backdrop-blur-sm bg-n-card/80 hover:bg-n-card/90 hover:shadow-elegant transition-all duration-200 hover-lift animate-fade-in relative overflow-hidden group"
+      >
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-n-primary via-n-lumira_coral to-n-lumira_salmon" />
+        <CardContent className="p-8">
+          <div className="flex flex-col sm:flex-row gap-8">
+            {/* ✅ Checkbox to left */}
+            <div className="flex items-start justify-center sm:items-center sm:flex-col gap-4">
+              <FontAwesomeIcon
+                icon={item.checked ? faCheckSquare : faSquare}
+                onClick={toggleCheck}
+                className="text-2xl cursor-pointer sm:mb-8"
+              />
             </div>
-          </div>
-        ) : (
-          <p
-            className={`font-poppins text-2xl ${
-              darkMode ? "text-white" : "text-black"
-            } underline cursor-pointer ml-40`}
-          >
-            Your cart is empty.
-          </p>
-        )
-      ) : localCart?.length > 0 ? (
-        <div
-          className={`border ${darkMode ? "border-white" : "border-black"} `}
-        >
-          <div className="overflow-y-auto max-h-[44.4rem] scrollbar-thin scrollbar-thumb-cyan-800 scrollbar-track-gray-300">
-            {localCart.map((item) => {
-              const product = products.find(
-                (product) => product.id === item.id
-              );
 
-              if (!product) return null;
+            {/* ✅ Product Image */}
+            <div className="relative w-full sm:w-48 h-48 rounded-2xl overflow-hidden bg-gradient-to-br from-n-muted to-n-muted/50 shadow-warm group/image">
+              <Image
+                src={product.mainImage}
+                alt={product.name}
+                fill
+                className="object-cover transition-transform duration-500 group-hover/image:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover/image:opacity-100 transition-opacity duration-300" />
+            </div>
 
-              return (
-                <div
-                  key={item.id}
-                  className={`border-b w-full ${
-                    darkMode ? "border-white" : "border-black"
+            {/* ✅ Main content */}
+            <div className="flex-1 space-y-4">
+              <h3
+                className="font-bold text-n-foreground text-2xl mb-2 transition-all duration-300 cursor-pointer"
+                onClick={() => router.push("/product/" + product.id)}
+              >
+                {product.name}
+              </h3>
+
+              {/* ✅ Features and Stock */}
+              <div className="flex items-center gap-4 mb-3 flex-wrap">
+                {features.map((feature, idx) => (
+                  <span
+                    key={idx}
+                    className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-gradient-to-r from-n-primary/20 to-n-primary/10 text-n-primary border border-n-primary/20"
+                  >
+                    {feature}
+                  </span>
+                ))}
+                {/* ✅ In Stock / Out of Stock Badge */}
+                <span
+                  className={`inline-flex items-center px-3 gap-2 py-1.5 rounded-full font-medium text-sm ${
+                    isInStock ? "text-emerald-600" : "text-red-800"
                   }`}
                 >
-                  <div className="flex items-center flex-row w-full p-5 md:p-10">
-                    <button
-                      type="button"
-                      onClick={() => toggleLocalItemCheck(item.id)}
-                      className="text-2xl md:text-4xl mr-2 md:mr-5"
-                      aria-pressed={item.checked}
-                    >
-                      <FontAwesomeIcon
-                        icon={item.checked ? faCheckSquare : faSquare}
-                        className={`${darkMode ? "text-white" : "text-black"}`}
-                      />
-                    </button>
+                  <div
+                    className={`w-2 h-2 ${
+                      isInStock ? "bg-emerald-500" : "bg-red-500"
+                    } rounded-full animate-pulse`}
+                  ></div>
+                  {isInStock ? "In Stock" : "Out of Stock"}
+                </span>
+              </div>
 
-                    <div
-                      className="mr-2 md:mr-5"
-                      onClick={() => router.push("/product/" + product.id)}
-                    >
-                      <Image
-                        src={product.mainImage}
-                        width={100}
-                        height={100}
-                        alt={product.name}
-                        className={`border ${
-                          darkMode ? "border-white" : "border-black"
-                        } min-w-[100px] min-h-[100px] w-[200px] cursor-pointer object-contain`}
-                      />
-                    </div>
-                    <div className="flex flex-col w-full justify-around">
-                      <div className="flex w-full justify-between items-center mb-2 md:mb-6">
-                        <h2
-                          onClick={() => router.push("/product/" + product.id)}
-                          className={`font-mono font-bold ${
-                            darkMode ? "text-white" : "text-black"
-                          } text-sm md:text-2xl cursor-pointer`}
-                        >
-                          {product.name}
-                        </h2>
-                        <button onClick={() => deleteFromLocalCart(item.id)}>
-                          <FontAwesomeIcon
-                            icon={faXmark}
-                            className={`${
-                              darkMode ? "text-white" : "text-black"
-                            } top-0 right-0 md:text-xl`}
-                            size="sm"
-                          />
-                        </button>
-                      </div>
-                      <div className="flex flex-row justify-end md:justify-between mb-2 md:mb-6">
-                        <div
-                          className={`hidden md:flex p-2 border ${
-                            darkMode ? "border-white" : "border-black"
-                          } w-20`}
-                        >
-                          <h2
-                            className={`${
-                              darkMode ? "text-white" : "text-black"
-                            }`}
-                          >
-                            Hello
-                          </h2>
-                        </div>
-                        {/* <div className="hidden md:flex p-2 border border-black w-20">
-                                    <h2 className=" text-black">Hello</h2>
-                                  </div> */}
-                        <div
-                          className={`p-2 border ${
-                            darkMode ? "border-white" : "border-black"
-                          } w-24 flex justify-between items-center`}
-                        >
-                          <button
-                            className={`${
-                              darkMode ? "text-white" : "text-black"
-                            } font-code text-sm md:text-lg font-bold`}
-                            onClick={() => removeFromLocalCart(item.id)}
-                          >
-                            -
-                          </button>
-                          <h1
-                            className={`font-poppins text-sm md:text-lg font-bold ${
-                              darkMode ? "text-white" : "text-black"
-                            }`}
-                          >
-                            {item.quantity}
-                          </h1>
-                          <button
-                            className={`${
-                              darkMode ? "text-white" : "text-black"
-                            } font-code text-sm md:text-lg font-bold`}
-                            onClick={() => addToLocalCart(item.id)}
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                      <div className="flex flex-row justify-between items-center w-full">
-                        <h1
-                          className={`hidden md:flex text-sm lg:text-lg font-poppins lg:font-bold ${
-                            darkMode ? "text-white" : "text-black"
-                          } underline cursor-pointer`}
-                        >
-                          MOVE TO FAVOURITES
-                        </h1>
-                        <FontAwesomeIcon
-                          icon={faHeart}
-                          className={`flex md:hidden ${
-                            item.checked ? "text-red-500" : "text-black"
-                          }  text-xl md:text-2xl`}
-                        />
-                        <h1 className="text-sm  lg:text-lg  font-poppins font-bold text-black">
-                          {currency} <span> </span>
-                          {(product.price * item.quantity).toFixed(2)}
-                        </h1>
-                      </div>
-                    </div>
-                  </div>
+              <div className="space-y-3">
+                <div className="flex items-baseline gap-3">
+                  <p className="text-3xl font-bold text-n-foreground">
+                    {currency} {product.price.toFixed(2)}
+                  </p>
+                  <p className="text-sm text-n-muted_foreground">per item</p>
                 </div>
-              );
-            })}
+                <div className="p-4 rounded-xl bg-gradient-to-r from-n-primary/5 to-n-lumira_coral/5 border border-n-primary/10">
+                  <p className="text-sm font-medium text-n-foreground">
+                    Subtotal:{" "}
+                    <span className="text-lg text-n-foreground font-bold">
+                      {currency} {(product.price * quantity).toFixed(2)}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* ✅ Remove + Quantity Buttons */}
+            <div className="flex flex-col sm:items-end gap-8">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleRemove}
+                className="self-end text-n-destructive hover:text-n-destructive hover:bg-n-destructive/10 hover-scale hover:shadow-warm transition-all duration-300"
+              >
+                <Trash2 className="h-5 w-5" />
+              </Button>
+
+              <div className="flex items-center gap-4 bg-gradient-to-r from-n-muted/50 to-n-muted/30 rounded-2xl p-4 backdrop-blur-sm border border-n-border/50">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handleDecrease}
+                  className="h-12 w-12 hover-scale shadow-sm hover:shadow-warm transition-all duration-300 border-n-primary/20 hover:border-n-primary/40"
+                >
+                  <Minus className="h-5 w-5" />
+                </Button>
+                <div className="flex flex-col items-center min-w-[3rem]">
+                  <span className="text-xs text-n-muted_foreground font-medium">
+                    QTY
+                  </span>
+                  <span className="text-2xl font-bold text-n-foreground">
+                    {quantity}
+                  </span>
+                </div>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handleIncrease}
+                  className="h-12 w-12 hover-scale shadow-sm hover:shadow-warm transition-all duration-300 border-n-primary/20 hover:border-n-primary/40"
+                >
+                  <Plus className="h-5 w-5" />
+                </Button>
+              </div>
+            </div>
           </div>
-        </div>
-      ) : (
+        </CardContent>
+      </Card>
+    );
+  };
+
+  const cartToRender = isSignedIn ? cartItems : localCart;
+  const isEmpty = !cartToRender || cartToRender.length === 0;
+
+  return (
+    <div className="lg:col-span-2 space-y-8">
+      {isEmpty ? (
         <p
           className={`font-poppins text-2xl ${
             darkMode ? "text-white" : "text-black"
-          } underline cursor-pointer ml-40`}
+          } underline cursor-pointer ml-10`}
         >
           Your cart is empty.
         </p>
+      ) : (
+        cartToRender.map((item) => {
+          const product = products.find(
+            (p) => p.id === (isSignedIn ? item.itemId : item.id)
+          );
+          if (!product) return null;
+          return renderProductCard(item, product, !isSignedIn);
+        })
       )}
     </div>
   );

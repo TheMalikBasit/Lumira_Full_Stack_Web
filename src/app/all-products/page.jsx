@@ -4,7 +4,7 @@ import Navbar from "@/Components/Navbar";
 import Footer from "@/Components/LumiraFooter";
 import { useAppContext } from "@/Context/AppContext";
 import { useEffect, useState } from "react";
-import { Loading } from "@/Components/Loading";
+import { Loading, LottieLoading } from "@/Components/Loading";
 import Image from "next/image";
 // UI components from File 2
 import {
@@ -33,7 +33,7 @@ const AllProducts = ({ hidden }) => {
     }
   }, [products]);
 
-  if (loading) return <Loading />;
+  if (loading) return <LottieLoading />;
 
   const saveOffer = (price, originalPrice) => {
     if (originalPrice - price > 0) {
@@ -112,7 +112,6 @@ const AllProducts = ({ hidden }) => {
                 className="card-lumira hover-lift group cursor-pointer"
                 onClick={() => {
                   router.push("/product/" + product.id);
-                  scrollTo(0, 0);
                 }}
               >
                 <CardContent className="p-0">

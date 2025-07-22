@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useAppContext } from "@/Context/AppContext";
 import Navbar from "../../../components/Navbar";
 import Footer from "@/Components/LumiraFooter";
-import { Loading } from "@/Components/Loading";
+import { Loading, LottieLoading } from "@/Components/Loading";
 import Image from "next/image";
 import {
   ArrowLeft,
@@ -90,7 +90,7 @@ const Product = () => {
     }
   }, [id, products]);
 
-  if (!productData) return <Loading />;
+  if (!productData) return <LottieLoading />;
 
   const cartProduct = cartItems.find((item) => item.itemId === id);
   const cartQuantity = cartProduct?.quantity || 0;
