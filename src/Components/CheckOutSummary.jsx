@@ -9,7 +9,8 @@ import { Separator } from "@/Components/UI/separator";
 import Image from "next/image";
 const CheckOutSummary = () => {
   const { user, isSignedIn } = useUser();
-  const { router, products, cartItems, localCart, loading } = useAppContext();
+  const { router, products, cartItems, localCart, loading, setLoading } =
+    useAppContext();
 
   const currentCart = isSignedIn ? cartItems : localCart;
   const checkedItems = currentCart.filter((item) => item.checked);
@@ -19,7 +20,7 @@ const CheckOutSummary = () => {
     .filter(Boolean);
 
   const fetchQuantity = (id) => {
-    const item = cartItems.find((item) => item.id === id);
+    const item = currentCart.find((item) => item.id === id);
     return item ? item.quantity : 0;
   };
 

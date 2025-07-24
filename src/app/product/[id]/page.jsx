@@ -331,7 +331,7 @@ const Product = () => {
                       </button>
                     </div>
                     <Button
-                      className="flex-1 bg-orange-500 text-white hover:bg-orange-600"
+                      className="flex-1 bg-n-lumira_coral text-white hover:bg-n-foreground"
                       onClick={() => router.push("/cart")}
                     >
                       Buy Now
@@ -357,7 +357,7 @@ const Product = () => {
                     </button>
                   </div>
                   <Button
-                    className="flex-1 bg-orange-500 text-white hover:bg-orange-600"
+                    className="flex-1 bg-n-foreground text-white hover:bg-n-spaceGradient"
                     onClick={() => router.push("/cart")}
                   >
                     Buy Now

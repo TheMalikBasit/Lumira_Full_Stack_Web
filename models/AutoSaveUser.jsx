@@ -15,7 +15,10 @@ const AutoSaveUser = () => {
       try {
         setLoading(true);
 
-        if (!isSignedIn || !user) return;
+        if (!isSignedIn || !user) {
+          setLoading(false);
+          return;
+        }
 
         const userRef = doc(db, "users", user.id);
         const userSnapshot = await getDoc(userRef);
