@@ -28,12 +28,14 @@ import {
   faPiedPiperHat,
 } from "@fortawesome/free-brands-svg-icons";
 import BackLights from "./BackLights";
+import { Loading } from "./Loading"; // Import your loading animation
 const Navbar = ({ relative, hidden, classic, bgBlur }) => {
   const navRef = useRef(null);
   const pathname = usePathname();
   const ToggleMode = useToggleMode();
   const { isAdmin, router, user, darkMode } = useAppContext();
   const [openNavigation, setopenNavigation] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const toggleNavigation = () => {
     if (openNavigation) {
@@ -45,7 +47,12 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
     }
   };
 
-  const handleClick = () => {
+  const handleClick = (url) => {
+    setLoading(true);
+    window.location.href = url;
+  };
+
+  const handleLinkClick = () => {
     if (!openNavigation) return;
 
     setopenNavigation(false);
@@ -62,120 +69,123 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
     }
   }, [darkMode]);
 
-  // if (adminLoading) {
-  //   return <Loading />
-  // }
   return (
-    <div
-      className={`
+    <>
+      {loading && <Loading />}
+      <div
+        className={`
         ${relative ? "relative" : "fixed"} ${hidden ? "hidden" : "block"} ${
-        classic ? "border-black" : ""
-      } ${
-        bgBlur ? "backdrop-blur-xl border-b border-black" : ""
-      } w-full top-0 left-0 right-0 z-50`}
-    >
-      <div className="flex items-center px-5 sm:px-10 lg:px-[75px] xl:px-40 max-lg:py-4">
-        <a className="flex flex-row items-center w-[12rem]" href="/">
-          {/* <Image src={brainwave} alt="Brainwave Logo" width={190} height={40} /> */}
-          <div className="max-w-2xl">
-            <FontAwesomeIcon
-              className="mr-3 text-orange-400"
-              icon={faFireFlameCurved}
-              size="2xl"
-            />
-          </div>
-          <h1
+          classic ? "border-black" : ""
+        } ${
+          bgBlur ? "backdrop-blur-xl border-b border-black" : ""
+        } w-full top-0 left-0 right-0 z-50`}
+      >
+        <div className="flex items-center px-5 sm:px-10 lg:px-[75px] xl:px-40 max-lg:py-4">
+          <a className="flex flex-row items-center w-[12rem]" href="/">
+            {/* <Image src={brainwave} alt="Brainwave Logo" width={190} height={40} /> */}
+            <div className="max-w-2xl">
+              <FontAwesomeIcon
+                className="mr-3 text-orange-400"
+                icon={faFireFlameCurved}
+                size="2xl"
+              />
+            </div>
+            <h1
+              className={`${
+                darkMode ? "text-fill-hover-dark" : "text-fill-hover"
+              } tracking-wider text-2xl font-bold font-serif`}
+              data-text="Lumira"
+            >
+              Lumira
+            </h1>
+          </a>
+          <nav
+            ref={navRef}
             className={`${
-              darkMode ? "text-fill-hover-dark" : "text-fill-hover"
-            } tracking-wider text-2xl font-bold font-serif`}
-            data-text="Lumira"
+              openNavigation ? "flex" : "hidden"
+            } fixed left-0 right-0 bottom-0 top-[5rem] bg-n-8 lg:static lg:flex lg:mx-auto lg:bg-transparent`}
           >
-            Lumira
-          </h1>
-        </a>
-        <nav
-          ref={navRef}
-          className={`${
-            openNavigation ? "flex" : "hidden"
-          } fixed left-0 right-0 bottom-0 top-[5rem] bg-n-8 lg:static lg:flex lg:mx-auto lg:bg-transparent`}
-        >
-          <div className="relative z-2 flex flex-col items-center justify-center lg:flex-row m-auto">
-            {navigation.map((item) => (
-              <a
-                key={item.id}
-                href={item.url}
-                onClick={handleClick}
-                className={`block uppercase relative font-ubuntu text-xl text-n-1 transition-colors cursor-pointer ${
-                  item.onlyMobile ? "lg:hidden" : ""
-                } ${
-                  item.url === pathname
-                    ? "z-2 lg:text-orange-500"
-                    : darkMode
-                    ? "lg:text-n-1"
-                    : "lg:text-neutral-950"
-                } px-6 py-6 md:py-8 lg:mr-2 lg:text-sm lg:font-semibold lg:leading-5  lg:hover:text-orange-500 xl:px-10`}
-              >
-                {item.clerk ? (
-                  user ? (
-                    <SignOutButton />
+            <div className="relative z-2 flex flex-col items-center justify-center lg:flex-row m-auto">
+              {navigation.map((item) => (
+                <a
+                  key={item.id}
+                  href={item.url}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleClick(item.url);
+                  }}
+                  className={`block uppercase relative font-ubuntu text-xl text-n-1 transition-colors cursor-pointer ${
+                    item.onlyMobile ? "lg:hidden" : ""
+                  } ${
+                    item.url === pathname
+                      ? "z-2 lg:text-orange-500"
+                      : darkMode
+                      ? "lg:text-n-1"
+                      : "lg:text-neutral-950"
+                  } px-6 py-6 md:py-8 lg:mr-2 lg:text-sm lg:font-semibold lg:leading-5  lg:hover:text-orange-500 xl:px-10`}
+                >
+                  {item.clerk ? (
+                    user ? (
+                      <SignOutButton />
+                    ) : (
+                      <SignInButton mode="modal">{item.title}</SignInButton>
+                    )
+                  ) : item.admin ? (
+                    isAdmin ? (
+                      <p className="border border-orange-500 rounded-[1rem] p-2">
+                        {item.title}
+                      </p>
+                    ) : null
                   ) : (
-                    <SignInButton mode="modal">{item.title}</SignInButton>
-                  )
-                ) : item.admin ? (
-                  isAdmin ? (
-                    <p className="border border-orange-500 rounded-[1rem] p-2">
-                      {item.title}
-                    </p>
-                  ) : null
-                ) : (
-                  item.title
-                )}
-              </a>
-            ))}
-          </div>
-          <HamburgerMenu />
-        </nav>
-        {/* <a
+                    item.title
+                  )}
+                </a>
+              ))}
+            </div>
+            <HamburgerMenu />
+          </nav>
+          {/* <a
           href="#signup"
           className="button hidden mr-8 text-n-1/50 transition-colors hover:text-n-1 lg:block"
         >
           New Account
         </a> */}
-        {darkMode ? (
-          <button
-            onClick={ToggleMode}
-            className="max-w-2xl cursor-pointer Z-10"
+          {darkMode ? (
+            <button
+              onClick={ToggleMode}
+              className="max-w-2xl cursor-pointer Z-10"
+            >
+              <FontAwesomeIcon
+                className="mr-3 text-white"
+                icon={faMoon}
+                size="2xl"
+              />
+            </button>
+          ) : (
+            <button
+              onClick={ToggleMode}
+              className="max-w-2xl cursor-pointer Z-10"
+            >
+              <FontAwesomeIcon
+                className="mr-3 text-orange-500"
+                icon={faSun}
+                size="2xl"
+              />
+            </button>
+          )}
+          <Button clerk user={user} router={router} className="hidden lg:flex">
+            Sign IN
+          </Button>
+          <Button
+            onclick={toggleNavigation}
+            className="ml-auto lg:hidden"
+            px="px-3"
           >
-            <FontAwesomeIcon
-              className="mr-3 text-white"
-              icon={faMoon}
-              size="2xl"
-            />
-          </button>
-        ) : (
-          <button
-            onClick={ToggleMode}
-            className="max-w-2xl cursor-pointer Z-10"
-          >
-            <FontAwesomeIcon
-              className="mr-3 text-orange-500"
-              icon={faSun}
-              size="2xl"
-            />
-          </button>
-        )}
-        <Button clerk user={user} router={router} className="hidden lg:flex">
-          Sign IN
-        </Button>
-        <Button
-          onclick={toggleNavigation}
-          className="ml-auto lg:hidden"
-          px="px-3"
-        >
-          <MenuSvg openNavigation={openNavigation} />
-        </Button>
+            <MenuSvg openNavigation={openNavigation} />
+          </Button>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
