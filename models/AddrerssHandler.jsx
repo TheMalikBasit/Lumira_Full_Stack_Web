@@ -4,35 +4,35 @@ import { useAppContext } from "@/Context/AppContext";
 import { useUser } from "@clerk/nextjs";
 import toast from "react-hot-toast";
 
-export const AddAddress = (user, isSignedIn, newAddress) => {
+export const AddShippingInfo = (user, isSignedIn, newShippingInfo) => {
   return async () => {
     try {
       if (!user) return;
       const userRef = doc(db, "users", user.id);
       const userSnapshot = await getDoc(userRef);
 
-      let updatedAddresses = [];
+      let updatedShippingInfo = [];
       if (userSnapshot.exists() && isSignedIn) {
         const userData = userSnapshot.data();
-        const prevAddresses = Array.isArray(userData.address)
-          ? userData.address
+        const prevShippingInfo = Array.isArray(userData.ShippingInfo)
+          ? userData.ShippingInfo
           : [];
-        // Assign addressIndex as length + 1
-        const addressIndex = prevAddresses.length + 1;
-        const addressWithIndex = { ...newAddress, addressIndex };
-        updatedAddresses = [...prevAddresses, addressWithIndex];
+        // Assign infoIndex as length + 1
+        const infoIndex = prevShippingInfo.length + 1;
+        const addressWithIndex = { ...newShippingInfo, infoIndex };
+        updatedShippingInfo = [...prevShippingInfo, addressWithIndex];
         await updateDoc(userRef, {
-          address: updatedAddresses,
+          ShippingInfo: updatedShippingInfo,
         });
       }
-      toast.success("Address added successfully");
+      toast.success("Shipping info added successfully");
     } catch (error) {
-      toast.error("Failed to add address");
+      toast.error("Failed to add shipping info");
     }
   };
 };
 
-export const updateAddressByIndex = (Index, newData) => {
+export const updateShippingInfoByIndex = (Index, newData) => {
   return async () => {
     const { user, isSignedIn } = useUser();
     try {
@@ -41,18 +41,18 @@ export const updateAddressByIndex = (Index, newData) => {
       const userSnapshot = await getDoc(userRef);
       if (userSnapshot.exists() && isSignedIn) {
         const userData = userSnapshot.data();
-        const allAddresses = Array.isArray(userData.address)
-          ? userData.address
+        const allAddresses = Array.isArray(userData.ShippingInfo)
+          ? userData.ShippingInfo
           : [];
         const requiredAddress = allAddresses.find(
-          (addr) => addr.addressIndex === Index
+          (addr) => addr.infoIndex === Index
         );
         const arrayIndex = allAddresses.findIndex(
-          (addr) => addr.addressIndex === Index
+          (addr) => addr.infoIndex === Index
         );
 
         if (arrayIndex === -1) {
-          toast.error("Address not found");
+          toast.error("Shipping info not found");
 
           return;
         }
@@ -73,7 +73,7 @@ export const updateAddressByIndex = (Index, newData) => {
   };
 };
 
-export const fetchAddressByIndex = (Index) => {
+export const fetchShippingInfoByIndex = (Index) => {
   return async () => {
     const { user } = useUser();
     try {
@@ -82,16 +82,16 @@ export const fetchAddressByIndex = (Index) => {
       const userRef = doc(db, "users", user.id);
       const userSnapshot = await getDoc(userRef);
       const userData = userSnapshot.data();
-      const allAddresses = Array.isArray(userData.address)
-        ? userData.address
+      const allAddresses = Array.isArray(userData.ShippingInfo)
+        ? userData.ShippingInfo
         : [];
       const requiredAddress = allAddresses.find(
-        (addr) => addr.addressIndex === Index
+        (addr) => addr.infoIndex === Index
       );
-      toast.success("Address fetched successfully");
+      toast.success("Shipping info fetched successfully");
       return requiredAddress;
     } catch (error) {
-      toast.error("Failed to fetch address");
+      toast.error("Failed to fetch shipping info");
     }
   };
 };

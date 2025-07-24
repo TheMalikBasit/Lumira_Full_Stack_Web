@@ -9,7 +9,7 @@ import { Button } from "@/Components/UI/lumiraButton";
 import { Trash2, Minus, Plus } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquare, faCheckSquare } from "@fortawesome/free-regular-svg-icons";
-
+import toast from "react-hot-toast";
 const RenderCart = () => {
   const {
     products,
@@ -19,7 +19,6 @@ const RenderCart = () => {
     router,
     loading,
     setLoading,
-    removeItemFromCart,
     darkMode,
     localCart,
     addToLocalCart,
@@ -51,26 +50,29 @@ const RenderCart = () => {
     const handleDecrease = () =>
       isLocal
         ? removeFromLocalCart(item.id)
-        : updateCartQuantity(item.itemId, quantity - 1);
-    const handleIncrease = () =>
-      isLocal
-        ? addToLocalCart(item.id)
-        : updateCartQuantity(item.itemId, quantity + 1);
+        : updateCartQuantity(item.id, quantity - 1);
+    const handleIncrease = () => {
+      if (product.availableStock > 0) {
+        isLocal
+          ? addToLocalCart(item.id)
+          : updateCartQuantity(item.id, quantity + 1);
+      } else {
+        toast.error("Item out of stock");
+      }
+    };
     const handleRemove = () =>
-      isLocal
-        ? deleteFromLocalCart(item.id)
-        : updateCartQuantity(item.itemId, 0);
+      isLocal ? deleteFromLocalCart(item.id) : updateCartQuantity(item.id, 0);
     const toggleCheck = () =>
-      isLocal ? toggleLocalItemCheck(item.id) : toggleItemChecked(item.itemId);
+      isLocal ? toggleLocalItemCheck(item.id) : toggleItemChecked(item.id);
 
-    const itemId = isLocal ? item.id : item.itemId;
+    const id = isLocal ? item.id : item.id;
     const features = product.features?.slice(0, 2) || [];
 
     const isInStock = product.availableStock > 0;
     console.log("From RenderCart inStock: ", isInStock);
     return (
       <Card
-        key={itemId}
+        key={id}
         className="border-n-border/50 backdrop-blur-sm bg-n-card/80 hover:bg-n-card/90 hover:shadow-elegant transition-all duration-200 hover-lift animate-fade-in relative overflow-hidden group"
       >
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-n-primary via-n-lumira_coral to-n-lumira_salmon" />
@@ -173,7 +175,7 @@ const RenderCart = () => {
                     QTY
                   </span>
                   <span className="text-2xl font-bold text-n-foreground">
-                    {quantity}
+                    {isInStock ? quantity : 0}
                   </span>
                 </div>
                 <Button
@@ -208,7 +210,7 @@ const RenderCart = () => {
       ) : (
         cartToRender.map((item) => {
           const product = products.find(
-            (p) => p.id === (isSignedIn ? item.itemId : item.id)
+            (p) => p.id === (isSignedIn ? item.id : item.id)
           );
           if (!product) return null;
           return renderProductCard(item, product, !isSignedIn);

@@ -128,7 +128,7 @@ const OrderSummaryClassic = () => {
       </CardContent>
 
       <CardFooter className="flex flex-col gap-5 p-8 pt-0">
-        <Link href="/checkout" className="w-full">
+        <Link href="/my-checkout" className="w-full">
           <Button className="w-full bg-gradient-warm hover:shadow-glow transition-all duration-200 text-lg py-8 rounded-xl font-bold tracking-wide hover-lift relative overflow-hidden group">
             <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
             <span className="relative z-10">Proceed to Checkout</span>

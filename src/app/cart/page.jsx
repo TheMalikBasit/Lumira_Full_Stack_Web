@@ -135,7 +135,6 @@
 import React from "react";
 import { useEffect } from "react";
 import { assets } from "@/assets/assets";
-import OrderSummary from "@/components/OrderSummary";
 import Navbar from "@/components/Navbar";
 import { useAppContext } from "../../Context/AppContext";
 import Image from "next/image";

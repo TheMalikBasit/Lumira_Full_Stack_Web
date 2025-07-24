@@ -33,14 +33,14 @@ export const AppContextProvider = (props) => {
   const [loading, setLoading] = useState(true);
   const [adminLoading, setAdminLoading] = useState(true);
   const [darkMode, setdarkMode] = useState(false);
-  const addToCart = async (itemId) => {
+  const addToCart = async (id) => {
     let cartData = structuredClone(cartItems);
 
-    let itemIndex = cartData.findIndex((item) => item.itemId === itemId);
+    let itemIndex = cartData.findIndex((item) => item.id === id);
     if (itemIndex !== -1) {
       cartData[itemIndex].quantity += 1;
     } else {
-      cartData.push({ itemId, quantity: 1, checked: true });
+      cartData.push({ id, quantity: 1, checked: true });
     }
 
     setCartItems(cartData);
@@ -55,14 +55,14 @@ export const AppContextProvider = (props) => {
     }
   };
 
-  const updateCartQuantity = async (itemId, quantity) => {
+  const updateCartQuantity = async (id, quantity) => {
     let cartData = structuredClone(cartItems);
 
     if (quantity === 0) {
-      cartData = cartData.filter((item) => item.itemId !== itemId);
+      cartData = cartData.filter((item) => item.id !== id);
     } else {
       cartData = cartData.map((item) =>
-        item.itemId === itemId ? { ...item, quantity } : item
+        item.id === id ? { ...item, quantity } : item
       );
     }
 
@@ -78,11 +78,19 @@ export const AppContextProvider = (props) => {
     }
   };
 
-  const toggleItemChecked = async (itemId) => {
+  const toggleItemChecked = async (id) => {
     let cartData = structuredClone(cartItems);
 
     cartData = cartData.map((item) =>
-      item.itemId === itemId ? { ...item, checked: !item.checked } : item
+      item.id === id
+        ? {
+            ...item,
+            checked:
+              products.find((p) => p.id === item.id)?.availableStock > 0
+                ? !item.checked
+                : false,
+          }
+        : item
     );
 
     setCartItems(cartData);
@@ -90,16 +98,17 @@ export const AppContextProvider = (props) => {
     if (user) {
       try {
         await UpdateCart({ userId: user.id, cartDataProp: cartData });
-
-        toast.success("Cart Updated");
+        products.find((p) => p.id === id).availableStock > 0
+          ? toast.success("Cart Updated")
+          : toast.error("Item out of stock");
       } catch (error) {
         toast.error("Failed to update cart");
       }
     }
   };
 
-  const removeItemFromCart = async (itemId) => {
-    let cartData = cartItems.filter((item) => item.itemId !== itemId);
+  const removeItemFromCart = async (id) => {
+    let cartData = cartItems.filter((item) => item.id !== id);
 
     setCartItems(cartData);
 
@@ -123,7 +132,7 @@ export const AppContextProvider = (props) => {
     return cartItems
       .filter((item) => item.checked)
       .reduce((total, item) => {
-        let product = products.find((product) => product.id === item.itemId);
+        let product = products.find((product) => product.id === item.id);
         return total + product.price * item.quantity;
       }, 0);
   };
@@ -132,7 +141,7 @@ export const AppContextProvider = (props) => {
     const syncCart = () => setLocalCart(fetchLocalCart());
     window.addEventListener("storage", syncCart);
     return () => window.removeEventListener("storage", syncCart);
-  }, [products]);
+  }, [products, user]);
 
   const addToLocalCart = (id) => {
     addLocalProducts({ ID: id });
@@ -156,7 +165,15 @@ export const AppContextProvider = (props) => {
 
   const toggleLocalItemCheck = (id) => {
     const updatedCart = localCart.map((item) =>
-      item.id === id ? { ...item, checked: !item.checked } : item
+      item.id === id
+        ? {
+            ...item,
+            checked:
+              products.find((p) => p.id === item.id)?.availableStock > 0
+                ? !item.checked
+                : false,
+          }
+        : item
     );
     setLocalCart(updatedCart);
 

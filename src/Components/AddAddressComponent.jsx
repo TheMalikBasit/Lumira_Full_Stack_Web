@@ -1,16 +1,20 @@
 "use client";
-import { AddAddress } from "../../models/AddrerssHandler";
+import { AddShippingInfo } from "../../models/AddrerssHandler";
 import { useState } from "react";
 import ButtonGradient from "@/assets/svg/ButtonGradient";
 import Button from "./Button";
 import { useUser } from "@clerk/nextjs";
 const AddAddressComponent = ({ onClose }) => {
   const [address, setaddress] = useState({
+    FirstName: "",
+    LastName: "",
+    Email: "",
+    Phone: "",
+    FullAddress: "",
     Country: "",
     State: "",
     City: "",
-    Area: "",
-    House: "",
+    ZipCode,
     Hints: "",
   });
 
@@ -25,7 +29,7 @@ const AddAddressComponent = ({ onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await AddAddress(user, isSignedIn, address)();
+    await AddShippingInfo(user, isSignedIn, address)();
   };
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">

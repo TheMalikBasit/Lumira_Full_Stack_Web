@@ -92,7 +92,7 @@ const Product = () => {
 
   if (!productData) return <LottieLoading />;
 
-  const cartProduct = cartItems.find((item) => item.itemId === id);
+  const cartProduct = cartItems.find((item) => item.id === id);
   const cartQuantity = cartProduct?.quantity || 0;
 
   const nextImage = () => {
@@ -316,10 +316,7 @@ const Product = () => {
                     <div className="flex items-center border rounded min-w-[120px] py-2 px-2 justify-between">
                       <button
                         onClick={() =>
-                          updateCartQuantity(
-                            cartProduct.itemId,
-                            cartQuantity - 1
-                          )
+                          updateCartQuantity(cartProduct.id, cartQuantity - 1)
                         }
                       >
                         -
@@ -327,10 +324,7 @@ const Product = () => {
                       <span>{cartQuantity}</span>
                       <button
                         onClick={() =>
-                          updateCartQuantity(
-                            cartProduct.itemId,
-                            cartQuantity + 1
-                          )
+                          updateCartQuantity(cartProduct.id, cartQuantity + 1)
                         }
                       >
                         +
