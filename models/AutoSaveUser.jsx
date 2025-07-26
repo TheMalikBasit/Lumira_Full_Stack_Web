@@ -41,9 +41,10 @@ const AutoSaveUser = () => {
         } else {
           const userData = userSnapshot.data();
           let cartData = Array.isArray(userData.cart) ? userData.cart : [];
-          let userAddress = Array.isArray(userData.address)
-            ? userData.address
+          let userShippingInfo = Array.isArray(userData.ShippingInfo)
+            ? userData.ShippingInfo
             : [];
+
           let mode = userData.darkMode;
 
           setdarkMode(mode);
@@ -58,12 +59,12 @@ const AutoSaveUser = () => {
             username: user.fullName || "",
             email: user.primaryEmailAddress.emailAddress,
             imageUrl: user.imageUrl,
-            address: userAddress,
+            ShippingInfo: userShippingInfo,
           });
 
           setCartItems(cartData);
           console.log("Updated cart data: ", cartData);
-          console.log("user Address: ", userAddress);
+          console.log("User userShippingInfo: ", userShippingInfo);
           setLoading(false);
         }
       } catch (error) {
