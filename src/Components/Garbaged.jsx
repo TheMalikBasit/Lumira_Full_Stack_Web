@@ -1149,3 +1149,134 @@
 // };
 
 // export default sampleCart;
+
+// CHECKOUT FORM COMPONENT
+//Billing Information
+{
+  /* <Card
+                className="border-n-border/50 backdrop-blur-sm bg-n-card/80 hover:bg-n-card/90 hover:shadow-elegant transition-all duration-500 hover-lift animate-fade-in relative overflow-hidden group"
+                style={{ animationDelay: "200ms" }}
+              >
+                
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-n-primary via-n-lumira_coral to-n-lumira_salmon"></div>
+                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-n-lumira_coral/5 to-transparent rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                <CardHeader className="flex flex-row items-center gap-4 bg-gradient-to-r from-n-lumira_coral/5 via-transparent to-n-primary/5 relative">
+                  <div className="p-3 rounded-xl bg-n-lumira_coral/20 group-hover:bg-n-lumira_coral/30 transition-colors duration-300">
+                    <User className="h-6 w-6 text-n-lumira_coral" />
+                  </div>
+                  <CardTitle className="text-n-foreground text-2xl font-bold">
+                    Billing Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6 p-8">
+                  <div className="flex items-center space-x-3">
+                    <Checkbox
+                      id="sameAsShipping"
+                      checked={sameAsShipping}
+                      onCheckedChange={setSameAsShipping}
+                      className="data-[state=checked]:bg-n-primary data-[state=checked]:border-n-primary"
+                    />
+                    <Label
+                      htmlFor="sameAsShipping"
+                      className="text-sm font-medium cursor-pointer"
+                    >
+                      Same as shipping address
+                    </Label>
+                  </div>
+
+                  {!sameAsShipping && (
+                    <div className="space-y-6 animate-fade-in">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label
+                            htmlFor="billingFirstName"
+                            className="text-sm font-medium"
+                          >
+                            First Name
+                          </Label>
+                          <Input
+                            id="billingFirstName"
+                            placeholder="John"
+                            className="focus:ring-2 focus:ring-n-primary/20 focus:border-n-primary transition-all duration-300"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label
+                            htmlFor="billingLastName"
+                            className="text-sm font-medium"
+                          >
+                            Last Name
+                          </Label>
+                          <Input
+                            id="billingLastName"
+                            placeholder="Doe"
+                            className="focus:ring-2 focus:ring-n-primary/20 focus:border-n-primary transition-all duration-300"
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label
+                          htmlFor="billingAddress"
+                          className="text-sm font-medium"
+                        >
+                          Address
+                        </Label>
+                        <Input
+                          id="billingAddress"
+                          placeholder="123 Main Street"
+                          className="focus:ring-2 focus:ring-n-primary/20 focus:border-n-primary transition-all duration-300"
+                        />
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                          <Label
+                            htmlFor="billingCity"
+                            className="text-sm font-medium"
+                          >
+                            City
+                          </Label>
+                          <Input
+                            id="billingCity"
+                            placeholder="New York"
+                            className="focus:ring-2 focus:ring-n-primary/20 focus:border-n-primary transition-all duration-300"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label
+                            htmlFor="billingState"
+                            className="text-sm font-medium"
+                          >
+                            State
+                          </Label>
+                          <Select>
+                            <SelectTrigger className="focus:ring-2 focus:ring-n-primary/20 focus:border-n-primary transition-all duration-300">
+                              <SelectValue placeholder="Select state" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="ny">New York</SelectItem>
+                              <SelectItem value="ca">California</SelectItem>
+                              <SelectItem value="tx">Texas</SelectItem>
+                              <SelectItem value="fl">Florida</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label
+                            htmlFor="billingZipCode"
+                            className="text-sm font-medium"
+                          >
+                            ZIP Code
+                          </Label>
+                          <Input
+                            id="billingZipCode"
+                            placeholder="10001"
+                            className="focus:ring-2 focus:ring-n-primary/20 focus:border-n-primary transition-all duration-300"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card> */
+}

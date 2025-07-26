@@ -22,7 +22,8 @@ import { useAppContext } from "@/Context/AppContext";
 import Payment from "./Payment";
 import CheckOutSummary from "./CheckOutSummary";
 import { Country, State, City } from "country-state-city";
-
+import { Tooltip } from "react-tooltip";
+import "react-tooltip/dist/react-tooltip.css";
 const Checkout = () => {
   const [orderItems] = useState([
     {
@@ -60,12 +61,24 @@ const Checkout = () => {
   const [filteredCities, setFilteredCities] = useState([]);
 
   const [countryName, setCountryName] = useState("");
+  const [stateName, setStateName] = useState("");
+  const [cityName, setCityName] = useState("");
 
   useEffect(() => {
     if (selectedCountry) {
       setCountryName(selectedCountry.name);
+      if (selectedState) {
+        setStateName(selectedState.name);
+      } else {
+        setStateName("");
+      }
+      if (selectedCity) {
+        setCityName(selectedCity);
+      } else {
+        setCityName("");
+      }
     }
-  }, [selectedCountry]);
+  }, [selectedCountry, selectedState, selectedCity]);
   const countryRef = useRef(null);
   const stateRef = useRef(null);
   const cityRef = useRef(null);
@@ -169,21 +182,36 @@ const Checkout = () => {
   const shipping = subtotal > 200 ? 0 : 15;
   const tax = subtotal * 0.08;
   const total = subtotal + shipping + tax;
+
   console.log("Selected Country:", selectedCountry);
   console.log("Selected Country Name:", countryName);
+  console.log("Selected State:", selectedState);
+  console.log("Selected State Name:", stateName);
+  console.log("Selected City:", selectedCity);
+  console.log("Selected City Name:", cityName);
+
+  useEffect(() => {
+    setUserInfo((prev) => ({
+      ...prev,
+      Country: countryName,
+      State: stateName,
+      City: cityName,
+    }));
+  }, [countryName, stateName, cityName]);
+
   const [getUserInfo, setUserInfo] = useState({
     FirstName: "",
     LastName: "",
     Email: "",
     Phone: "",
     FullAddress: "",
-    Country: countryName,
-    State: selectedState,
-    City: selectedCity,
-    ZipCode: 0,
-    Hints: "",
+    Country: "",
+    State: "",
+    City: "",
+    ZipCode: "",
   });
 
+  console.log("User Info from checkout component:", getUserInfo);
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -353,30 +381,54 @@ const Checkout = () => {
                         className="focus:ring-2 focus:ring-n-primary/20 focus:border-n-primary transition-all duration-300"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="address" className="text-sm font-medium">
-                        Address
-                      </Label>
-                      <Input
-                        id="address"
-                        placeholder="123 Main Street"
-                        value={getUserInfo.FullAddress}
-                        onChange={(e) =>
-                          setUserInfo({
-                            ...getUserInfo,
-                            FullAddress: e.target.value,
-                          })
-                        }
-                        className="focus:ring-2 focus:ring-n-primary/20 focus:border-n-primary transition-all duration-300"
-                      />
+                    <div className="flex flex-col md:flex-row gap-4">
+                      <div className="space-y-2 w-full">
+                        <Label
+                          htmlFor="address"
+                          className="text-sm font-medium"
+                        >
+                          Full Address
+                        </Label>
+                        <Input
+                          id="address"
+                          placeholder="123 Main Street"
+                          value={getUserInfo.FullAddress}
+                          onChange={(e) =>
+                            setUserInfo({
+                              ...getUserInfo,
+                              FullAddress: e.target.value,
+                            })
+                          }
+                          className="focus:ring-2 focus:ring-n-primary/20 focus:border-n-primary transition-all duration-300"
+                        />
+                      </div>
+                      <div className="space-y-2 min-w-5">
+                        <Label className="text-sm font-medium">Zip Code</Label>
+
+                        <Input
+                          type="number"
+                          required
+                          placeholder="10001"
+                          value={getUserInfo.ZipCode}
+                          onChange={(e) =>
+                            setUserInfo({
+                              ...getUserInfo,
+                              ZipCode: e.target.value,
+                            })
+                          }
+                          className="no-spinner focus:ring-2 focus:ring-n-primary/20 focus:border-n-primary transition-all duration-300"
+                        />
+                      </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {/* Country div     */}
-                      <div ref={countryRef} className="relative">
+                      <div ref={countryRef} className="relative space-y-2">
                         <Label className="text-sm font-medium">Country</Label>
                         <Input
                           type="text"
-                          placeholder="Select country"
+                          placeholder={
+                            countryName ? countryName : "Select country"
+                          }
                           value={queryCountry}
                           onChange={handleCountryInput}
                           onFocus={() => setDropdownCountry(true)}
@@ -396,185 +448,101 @@ const Checkout = () => {
                           </ul>
                         )}
                       </div>
-                    </div>
+                      {/* State */}
+                      <div ref={stateRef} className="relative space-y-3">
+                        <div className="flex items-center gap-2">
+                          <Label className="text-sm font-medium">State</Label>
+                          {!selectedCountry && (
+                            <>
+                              <span
+                                data-tooltip-id="select-country-tooltip"
+                                data-tooltip-content="Select a Country First"
+                                className="cursor-help text-sm text-blue-500"
+                              >
+                                ?
+                              </span>
+                              <Tooltip id="select-country-tooltip" />
+                            </>
+                          )}
+                        </div>
+                        <Input
+                          type="text"
+                          placeholder="Select state"
+                          value={queryState}
+                          onChange={handleStateInput}
+                          onFocus={
+                            selectedCountry
+                              ? () => setDropdownState(true)
+                              : null
+                          }
+                          className={`${
+                            selectedCountry ? "opacity-100" : "opacity-50"
+                          } focus:ring-2 focus:ring-n-primary/20 focus:border-n-primary transition-all duration-300`}
+                          disabled={!selectedCountry}
+                        />
+                        {dropdownState && (
+                          <ul className="absolute bottom-full z-10 w-full max-h-60 overflow-auto ring-2 ring-n-primary/20 border-n-primary transition-all duration-300 bg-white border rounded shadow [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+                            {filteredStates.map((state) => (
+                              <li
+                                key={state.isoCode}
+                                onClick={() => handleSelectState(state)}
+                                className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                              >
+                                {state.name}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                      {/* City */}
 
-                    {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="city" className="text-sm font-medium">
-                        City
-                      </Label>
-                      <Input
-                        id="city"
-                        placeholder="New York"
-                        value={getUserInfo.City}
-                        onChange={(e) => setUserInfo({...getUserInfo, City: e.target.value })}
-                        className="focus:ring-2 focus:ring-n-primary/20 focus:border-n-primary transition-all duration-300"
-                      />
+                      <div ref={cityRef} className="relative space-y-2">
+                        <Label className="text-sm font-medium">City</Label>
+                        {!selectedState && (
+                          <>
+                            <span
+                              data-tooltip-id="select-state-tooltip"
+                              data-tooltip-content="Select a State First"
+                              className="cursor-help text-sm text-blue-500"
+                            >
+                              ?
+                            </span>
+                            <Tooltip id="select-state-tooltip" />
+                          </>
+                        )}
+
+                        <Input
+                          type="text"
+                          placeholder="Select city"
+                          value={queryCity}
+                          onChange={handleCityInput}
+                          onFocus={() => setDropdownCity(true)}
+                          className={`${
+                            selectedState ? "opacity-100" : "opacity-50"
+                          } focus:ring-2 focus:ring-n-primary/20 focus:border-n-primary transition-all duration-300`}
+                          disabled={!selectedState}
+                        />
+                        {dropdownCity && (
+                          <ul className="absolute bottom-full z-10 w-full max-h-60 overflow-auto ring-2 ring-n-primary/20 border-n-primary transition-all duration-300 bg-white border rounded shadow [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+                            {filteredCities.map((city) => (
+                              <li
+                                key={city.name}
+                                onClick={() => handleSelectCity(city)}
+                                className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                              >
+                                {city.name}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="state" className="text-sm font-medium">
-                        State
-                      </Label>
-                      <Select>
-                        <SelectTrigger className="focus:ring-2 focus:ring-n-primary/20 focus:border-n-primary transition-all duration-300">
-                          <SelectValue placeholder="Select state" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="ny">New York</SelectItem>
-                          <SelectItem value="ca">California</SelectItem>
-                          <SelectItem value="tx">Texas</SelectItem>
-                          <SelectItem value="fl">Florida</SelectItem>
-                        </SelectContent>
-                      </Select> 
-                      <input type="text"
-                      placeholder="Enter State"
-                      value={getUserInfo.State}
-                      onChange={(e) => setUserInfo({...getUserInfo, State: e.target.value })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="zipCode" className="text-sm font-medium">
-                        ZIP Code
-                      </Label>
-                      <Input
-                        id="zipCode"
-                        placeholder="10001"
-                        className="focus:ring-2 focus:ring-n-primary/20 focus:border-n-primary transition-all duration-300"
-                      />
-                    </div>
-                  </div> */}
+                    <Button className={"text-center w-full mt-3"}>
+                      Add Shipment Infomation
+                    </Button>
                   </form>
                 </CardContent>
               </Card>
-
-              {/* Billing Information */}
-              {/* <Card
-                className="border-n-border/50 backdrop-blur-sm bg-n-card/80 hover:bg-n-card/90 hover:shadow-elegant transition-all duration-500 hover-lift animate-fade-in relative overflow-hidden group"
-                style={{ animationDelay: "200ms" }}
-              >
-                
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-n-primary via-n-lumira_coral to-n-lumira_salmon"></div>
-                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-n-lumira_coral/5 to-transparent rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                <CardHeader className="flex flex-row items-center gap-4 bg-gradient-to-r from-n-lumira_coral/5 via-transparent to-n-primary/5 relative">
-                  <div className="p-3 rounded-xl bg-n-lumira_coral/20 group-hover:bg-n-lumira_coral/30 transition-colors duration-300">
-                    <User className="h-6 w-6 text-n-lumira_coral" />
-                  </div>
-                  <CardTitle className="text-n-foreground text-2xl font-bold">
-                    Billing Information
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6 p-8">
-                  <div className="flex items-center space-x-3">
-                    <Checkbox
-                      id="sameAsShipping"
-                      checked={sameAsShipping}
-                      onCheckedChange={setSameAsShipping}
-                      className="data-[state=checked]:bg-n-primary data-[state=checked]:border-n-primary"
-                    />
-                    <Label
-                      htmlFor="sameAsShipping"
-                      className="text-sm font-medium cursor-pointer"
-                    >
-                      Same as shipping address
-                    </Label>
-                  </div>
-
-                  {!sameAsShipping && (
-                    <div className="space-y-6 animate-fade-in">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label
-                            htmlFor="billingFirstName"
-                            className="text-sm font-medium"
-                          >
-                            First Name
-                          </Label>
-                          <Input
-                            id="billingFirstName"
-                            placeholder="John"
-                            className="focus:ring-2 focus:ring-n-primary/20 focus:border-n-primary transition-all duration-300"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label
-                            htmlFor="billingLastName"
-                            className="text-sm font-medium"
-                          >
-                            Last Name
-                          </Label>
-                          <Input
-                            id="billingLastName"
-                            placeholder="Doe"
-                            className="focus:ring-2 focus:ring-n-primary/20 focus:border-n-primary transition-all duration-300"
-                          />
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label
-                          htmlFor="billingAddress"
-                          className="text-sm font-medium"
-                        >
-                          Address
-                        </Label>
-                        <Input
-                          id="billingAddress"
-                          placeholder="123 Main Street"
-                          className="focus:ring-2 focus:ring-n-primary/20 focus:border-n-primary transition-all duration-300"
-                        />
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="space-y-2">
-                          <Label
-                            htmlFor="billingCity"
-                            className="text-sm font-medium"
-                          >
-                            City
-                          </Label>
-                          <Input
-                            id="billingCity"
-                            placeholder="New York"
-                            className="focus:ring-2 focus:ring-n-primary/20 focus:border-n-primary transition-all duration-300"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label
-                            htmlFor="billingState"
-                            className="text-sm font-medium"
-                          >
-                            State
-                          </Label>
-                          <Select>
-                            <SelectTrigger className="focus:ring-2 focus:ring-n-primary/20 focus:border-n-primary transition-all duration-300">
-                              <SelectValue placeholder="Select state" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="ny">New York</SelectItem>
-                              <SelectItem value="ca">California</SelectItem>
-                              <SelectItem value="tx">Texas</SelectItem>
-                              <SelectItem value="fl">Florida</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="space-y-2">
-                          <Label
-                            htmlFor="billingZipCode"
-                            className="text-sm font-medium"
-                          >
-                            ZIP Code
-                          </Label>
-                          <Input
-                            id="billingZipCode"
-                            placeholder="10001"
-                            className="focus:ring-2 focus:ring-n-primary/20 focus:border-n-primary transition-all duration-300"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card> */}
-
               {/* Payment Information */}
               <Payment />
             </div>

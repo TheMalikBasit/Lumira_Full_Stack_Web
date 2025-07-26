@@ -4,7 +4,8 @@ import { useAppContext } from "@/Context/AppContext";
 import { useUser } from "@clerk/nextjs";
 import toast from "react-hot-toast";
 
-export const AddShippingInfo = (user, isSignedIn, newShippingInfo) => {
+export const AddShippingInfo = (newShippingInfo) => {
+  const { user, isSignedIn } = useUser;
   return async () => {
     try {
       if (!user) return;

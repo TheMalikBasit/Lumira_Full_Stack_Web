@@ -30,7 +30,7 @@ const AutoSaveUser = () => {
             email: user.primaryEmailAddress.emailAddress,
             imageUrl: user.imageUrl,
             address: [],
-            orders: [],
+            ordersHistory: [],
             isAdmin: false,
             cart: [],
             darkMode: false,
@@ -73,8 +73,6 @@ const AutoSaveUser = () => {
 
     saveUserToFirestore();
   }, [isSignedIn, user]);
-
-  return null;
 };
 
 export default AutoSaveUser;
