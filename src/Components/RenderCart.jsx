@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { useAppContext } from "@/Context/AppContext";
 import { useUser } from "@clerk/nextjs";
-import { LoadingDiv } from "@/Components/Loading";
+import { LoadingDiv, LottieLoading } from "@/Components/Loading";
 import Image from "next/image";
 import { Card, CardContent } from "@/Components/UI/card";
 import { Button } from "@/Components/UI/lumiraButton";
@@ -42,7 +42,7 @@ const RenderCart = () => {
     document.body.style.backgroundColor = darkMode ? "#000000" : "#FFFFF4";
   }, [cartItems, isSignedIn, localCart]);
 
-  if (loading) return <LoadingDiv />;
+  if (loading) return <LottieLoading />;
 
   // ✅ Only the updated portion of renderProductCard is shown
   const renderProductCard = (item, product, isLocal = false) => {

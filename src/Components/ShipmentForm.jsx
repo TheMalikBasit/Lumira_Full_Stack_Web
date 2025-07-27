@@ -2,7 +2,15 @@
 import { useState, useRef, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import { AddShippingInfo } from "../../models/AddrerssHandler";
-import { ArrowLeft, CreditCard, Lock, MapPin, User } from "lucide-react";
+import {
+  ArrowLeft,
+  CreditCard,
+  Lock,
+  MapPin,
+  User,
+  CrossIcon,
+  DeleteIcon,
+} from "lucide-react";
 import { Button } from "@/Components/UI/lumiraButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/UI/card";
 import { Input } from "@/Components/UI/input";
@@ -25,7 +33,7 @@ import { Country, State, City } from "country-state-city";
 import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
 import ShipmentInfoDB from "./ShipmentInfoDB";
-const ShipmentForm = () => {
+const ShipmentForm = ({ onReload, handleToggle }) => {
   const { router, products, cartItems, localCart } = useAppContext();
   const { user, isSignedIn } = useUser();
 
@@ -207,6 +215,12 @@ const ShipmentForm = () => {
         <CardTitle className="text-n-foreground text-2xl font-bold">
           Shipping Information
         </CardTitle>
+        <div
+          onClick={handleToggle}
+          className="cursor-pointer ml-auto p-3 rounded-xl bg-n-primary/20 group-hover:bg-n-primary/30 transition-colors duration-300"
+        >
+          <DeleteIcon className="h-6 w-6 text-n-primary" />
+        </div>
       </CardHeader>
       <CardContent className="space-y-6 p-8">
         <form onSubmit={handleSubmit}>
@@ -423,9 +437,17 @@ const ShipmentForm = () => {
               )}
             </div>
           </div>
-          <Button className={"text-center w-full mt-3"} type="submit">
+          {/* <div onClick={{ onReload, handleToggle }}> */}
+          <Button
+            onClick={() => {
+              onReload(), handleToggle();
+            }}
+            className={"text-center w-full mt-3"}
+            type="submit"
+          >
             Add Shipment Infomation
           </Button>
+          {/* </div> */}
         </form>
       </CardContent>
     </Card>

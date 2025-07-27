@@ -28,14 +28,14 @@ import {
   faPiedPiperHat,
 } from "@fortawesome/free-brands-svg-icons";
 import BackLights from "./BackLights";
-import { Loading } from "./Loading"; // Import your loading animation
+import { Loading, LottieLoading } from "./Loading"; // Import your loading animation
 const Navbar = ({ relative, hidden, classic, bgBlur }) => {
   const navRef = useRef(null);
   const pathname = usePathname();
   const ToggleMode = useToggleMode();
-  const { isAdmin, router, user, darkMode } = useAppContext();
+  const { isAdmin, router, user, darkMode, loading, setLoading } =
+    useAppContext();
   const [openNavigation, setopenNavigation] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const toggleNavigation = () => {
     if (openNavigation) {
@@ -69,9 +69,9 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
     }
   }, [darkMode]);
 
+  if (loading) <LottieLoading />;
   return (
     <>
-      {loading && <Loading />}
       <div
         className={`
         ${relative ? "relative" : "fixed"} ${hidden ? "hidden" : "block"} ${

@@ -1280,3 +1280,198 @@
                 </CardContent>
               </Card> */
 }
+
+//Functions for shipment addinf form
+
+// const [orderItems] = useState([
+//   {
+//     id: "1",
+//     name: "Modern Pendant Lamp",
+//     price: 189,
+//     image: "/src/assets/pendant-lamp.jpg",
+//     quantity: 1,
+//     color: "Brass",
+//   },
+//   {
+//     id: "2",
+//     name: "Study Desk Lamp",
+//     price: 129,
+//     image: "/src/assets/study-lamp.jpg",
+//     quantity: 2,
+//     color: "Black",
+//   },
+// ]);
+// const subtotal = orderItems.reduce(
+//   (sum, item) => sum + item.price * item.quantity,
+//   0
+// );
+// const shipping = subtotal > 200 ? 0 : 15;
+// const tax = subtotal * 0.08;
+// const total = subtotal + shipping + tax;
+//const { router, products, cartItems, localCart, userData } = useAppContext();
+//const { user, isSignedIn } = useUser();
+
+// const allCountries = Country.getAllCountries();
+// const [queryCountry, setQueryCountry] = useState("");
+// const [queryState, setQueryState] = useState("");
+// const [queryCity, setQueryCity] = useState("");
+
+// const [selectedCountry, setSelectedCountry] = useState(null);
+// const [selectedState, setSelectedState] = useState(null);
+// const [selectedCity, setSelectedCity] = useState("");
+// const [area, setArea] = useState("");
+
+// const [filteredCountries, setFilteredCountries] = useState(allCountries);
+// const [filteredStates, setFilteredStates] = useState([]);
+// const [filteredCities, setFilteredCities] = useState([]);
+
+// const [countryName, setCountryName] = useState("");
+// const [stateName, setStateName] = useState("");
+// const [cityName, setCityName] = useState("");
+
+// useEffect(() => {
+//   if (selectedCountry) {
+//     setCountryName(selectedCountry.name);
+//     if (selectedState) {
+//       setStateName(selectedState.name);
+//     } else {
+//       setStateName("");
+//     }
+//     if (selectedCity) {
+//       setCityName(selectedCity);
+//     } else {
+//       setCityName("");
+//     }
+//   }
+// }, [selectedCountry, selectedState, selectedCity]);
+// const countryRef = useRef(null);
+// const stateRef = useRef(null);
+// const cityRef = useRef(null);
+
+// // Hide dropdowns on outside click
+// useEffect(() => {
+//   const handleClickOutside = (e) => {
+//     if (!countryRef.current?.contains(e.target)) setDropdownCountry(false);
+//     if (!stateRef.current?.contains(e.target)) setDropdownState(false);
+//     if (!cityRef.current?.contains(e.target)) setDropdownCity(false);
+//   };
+
+//   const handleEscape = (e) => {
+//     if (e.key === "Escape") {
+//       setDropdownCountry(false);
+//       setDropdownState(false);
+//       setDropdownCity(false);
+//     }
+//   };
+
+//   document.addEventListener("mousedown", handleClickOutside);
+//   document.addEventListener("keydown", handleEscape);
+//   return () => {
+//     document.removeEventListener("mousedown", handleClickOutside);
+//     document.removeEventListener("keydown", handleEscape);
+//   };
+// }, []);
+
+// const [dropdownCountry, setDropdownCountry] = useState(false);
+// const [dropdownState, setDropdownState] = useState(false);
+// const [dropdownCity, setDropdownCity] = useState(false);
+
+// const handleCountryInput = (e) => {
+//   const input = e.target.value;
+//   setQueryCountry(input);
+//   const filtered = allCountries.filter((country) =>
+//     country.name.toLowerCase().startsWith(input.toLowerCase())
+//   );
+//   setFilteredCountries(filtered);
+//   setDropdownCountry(true);
+// };
+
+// const handleStateInput = (e) => {
+//   const input = e.target.value;
+//   setQueryState(input);
+//   if (selectedCountry) {
+//     const states = State.getStatesOfCountry(selectedCountry.isoCode);
+//     const filtered = states.filter((state) =>
+//       state.name.toLowerCase().startsWith(input.toLowerCase())
+//     );
+//     setFilteredStates(filtered);
+//     setDropdownState(true);
+//   }
+// };
+
+// const handleCityInput = (e) => {
+//   const input = e.target.value;
+//   setQueryCity(input);
+//   if (selectedCountry && selectedState) {
+//     const cities = City.getCitiesOfState(
+//       selectedCountry.isoCode,
+//       selectedState.isoCode
+//     );
+//     const filtered = cities.filter((city) =>
+//       city.name.toLowerCase().startsWith(input.toLowerCase())
+//     );
+//     setFilteredCities(filtered);
+//     setDropdownCity(true);
+//   }
+// };
+
+// const handleSelectCountry = (country) => {
+//   setSelectedCountry(country);
+//   setQueryCountry(country.name);
+//   setFilteredStates(State.getStatesOfCountry(country.isoCode));
+//   setSelectedState(null);
+//   setSelectedCity("");
+//   setFilteredCities([]);
+//   setDropdownCountry(false);
+// };
+
+// const handleSelectState = (state) => {
+//   setSelectedState(state);
+//   setQueryState(state.name);
+//   setFilteredCities(
+//     City.getCitiesOfState(selectedCountry.isoCode, state.isoCode)
+//   );
+//   setSelectedCity("");
+//   setDropdownState(false);
+// };
+
+// const handleSelectCity = (city) => {
+//   setSelectedCity(city.name);
+//   setQueryCity(city.name);
+//   setDropdownCity(false);
+// };
+
+// console.log("Selected Country:", selectedCountry);
+// console.log("Selected Country Name:", countryName);
+// console.log("Selected State:", selectedState);
+// console.log("Selected State Name:", stateName);
+// console.log("Selected City:", selectedCity);
+// console.log("Selected City Name:", cityName);
+
+// useEffect(() => {
+//   setUserInfo((prev) => ({
+//     ...prev,
+//     Country: countryName,
+//     State: stateName,
+//     City: cityName,
+//   }));
+// }, [countryName, stateName, cityName]);
+
+// const [getUserInfo, setUserInfo] = useState({
+//   FirstName: "",
+//   LastName: "",
+//   Email: "",
+//   Phone: "",
+//   FullAddress: "",
+//   Country: "",
+//   State: "",
+//   City: "",
+//   ZipCode: "",
+// });
+
+// console.log("User Info from checkout component:", getUserInfo);
+// const handleSubmit = async (e) => {
+//   e.preventDefault();
+
+//   await AddShippingInfo(user, isSignedIn, getUserInfo)();
+// };

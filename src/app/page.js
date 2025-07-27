@@ -14,7 +14,7 @@ import { LottieLoading } from "@/Components/Loading";
 export default function Home() {
   const [showVideo, setShowVideo] = useState(false);
   const [fade, setFade] = useState(false);
-
+  const { loading } = useAppContext();
   useEffect(() => {
     const hasPlayed = sessionStorage.getItem("introPlayed");
 
@@ -33,7 +33,7 @@ export default function Home() {
       };
     }
   }, []);
-
+  if (loading) <LottieLoading />;
   return (
     <>
       {showVideo && (
