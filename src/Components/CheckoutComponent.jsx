@@ -43,6 +43,10 @@ const Checkout = () => {
   const [toggleNewAddress, setToggleNewAddress] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [selectedShippingData, setSelectedShippingData] = useState({});
+  //Summarized info that will be used for checkout
+  const [AllComponentInfo, setAllComponentInfo] = useState({
+    shippingInfo: selectedShippingData,
+  });
 
   const handleReload = () => {
     setReloadKey((prev) => prev + 1);
@@ -156,6 +160,7 @@ const Checkout = () => {
                     <ShipmentInfoDB
                       data={shipmentData}
                       selectedAddress={handleAddressSelection}
+                      onReload={handleReload}
                     />
                   </div>
                 )}

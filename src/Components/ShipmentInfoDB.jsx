@@ -1,8 +1,18 @@
 import React from "react";
 import { useState, useRef, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
-import { AddShippingInfo } from "../../models/AddrerssHandler";
-import { ArrowLeft, CreditCard, Lock, MapPin, User } from "lucide-react";
+import {
+  AddShippingInfo,
+  deleteShipmentInfoByIndex,
+} from "../../models/AddrerssHandler";
+import {
+  ArrowLeft,
+  CreditCard,
+  Lock,
+  MapPin,
+  User,
+  Trash2,
+} from "lucide-react";
 import { Button } from "@/Components/UI/lumiraButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/UI/card";
 import { Input } from "@/Components/UI/input";
@@ -10,8 +20,9 @@ import { Label } from "@/Components/UI/label";
 import { Checkbox } from "@/Components/UI/checkbox";
 import { LottieLoading } from "./Loading";
 import { useAppContext } from "@/Context/AppContext";
-const ShipmentInfoDB = ({ data, selectedAddress }) => {
-  const { loading } = useAppContext();
+const ShipmentInfoDB = ({ data, selectedAddress, onReload }) => {
+  const { loading, setUserData } = useAppContext();
+  const { user } = useUser();
   const [selectedIndex, setSelectedIndex] = useState(null);
 
   const handleSelect = (index) => {
@@ -23,6 +34,11 @@ const ShipmentInfoDB = ({ data, selectedAddress }) => {
     } else {
       setSelectedIndex(null);
     }
+  };
+
+  const handleDelete = async (index) => {
+    await deleteShipmentInfoByIndex(user, index, setUserData);
+    onReload(); // run this after deletion completes
   };
 
   useEffect(() => {
@@ -55,7 +71,7 @@ const ShipmentInfoDB = ({ data, selectedAddress }) => {
             <p className="text-n-muted_foreground text-sm mb-6">
               Select a previously used address or add a new one below
             </p>
-            <div className="space-y-4">
+            <div className="space-y-4 max-h-[20rem] hover:overflow-y-auto and overflow-hidden scrollbar-thin scrollbar-thumb-n-muted_foreground scrollbar-track-transparent">
               {data.map((item, index) => {
                 const checkboxId = `address-${index}`;
                 const isChecked = selectedIndex === index;
@@ -64,7 +80,7 @@ const ShipmentInfoDB = ({ data, selectedAddress }) => {
                   <div
                     key={index}
                     className="flex items-start gap-4 p-4 rounded-xl border border-n-border/30 hover:border-n-primary/30 bg-gradient-to-r from-n-card to-n-muted/20 hover:from-n-primary/5 hover:to-n-lumira_coral/5 transition-all duration-300 group/address cursor-pointer"
-                    onClick={() => handleSelect(index)} // whole div clickable
+                    // whole div clickable
                   >
                     <Checkbox
                       id={checkboxId}
@@ -73,7 +89,10 @@ const ShipmentInfoDB = ({ data, selectedAddress }) => {
                       name="savedAddress"
                       className="mt-1 data-[state=checked]:bg-n-primary data-[state=checked]:border-n-primary"
                     />
-                    <div className="flex-1 space-y-1">
+                    <div
+                      className="flex-1 space-y-1 cursor-pointer"
+                      onClick={() => handleSelect(index)}
+                    >
                       <div className="flex items-center gap-2">
                         <Label
                           htmlFor={checkboxId}
@@ -81,9 +100,11 @@ const ShipmentInfoDB = ({ data, selectedAddress }) => {
                         >
                           Home Address
                         </Label>
-                        <span className="text-xs px-2 py-1 rounded-full bg-n-primary/10 text-n-primary">
-                          Default
-                        </span>
+                        {index == 0 && (
+                          <span className="text-xs px-2 py-1 rounded-full bg-n-primary/10 text-n-primary">
+                            Default
+                          </span>
+                        )}
                       </div>
                       <p className="text-sm text-n-muted_foreground">
                         {item.FirstName} {item.LastName}
@@ -97,6 +118,12 @@ const ShipmentInfoDB = ({ data, selectedAddress }) => {
                       <p className="text-sm text-n-muted_foreground">
                         {item.Phone}
                       </p>
+                    </div>
+                    <div
+                      onClick={() => handleDelete(item.infoIndex)}
+                      className="z-20 cursor-pointer ml-auto p-3 rounded-xl bg-n-primary/20 group-hover:bg-n-primary/30 transition-colors duration-300"
+                    >
+                      <Trash2 className="h-3 w-3 text-n-primary" />
                     </div>
                   </div>
                 );

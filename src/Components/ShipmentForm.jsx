@@ -34,7 +34,8 @@ import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
 import ShipmentInfoDB from "./ShipmentInfoDB";
 const ShipmentForm = ({ onReload, handleToggle }) => {
-  const { router, products, cartItems, localCart } = useAppContext();
+  const { router, products, cartItems, localCart, setUserData } =
+    useAppContext();
   const { user, isSignedIn } = useUser();
 
   const allCountries = Country.getAllCountries();
@@ -200,7 +201,10 @@ const ShipmentForm = ({ onReload, handleToggle }) => {
     e.preventDefault();
     console.log("Called from handle submit", getUserInfo);
 
-    await AddShippingInfo(user, isSignedIn, getUserInfo)();
+    await AddShippingInfo(user, isSignedIn, getUserInfo, setUserData)();
+
+    onReload();
+    handleToggle();
   };
 
   return (
@@ -438,13 +442,7 @@ const ShipmentForm = ({ onReload, handleToggle }) => {
             </div>
           </div>
           {/* <div onClick={{ onReload, handleToggle }}> */}
-          <Button
-            onClick={() => {
-              onReload(), handleToggle();
-            }}
-            className={"text-center w-full mt-3"}
-            type="submit"
-          >
+          <Button className={"text-center w-full mt-3"} type="submit">
             Add Shipment Infomation
           </Button>
           {/* </div> */}

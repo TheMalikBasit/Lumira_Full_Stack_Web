@@ -3,8 +3,14 @@ import { doc, collection, updateDoc, getDoc } from "firebase/firestore";
 import { useAppContext } from "@/Context/AppContext";
 import { useUser } from "@clerk/nextjs";
 import toast from "react-hot-toast";
+import { useEffect } from "react";
 
-export const AddShippingInfo = (user, isSignedIn, newShippingInfo) => {
+export const AddShippingInfo = (
+  user,
+  isSignedIn,
+  newShippingInfo,
+  setUserData
+) => {
   return async () => {
     try {
       if (!user) return;
@@ -25,11 +31,54 @@ export const AddShippingInfo = (user, isSignedIn, newShippingInfo) => {
           ShippingInfo: updatedShippingInfo,
         });
       }
+      setUserData((prev) => ({
+        ...prev,
+        ShippingInfo: updatedShippingInfo,
+      }));
       toast.success("Shipping info added successfully");
     } catch (error) {
       toast.error("Failed to add shipping info");
     }
   };
+};
+
+export const deleteShipmentInfoByIndex = async (
+  user,
+  indexToDelete,
+  setUserData
+) => {
+  try {
+    if (!user) return;
+
+    const userRef = doc(db, "users", user.id);
+    const userSnapshot = await getDoc(userRef);
+    const userData = userSnapshot.data();
+
+    const allAddresses = Array.isArray(userData?.ShippingInfo)
+      ? userData.ShippingInfo
+      : [];
+
+    const updatedAddresses = allAddresses
+      .filter((addr) => addr.infoIndex !== indexToDelete)
+      .map((item, i) => ({
+        ...item,
+        infoIndex: i + 1,
+      }));
+
+    await updateDoc(userRef, {
+      ShippingInfo: updatedAddresses,
+    });
+
+    setUserData((prev) => ({
+      ...prev,
+      ShippingInfo: updatedAddresses,
+    }));
+
+    toast.success("Shipment Info Deleted");
+  } catch (error) {
+    console.error("Error deleting shipment info:", error);
+    toast.error("Failed to delete shipment info");
+  }
 };
 
 export const updateShippingInfoByIndex = (Index, newData) => {
@@ -63,7 +112,7 @@ export const updateShippingInfoByIndex = (Index, newData) => {
         };
 
         await updateDoc(userRef, {
-          address: allAddresses,
+          ShippingInfo: allAddresses,
         });
       }
       toast.success("Address updated successfully");
