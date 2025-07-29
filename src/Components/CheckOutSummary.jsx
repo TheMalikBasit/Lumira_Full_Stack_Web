@@ -6,8 +6,14 @@ import { ArrowLeft, CreditCard, Lock, MapPin, User } from "lucide-react";
 import { Button } from "@/Components/UI/lumiraButton";
 import { LottieLoading } from "./Loading";
 import { Separator } from "@/Components/UI/separator";
+import { Tooltip } from "react-tooltip";
+import "react-tooltip/dist/react-tooltip.css";
 import Image from "next/image";
-const CheckOutSummary = () => {
+const CheckOutSummary = ({
+  shipmentCharge,
+  totalCharged,
+  selectedShippingData,
+}) => {
   const { user, isSignedIn } = useUser();
   const { router, products, cartItems, localCart, loading, setLoading } =
     useAppContext();
@@ -25,14 +31,18 @@ const CheckOutSummary = () => {
   };
 
   console.log("From checkout order summary orderItems: ", orderItems);
+
   const subtotal = orderItems.reduce(
     (sum, item) => sum + item.price * fetchQuantity(item.id),
     0
   );
-  const shipping = subtotal > 10000 ? 0 : 15;
-  const tax = subtotal * 0.02;
-  const total = subtotal + shipping + tax;
+  // const tax = subtotal * 0.02;
+  const total = subtotal + shipmentCharge;
 
+  useEffect(() => {
+    totalCharged(total);
+  }, [subtotal, total, shipmentCharge]);
+  console.log("Shipment data test", selectedShippingData);
   return (
     <>
       <div className="lg:sticky lg:top-8 lg:h-fit">
@@ -115,34 +125,44 @@ const CheckOutSummary = () => {
                   </span>
                 </div>
                 <div className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent">
-                  <span className="text-n-muted_foreground font-medium">
-                    Shipping
-                  </span>
-                  <span
-                    className={`font-bold text-lg ${
-                      shipping === 0 ? "text-emerald-600" : "text-n-foreground"
-                    }`}
-                  >
-                    {shipping === 0 ? (
+                  {shipmentCharge != 0 ? (
+                    <span className="text-n-muted_foreground font-medium">
+                      Shipping
+                    </span>
+                  ) : (
+                    <></>
+                  )}
+                  <span className={`font-bold text-lg "text-emerald-600"}`}>
+                    {shipmentCharge === null ? (
                       <span className="flex items-center gap-2">
-                        <span>Free</span>
-                        <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
-                          🎉
+                        <span className="text-center text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-lg">
+                          Select an address first or add a new one.
+                        </span>
+                      </span>
+                    ) : shipmentCharge === 0 ? (
+                      <span className="flex items-center">
+                        <span className="text-center text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-lg">
+                          Please note that international shipping rates may be
+                          higher due to the fragile nature of the items, which
+                          require premium handling and packaging. You will pay
+                          additional shipment ammout that PostEx will provide
+                          you with a detailed breakdown of the shipping charges
+                          applicable to your order.
                         </span>
                       </span>
                     ) : (
-                      `RS${shipping.toFixed(2)}`
+                      `RS${shipmentCharge}`
                     )}
                   </span>
                 </div>
-                <div className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent">
+                {/* <div className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent">
                   <span className="text-n-muted_foreground font-medium">
                     Tax
                   </span>
                   <span className="text-n-foreground font-bold text-lg">
                     ${tax.toFixed(2)}
                   </span>
-                </div>
+                </div> */}
               </div>
 
               <Separator className="my-6" />
@@ -177,14 +197,32 @@ const CheckOutSummary = () => {
                   </p>
                 </div>
               </div>
-
-              <Button className="w-full bg-gradient-warm hover:shadow-glow transition-all duration-500 text-lg py-8 rounded-xl font-bold tracking-wide hover-lift relative overflow-hidden group">
-                <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                <span className="relative z-10 flex items-center justify-center gap-3">
-                  <Lock className="h-5 w-5" />
-                  Complete Secure Order
-                </span>
-              </Button>
+              {Object.keys(selectedShippingData).length === 0 ? (
+                <>
+                  <Button
+                    data-tooltip-id="select-country-tooltip"
+                    data-tooltip-content="Select a Shipment Address First"
+                    className="cursor-default opacity-25 w-full bg-gradient-warm hover:shadow-glow transition-all duration-500 text-lg py-8 rounded-xl font-bold tracking-wide hover-lift relative overflow-hidden group"
+                  >
+                    <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                    <span className="relative z-10 flex items-center justify-center gap-3">
+                      <Lock className="h-5 w-5" />
+                      Complete Secure Order
+                    </span>
+                  </Button>
+                  <Tooltip id="select-country-tooltip" />
+                </>
+              ) : (
+                <>
+                  <Button className="w-full bg-gradient-warm hover:shadow-glow transition-all duration-500 text-lg py-8 rounded-xl font-bold tracking-wide hover-lift relative overflow-hidden group">
+                    <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                    <span className="relative z-10 flex items-center justify-center gap-3">
+                      <Lock className="h-5 w-5" />
+                      Complete Secure Order
+                    </span>
+                  </Button>
+                </>
+              )}
             </CardContent>
           )}
         </Card>

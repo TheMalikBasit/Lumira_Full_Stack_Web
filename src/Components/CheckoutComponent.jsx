@@ -43,6 +43,8 @@ const Checkout = () => {
   const [toggleNewAddress, setToggleNewAddress] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [selectedShippingData, setSelectedShippingData] = useState({});
+  const [Subtotal, setSubtotal] = useState(null);
+  const [shipmentCharges, setShipmentCharges] = useState(null);
   //Summarized info that will be used for checkout
   const [AllComponentInfo, setAllComponentInfo] = useState({
     shippingInfo: selectedShippingData,
@@ -67,6 +69,10 @@ const Checkout = () => {
     console.log("Toggle address function...........", toggleNewAddress);
   };
 
+  const handleTotal = (total) => {
+    setSubtotal(total);
+  };
+
   useEffect(() => {
     if (userData && Array.isArray(userData.ShippingInfo)) {
       setShipmentData(userData.ShippingInfo);
@@ -75,8 +81,25 @@ const Checkout = () => {
   }, [userData]);
 
   useEffect(() => {
-    console.log("Selected data by checkout component ", selectedShippingData);
+    console.log("Selected data by checkout component", selectedShippingData);
+    if (selectedShippingData) {
+      const country = selectedShippingData.Country;
+      const city = selectedShippingData.City;
+
+      if (!country) {
+        setShipmentCharges(null);
+      } else if (country === "Pakistan") {
+        if (city === "Lahore") {
+          setShipmentCharges(200);
+        } else {
+          setShipmentCharges(500);
+        }
+      } else {
+        setShipmentCharges(0);
+      }
+    }
   }, [selectedShippingData]);
+  console.log("Handle Total ", Subtotal);
   return (
     <>
       <Navbar relative />
@@ -197,7 +220,11 @@ const Checkout = () => {
             </div>
 
             {/* Order Summary */}
-            <CheckOutSummary />
+            <CheckOutSummary
+              shipmentCharge={shipmentCharges}
+              totalCharged={handleTotal}
+              selectedShippingData={selectedShippingData}
+            />
           </div>
         </div>
       </div>

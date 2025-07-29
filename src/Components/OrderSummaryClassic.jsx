@@ -16,20 +16,20 @@ import Link from "next/link";
 const OrderSummaryClassic = () => {
   const { getCartAmount, currency, darkMode, getLocalCartAmount, products } =
     useAppContext();
-  const [shipmentCharges, setshipmentCharges] = useState(0);
   const { isSignedIn } = useUser();
 
-  useEffect(() => {
-    if (getCartAmount() > 0 || getLocalCartAmount() > 0) {
-      setshipmentCharges(200);
-    } else {
-      setshipmentCharges(0);
-    }
-  }, [getCartAmount, getLocalCartAmount, products]);
+  //   const [shipmentCharges, setshipmentCharges] = useState(0);
+  // useEffect(() => {
+  //   if (getCartAmount() > 0 || getLocalCartAmount() > 0) {
+  //     setshipmentCharges(200);
+  //   } else {
+  //     setshipmentCharges(0);
+  //   }
+  // }, [getCartAmount, getLocalCartAmount, products]);
 
   const subtotal = isSignedIn ? getCartAmount() : getLocalCartAmount();
   const tax = Math.floor(subtotal * 0.02);
-  const total = subtotal + tax + shipmentCharges;
+  const total = subtotal + tax;
 
   return (
     <Card
@@ -63,24 +63,13 @@ const OrderSummaryClassic = () => {
             <span className="text-n-muted_foreground font-medium">
               Shipping
             </span>
-            <span
-              className={`font-bold text-lg ${
-                shipmentCharges === 0 ? "text-emerald-600" : "text-foreground"
-              }`}
-            >
-              {shipmentCharges === 0 ? (
-                <span className="flex items-center gap-2">
-                  <span>Free</span>
-                  <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
-                    🎉
-                  </span>
-                </span>
-              ) : (
-                `${currency}${shipmentCharges.toFixed(2)}`
-              )}
+            <span className={`font-bold text-emerald-600"}`}>
+              <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
+                Based on your shipment location🤷‍♀️
+              </span>
             </span>
           </div>
-          <div className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent">
+          {/* <div className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent">
             <span className="text-n-muted_foreground font-medium">
               Tax <span className="text-orange-500">(2%)</span>
             </span>
@@ -88,7 +77,7 @@ const OrderSummaryClassic = () => {
               {currency}
               {tax.toFixed(2)}
             </span>
-          </div>
+          </div> */}
         </div>
 
         <Separator className="my-6" />

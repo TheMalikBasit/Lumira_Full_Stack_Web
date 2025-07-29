@@ -4,9 +4,9 @@ import { useAppContext } from "@/Context/AppContext";
 import { useUser } from "@clerk/nextjs";
 import { LoadingDiv, LottieLoading } from "@/Components/Loading";
 import Image from "next/image";
-import { Card, CardContent } from "@/Components/UI/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/Components/UI/card";
 import { Button } from "@/Components/UI/lumiraButton";
-import { Trash2, Minus, Plus } from "lucide-react";
+import { Trash2, Minus, Plus, BaggageClaim } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquare, faCheckSquare } from "@fortawesome/free-regular-svg-icons";
 import toast from "react-hot-toast";
@@ -30,15 +30,6 @@ const RenderCart = () => {
   const { isSignedIn } = useUser();
 
   useEffect(() => {
-    if (isSignedIn) {
-      if (cartItems === undefined || cartItems === null) {
-        setLoading(true);
-      } else {
-        setLoading(false);
-      }
-    } else {
-      setLoading(false);
-    }
     document.body.style.backgroundColor = darkMode ? "#000000" : "#FFFFF4";
   }, [cartItems, isSignedIn, localCart]);
 
@@ -77,9 +68,9 @@ const RenderCart = () => {
       >
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-n-primary via-n-lumira_coral to-n-lumira_salmon" />
         <CardContent className="p-8">
-          <div className="flex flex-col sm:flex-row gap-8">
+          <div className="flex flex-col sm:flex-row gap-8 sm:items-center">
             {/* ✅ Checkbox to left */}
-            <div className="flex items-start justify-center sm:items-center sm:flex-col gap-4">
+            <div className="flex items-start justify-center items-center sm:flex-col gap-4">
               <FontAwesomeIcon
                 icon={item.checked ? faCheckSquare : faSquare}
                 onClick={toggleCheck}
@@ -133,59 +124,59 @@ const RenderCart = () => {
               </div>
 
               <div className="space-y-3">
-                <div className="flex items-baseline gap-3">
+                <div className="flex items-baseline gap-3 space-y-3">
                   <p className="text-3xl font-bold text-n-foreground">
                     {currency} {product.price.toFixed(2)}
                   </p>
                   <p className="text-sm text-n-muted_foreground">per item</p>
                 </div>
-                <div className="p-4 rounded-xl bg-gradient-to-r from-n-primary/5 to-n-lumira_coral/5 border border-n-primary/10">
-                  <p className="text-sm font-medium text-n-foreground">
-                    Subtotal:{" "}
-                    <span className="text-lg text-n-foreground font-bold">
-                      {currency} {(product.price * quantity).toFixed(2)}
-                    </span>
-                  </p>
-                </div>
-              </div>
-            </div>
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="p-4 rounded-xl bg-gradient-to-r from-n-primary/5 to-n-lumira_coral/5 border border-n-primary/10">
+                    <p className="text-sm font-medium text-n-foreground">
+                      Subtotal:{" "}
+                      <span className="text-lg text-n-foreground font-bold">
+                        {currency} {(product.price * quantity).toFixed(2)}
+                      </span>
+                    </p>
+                  </div>
+                  <div className="flex flex-row w-full gap-4 justify-center items-center">
+                    <div className="flex items-center justify-center w-full gap-4 bg-gradient-to-r from-n-muted/50 to-n-muted/30 rounded-2xl p-4 backdrop-blur-sm border border-n-border/50">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={handleDecrease}
+                        className="h-12 w-12 hover-scale shadow-sm hover:shadow-warm transition-all duration-300 border-n-primary/20 hover:border-n-primary/40"
+                      >
+                        <Minus className="h-5 w-5" />
+                      </Button>
+                      <div className="flex flex-col items-center min-w-[3rem]">
+                        <span className="text-xs text-n-muted_foreground font-medium">
+                          QTY
+                        </span>
+                        <span className="text-2xl font-bold text-n-foreground">
+                          {isInStock ? quantity : 0}
+                        </span>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={handleIncrease}
+                        className="h-12 w-12 hover-scale shadow-sm hover:shadow-warm transition-all duration-300 border-n-primary/20 hover:border-n-primary/40"
+                      >
+                        <Plus className="h-5 w-5" />
+                      </Button>
+                    </div>
 
-            {/* ✅ Remove + Quantity Buttons */}
-            <div className="flex flex-col sm:items-end gap-8">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleRemove}
-                className="self-end text-n-destructive hover:text-n-destructive hover:bg-n-destructive/10 hover-scale hover:shadow-warm transition-all duration-300"
-              >
-                <Trash2 className="h-5 w-5" />
-              </Button>
-
-              <div className="flex items-center gap-4 bg-gradient-to-r from-n-muted/50 to-n-muted/30 rounded-2xl p-4 backdrop-blur-sm border border-n-border/50">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={handleDecrease}
-                  className="h-12 w-12 hover-scale shadow-sm hover:shadow-warm transition-all duration-300 border-n-primary/20 hover:border-n-primary/40"
-                >
-                  <Minus className="h-5 w-5" />
-                </Button>
-                <div className="flex flex-col items-center min-w-[3rem]">
-                  <span className="text-xs text-n-muted_foreground font-medium">
-                    QTY
-                  </span>
-                  <span className="text-2xl font-bold text-n-foreground">
-                    {isInStock ? quantity : 0}
-                  </span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleRemove}
+                      className=" text-n-destructive hover:text-n-destructive hover:bg-n-destructive/10 hover-scale hover:shadow-warm transition-all duration-300"
+                    >
+                      <Trash2 className="h-10 w-10" />
+                    </Button>
+                  </div>
                 </div>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={handleIncrease}
-                  className="h-12 w-12 hover-scale shadow-sm hover:shadow-warm transition-all duration-300 border-n-primary/20 hover:border-n-primary/40"
-                >
-                  <Plus className="h-5 w-5" />
-                </Button>
               </div>
             </div>
           </div>
@@ -198,25 +189,48 @@ const RenderCart = () => {
   const isEmpty = !cartToRender || cartToRender.length === 0;
 
   return (
-    <div className="lg:col-span-2 space-y-8">
-      {isEmpty ? (
-        <p
-          className={`font-poppins text-2xl ${
-            darkMode ? "text-white" : "text-black"
-          } underline cursor-pointer ml-10`}
-        >
-          Your cart is empty.
-        </p>
-      ) : (
-        cartToRender.map((item) => {
-          const product = products.find(
-            (p) => p.id === (isSignedIn ? item.id : item.id)
-          );
-          if (!product) return null;
-          return renderProductCard(item, product, !isSignedIn);
-        })
-      )}
-    </div>
+    <>
+      <div className="lg:col-span-2 space-y-8">
+        {isEmpty ? (
+          <p
+            className={`font-poppins text-2xl ${
+              darkMode ? "text-white" : "text-black"
+            } underline cursor-pointer ml-10`}
+          >
+            Your cart is empty.
+          </p>
+        ) : loading ? (
+          <>
+            {" "}
+            <div className="border-n-border/50 mr-auto backdrop-blur-sm bg-n-card/80  relative overflow-hidden group">
+              <div className="flex min-h-screen justify-center py-8">
+                <LottieLoading />
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="border border-n-muted_foreground rounded-lg max-h-[40rem] hover:overflow-y-auto and overflow-hidden scrollbar-thin scrollbar-thumb-n-muted_foreground scrollbar-track-transparent">
+              <CardHeader>
+                <CardTitle className="text-n-foreground text-2xl font-bold flex items-center gap-3 justify-center">
+                  <div className="p-2 rounded-lg bg-n-primary/20">
+                    <BaggageClaim className="h-6 w-6 text-n-primary" />
+                  </div>
+                  Your cart items
+                </CardTitle>
+              </CardHeader>
+              {cartToRender.map((item) => {
+                const product = products.find(
+                  (p) => p.id === (isSignedIn ? item.id : item.id)
+                );
+                if (!product) return null;
+                return renderProductCard(item, product, !isSignedIn);
+              })}
+            </div>
+          </>
+        )}
+      </div>
+    </>
   );
 };
 

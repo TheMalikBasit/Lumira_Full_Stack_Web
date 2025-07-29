@@ -153,6 +153,8 @@ import UserDetails from "@/Components/UserDetails";
 import AddAddressComponent from "@/Components/AddAddressComponent";
 import { useUser } from "@clerk/nextjs";
 import Footer from "@/Components/LumiraFooter";
+import { ArrowLeft } from "lucide-react";
+import { Button } from "@/Components/UI/lumiraButton";
 import {
   fetchLocalCart,
   addLocalProducts,
@@ -210,20 +212,47 @@ const cart = () => {
       )}
       <div className="min-h-screen relative overflow-hidden ">
         <div className="container mx-auto px-4 py-8 relative z-10">
-          {/* <h1
-            className={`${
-              darkMode ? "text-white" : "text-black"
-            } text-center lg:text-start lg:ml-20 h1 font-code pt-10`}
-          >
-            SHOPPING CART
-          </h1>
-          <div
-            className={`${
-              darkMode ? "border-white" : "border-black"
-            } w-full border border-t my-10`}
-          /> */}
+          <div className="flex items-center gap-6 mb-16">
+            <div
+              onClick={() => {
+                router.push("/my-products");
+              }}
+            >
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hover-scale shadow-warm hover:shadow-glow transition-all duration-300"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+            </div>
+
+            <div className="flex-1">
+              <h1 className="text-5xl font-bold text-n-foreground mb-3 animate-fade-in">
+                Shopping Cart
+              </h1>
+              <p
+                className="text-n-muted_foreground text-lg animate-fade-in"
+                style={{ animationDelay: "200ms" }}
+              >
+                {cartItems.length} {cartItems.length === 1 ? "item" : "items"}{" "}
+                ready for checkout
+              </p>
+            </div>
+            <div
+              className="hidden md:flex items-center gap-4 animate-fade-in"
+              style={{ animationDelay: "400ms" }}
+            >
+              <div className="text-right">
+                <p className="text-sm text-n-muted_foreground">Total Items</p>
+                <p className="text-2xl font-bold text-n-foreground">
+                  {cartItems.reduce((sum, item) => sum + item.quantity, 0)}
+                </p>
+              </div>
+            </div>
+          </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-            <div className="lg:col-span-2 space-y-8">
+            <div className="lg:col-span-2 space-y-8 ">
               <RenderCart />
             </div>
             <div className="lg:col-span-1">
