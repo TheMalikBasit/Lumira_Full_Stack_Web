@@ -34,6 +34,7 @@ import "react-tooltip/dist/react-tooltip.css";
 import ShipmentInfoDB from "./ShipmentInfoDB";
 import ShipmentForm from "./ShipmentForm";
 import { LottieLoading } from "./Loading";
+import toast from "react-hot-toast";
 const Checkout = () => {
   const { router, products, cartItems, localCart, userData, loading } =
     useAppContext();
@@ -99,6 +100,12 @@ const Checkout = () => {
       }
     }
   }, [selectedShippingData]);
+
+  useEffect(() => {
+    if (!user) {
+      toast.error("Login to complete your order");
+    }
+  }, [user]);
   console.log("Handle Total ", Subtotal);
   return (
     <>

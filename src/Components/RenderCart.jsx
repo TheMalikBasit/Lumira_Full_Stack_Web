@@ -15,7 +15,7 @@ const RenderCart = () => {
     products,
     cartItems,
     updateCartQuantity,
-    currency,
+    Currency,
     router,
     loading,
     setLoading,
@@ -126,7 +126,8 @@ const RenderCart = () => {
               <div className="space-y-3">
                 <div className="flex items-baseline gap-3 space-y-3">
                   <p className="text-3xl font-bold text-n-foreground">
-                    {currency} {product.price.toFixed(2)}
+                    {product.price}
+                    {Currency}
                   </p>
                   <p className="text-sm text-n-muted_foreground">per item</p>
                 </div>
@@ -135,7 +136,8 @@ const RenderCart = () => {
                     <p className="text-sm font-medium text-n-foreground">
                       Subtotal:{" "}
                       <span className="text-lg text-n-foreground font-bold">
-                        {currency} {(product.price * quantity).toFixed(2)}
+                        {product.price * quantity}
+                        {Currency}
                       </span>
                     </p>
                   </div>

@@ -63,10 +63,9 @@ const OrderSummaryClassic = () => {
             <span className="text-n-muted_foreground font-medium">
               Shipping
             </span>
-            <span className={`font-bold text-emerald-600"}`}>
-              <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
-                Based on your shipment location🤷‍♀️
-              </span>
+
+            <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
+              Depends on your shipment location🤷‍♀️
             </span>
           </div>
           {/* <div className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent">

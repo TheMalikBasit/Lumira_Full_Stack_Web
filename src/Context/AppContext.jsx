@@ -20,7 +20,7 @@ export const useAppContext = () => {
 };
 
 export const AppContextProvider = (props) => {
-  const currency = process.env.NEXT_PUBLIC_CURRENCY;
+  // const currency = process.env.NEXT_PUBLIC_CURRENCY;
   const router = useRouter();
 
   const { user } = useUser();
@@ -33,6 +33,23 @@ export const AppContextProvider = (props) => {
   const [loading, setLoading] = useState(true);
   const [adminLoading, setAdminLoading] = useState(true);
   const [darkMode, setdarkMode] = useState(false);
+  const [Currency, setCurrency] = useState("");
+
+  console.log("Curency from App Context", Currency);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("selectedCurrency");
+      if (stored) {
+        setCurrency(stored);
+
+        console.log("Currency from localStorage:", stored);
+      } else {
+        console.log("No currency found in localStorage");
+      }
+    }
+  }, []); // empty dependency array: runs ONCE on initial mount
+
   const addToCart = async (id) => {
     let cartData = structuredClone(cartItems);
 
@@ -192,7 +209,6 @@ export const AppContextProvider = (props) => {
   };
   const value = {
     user,
-    currency,
     router,
     isAdmin,
     setIsAdmin,
@@ -222,6 +238,8 @@ export const AppContextProvider = (props) => {
     deleteFromLocalCart,
     toggleLocalItemCheck,
     getLocalCartAmount,
+    Currency,
+    setCurrency,
   };
 
   return (

@@ -143,12 +143,12 @@ const Product = () => {
         </div> */}
 
         {/* Back Button */}
-        <Link
-          href="/products"
-          className="inline-flex items-center gap-2 text-n-muted_foreground hover:text-n-foreground"
+        <div
+          onClick={() => router.push("/all-products")}
+          className="cursor-pointer inline-flex items-center gap-2 text-n-muted_foreground hover:text-n-foreground"
         >
           <ArrowLeft className="w-4 h-4" /> Back to Products
-        </Link>
+        </div>
 
         {/* Product Section */}
         <div className="grid lg:grid-cols-2 gap-12">

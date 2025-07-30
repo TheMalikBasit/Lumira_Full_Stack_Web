@@ -17,11 +17,11 @@ const SplineFile = () => {
       {isLargeScreen && (
         <div
           id="spline-container"
-          className={`transition-opacity duration-700 ease-in-out -mt-[200px] xl:-mt-[300px] ${
+          className={`transition-opacity duration-700 ease-in-out  ${
             isLoaded
-              ? "opacity-100 invisible lg:visible lg:flex "
-              : "opacity-0 invisible"
-          } pointer-events-none -z-10 lg:flex`}
+              ? "opacity-100 invisible lg:visible lg:flex -mt-[200px] xl:-mt-[300px]"
+              : "opacity-0 invisible mt-0"
+          } pointer-events-none -z-20 lg:flex`}
         >
           <Spline
             scene="https://draft.spline.design/tJ7jNGEoO5MyV8zW/scene.splinecode"

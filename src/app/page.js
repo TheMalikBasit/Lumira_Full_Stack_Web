@@ -11,10 +11,13 @@ import Footer from "@/Components/LumiraFooter";
 import ProductHighlights from "@/Components/ProductsHighlights";
 import { useAppContext } from "@/Context/AppContext";
 import { LottieLoading } from "@/Components/Loading";
+import SelectCurrency from "@/Components/SelectCurrency";
 export default function Home() {
   const [showVideo, setShowVideo] = useState(false);
   const [fade, setFade] = useState(false);
   const { loading } = useAppContext();
+  const [showCurrencyModal, setShowCurrencyModal] = useState(true); // initially true
+
   useEffect(() => {
     const hasPlayed = sessionStorage.getItem("introPlayed");
 
@@ -53,7 +56,7 @@ export default function Home() {
           />
         </div>
       )}
-
+      <SelectCurrency />
       <BackLights L1 />
       <div className="pt-[4.75rem] lg:pt-[5.25rem] overflow-hidden">
         <Navbar bgBlur />

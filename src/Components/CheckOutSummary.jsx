@@ -112,8 +112,10 @@ const CheckOutSummary = ({
                 ))}
               </div>
 
+              <div className="cursor-pointer">
+                <p className="text-md text-green-700 underline">ReturnPolicy</p>
+              </div>
               <Separator className="my-6" />
-
               {/* Price Breakdown */}
               <div className="space-y-4">
                 <div className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent">
@@ -145,9 +147,9 @@ const CheckOutSummary = ({
                           Please note that international shipping rates may be
                           higher due to the fragile nature of the items, which
                           require premium handling and packaging. You will pay
-                          additional shipment ammout that PostEx will provide
-                          you with a detailed breakdown of the shipping charges
-                          applicable to your order.
+                          additional shipment ammout that DHL provide you with a
+                          detailed breakdown of the shipping charges applicable
+                          to your order.
                         </span>
                       </span>
                     ) : (
@@ -197,11 +199,11 @@ const CheckOutSummary = ({
                   </p>
                 </div>
               </div>
-              {Object.keys(selectedShippingData).length === 0 ? (
+              {!user ? (
                 <>
                   <Button
-                    data-tooltip-id="select-country-tooltip"
-                    data-tooltip-content="Select a Shipment Address First"
+                    data-tooltip-id="incomplete-info-tooltip"
+                    data-tooltip-content="Login to complete your checkout"
                     className="cursor-default opacity-25 w-full bg-gradient-warm hover:shadow-glow transition-all duration-500 text-lg py-8 rounded-xl font-bold tracking-wide hover-lift relative overflow-hidden group"
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
@@ -210,7 +212,25 @@ const CheckOutSummary = ({
                       Complete Secure Order
                     </span>
                   </Button>
-                  <Tooltip id="select-country-tooltip" />
+                  <Tooltip id="incomplete-info-tooltip" />
+                </>
+              ) : Object.keys(selectedShippingData).length === 0 ? (
+                <>
+                  {" "}
+                  <>
+                    <Button
+                      data-tooltip-id="incomplete-info-tooltip"
+                      data-tooltip-content="Select Shipment Address Or Add New One"
+                      className="cursor-default opacity-25 w-full bg-gradient-warm hover:shadow-glow transition-all duration-500 text-lg py-8 rounded-xl font-bold tracking-wide hover-lift relative overflow-hidden group"
+                    >
+                      <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                      <span className="relative z-10 flex items-center justify-center gap-3">
+                        <Lock className="h-5 w-5" />
+                        Complete Secure Order
+                      </span>
+                    </Button>
+                    <Tooltip id="incomplete-info-tooltip" />
+                  </>
                 </>
               ) : (
                 <>

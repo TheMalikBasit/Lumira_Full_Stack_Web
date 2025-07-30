@@ -51,7 +51,7 @@ const products = [
 ];
 
 const ProductHighlights = () => {
-  const { products, router } = useAppContext();
+  const { products, router, Currency } = useAppContext();
   const [loading, setloading] = useState(true);
 
   useEffect(() => {
@@ -178,11 +178,13 @@ const ProductHighlights = () => {
                   {/* Price */}
                   <div className="flex items-center gap-2 mb-4">
                     <span className="text-lg font-bold text-foreground">
-                      ${product.price}
+                      {Currency}
+                      {product.price}
                     </span>
                     {product.originalPrice && (
                       <span className="text-sm text-muted-foreground line-through">
-                        ${product.originalPrice}
+                        {Currency}
+                        {product.originalPrice}
                       </span>
                     )}
                   </div>

@@ -442,9 +442,26 @@ const ShipmentForm = ({ onReload, handleToggle }) => {
             </div>
           </div>
           {/* <div onClick={{ onReload, handleToggle }}> */}
-          <Button className={"text-center w-full mt-3"} type="submit">
-            Add Shipment Infomation
-          </Button>
+          {user ? (
+            <>
+              <Button className={"text-center w-full mt-3"} type="submit">
+                Add Shipment Infomation
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                data-tooltip-id="login-user-tooltip"
+                data-tooltip-content="Login to add shipment info"
+                className={"cursor-default opacity-25 text-center w-full mt-3"}
+                type="submit"
+              >
+                Add Shipment Infomation
+              </Button>
+              <Tooltip id="login-user-tooltip" />
+            </>
+          )}
+
           {/* </div> */}
         </form>
       </CardContent>
