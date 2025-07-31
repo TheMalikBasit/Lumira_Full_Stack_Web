@@ -39,10 +39,10 @@ const Checkout = () => {
   const { router, products, cartItems, localCart, userData, loading } =
     useAppContext();
   const { user, isSignedIn } = useUser();
-
   const [shipmentData, setShipmentData] = useState([]);
   const [toggleNewAddress, setToggleNewAddress] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
+
   const [selectedShippingData, setSelectedShippingData] = useState({});
   const [Subtotal, setSubtotal] = useState(null);
   const [shipmentCharges, setShipmentCharges] = useState(null);
