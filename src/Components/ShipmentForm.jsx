@@ -168,12 +168,12 @@ const ShipmentForm = ({ onReload, handleToggle }) => {
     setDropdownCity(false);
   };
 
-  console.log("Selected Country:", selectedCountry);
-  console.log("Selected Country Name:", countryName);
-  console.log("Selected State:", selectedState);
-  console.log("Selected State Name:", stateName);
-  console.log("Selected City:", selectedCity);
-  console.log("Selected City Name:", cityName);
+  // console.log("Selected Country:", selectedCountry);
+  // console.log("Selected Country Name:", countryName);
+  // console.log("Selected State:", selectedState);
+  // console.log("Selected State Name:", stateName);
+  // console.log("Selected City:", selectedCity);
+  // console.log("Selected City Name:", cityName);
 
   useEffect(() => {
     setUserInfo((prev) => ({
@@ -196,10 +196,10 @@ const ShipmentForm = ({ onReload, handleToggle }) => {
     ZipCode: "",
   });
 
-  console.log("User Info from checkout component:", getUserInfo);
+  //console.log("User Info from checkout component:", getUserInfo);
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Called from handle submit", getUserInfo);
+    //console.log("Called from handle submit", getUserInfo);
 
     await AddShippingInfo(user, isSignedIn, getUserInfo, setUserData)();
 

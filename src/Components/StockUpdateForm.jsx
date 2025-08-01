@@ -71,8 +71,8 @@ const StockUpdateForm = ({ id }) => {
       setOriginalPrice(productData.originalPrice || "");
       setCategory(productData.category || "");
     }
-    console.log("Product ID:", productId);
-    console.log("Fetched product:", productSnap.data());
+    //console.log("Product ID:", productId);
+    //console.log("Fetched product:", productSnap.data());
   };
 
   useEffect(() => {

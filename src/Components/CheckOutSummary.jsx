@@ -13,6 +13,7 @@ const CheckOutSummary = ({
   shipmentCharge,
   totalCharged,
   selectedShippingData,
+  selectedPaymentData,
 }) => {
   const { user, isSignedIn } = useUser();
   const { router, products, cartItems, localCart, loading, setLoading } =
@@ -30,8 +31,6 @@ const CheckOutSummary = ({
     return item ? item.quantity : 0;
   };
 
-  console.log("From checkout order summary orderItems: ", orderItems);
-
   const subtotal = orderItems.reduce(
     (sum, item) => sum + item.price * fetchQuantity(item.id),
     0
@@ -42,7 +41,7 @@ const CheckOutSummary = ({
   useEffect(() => {
     totalCharged(total);
   }, [subtotal, total, shipmentCharge]);
-  console.log("Shipment data test", selectedShippingData);
+
   return (
     <>
       <div className="lg:sticky lg:top-8 lg:h-fit">
@@ -231,6 +230,21 @@ const CheckOutSummary = ({
                     </Button>
                     <Tooltip id="incomplete-info-tooltip" />
                   </>
+                </>
+              ) : selectedPaymentData === "" ? (
+                <>
+                  <Button
+                    data-tooltip-id="incomplete-info-tooltip"
+                    data-tooltip-content="Select A Payment Option"
+                    className="cursor-default opacity-25 w-full bg-gradient-warm hover:shadow-glow transition-all duration-500 text-lg py-8 rounded-xl font-bold tracking-wide hover-lift relative overflow-hidden group"
+                  >
+                    <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                    <span className="relative z-10 flex items-center justify-center gap-3">
+                      <Lock className="h-5 w-5" />
+                      Complete Secure Order
+                    </span>
+                  </Button>
+                  <Tooltip id="incomplete-info-tooltip" />
                 </>
               ) : (
                 <>

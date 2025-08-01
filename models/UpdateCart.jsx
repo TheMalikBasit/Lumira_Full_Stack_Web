@@ -9,7 +9,7 @@ const UpdateCart = async ({ userId, cartDataProp }) => {
       cart: cartDataProp,
     });
   } catch (error) {
-    console.log("Failed to add product in cart");
+    //console.log("Failed to add product in cart");
     console.error(error);
   }
 };

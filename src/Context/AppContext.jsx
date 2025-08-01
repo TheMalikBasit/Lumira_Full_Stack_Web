@@ -35,7 +35,7 @@ export const AppContextProvider = (props) => {
   const [darkMode, setdarkMode] = useState(false);
   const [Currency, setCurrency] = useState("");
 
-  console.log("Curency from App Context", Currency);
+  //console.log("Curency from App Context", Currency);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -43,9 +43,9 @@ export const AppContextProvider = (props) => {
       if (stored) {
         setCurrency(stored);
 
-        console.log("Currency from localStorage:", stored);
+        //console.log("Currency from localStorage:", stored);
       } else {
-        console.log("No currency found in localStorage");
+        //console.log("No currency found in localStorage");
       }
     }
   }, []); // empty dependency array: runs ONCE on initial mount

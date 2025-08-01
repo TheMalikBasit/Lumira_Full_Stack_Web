@@ -43,8 +43,6 @@ const ShipmentInfoDB = ({ data, selectedAddress, onReload }) => {
 
   useEffect(() => {
     selectedAddress(selectedIndex);
-    console.log("User Shipment data", data);
-    console.log("Is checked is called", selectedIndex);
   }, [selectedIndex]);
 
   return (

@@ -15,7 +15,7 @@ const page = () => {
 
   const handleUpdateForm = (id) => {
     setId(id);
-    console.log("Selected product ID:", id);
+    //console.log("Selected product ID:", id);
   };
 
   if (adminLoading) return <LottieLoading />;

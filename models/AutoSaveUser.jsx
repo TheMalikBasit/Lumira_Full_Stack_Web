@@ -36,7 +36,7 @@ const AutoSaveUser = () => {
             darkMode: false,
           });
           setCartItems([]);
-          console.log("User info stored in Firestore");
+          //console.log("User info stored in Firestore");
           setLoading(false);
         } else {
           const userData = userSnapshot.data();
@@ -63,8 +63,8 @@ const AutoSaveUser = () => {
           });
 
           setCartItems(cartData);
-          console.log("Updated cart data: ", cartData);
-          console.log("User userShippingInfo: ", userShippingInfo);
+          //console.log("Updated cart data: ", cartData);
+          //console.log("User userShippingInfo: ", userShippingInfo);
           setLoading(false);
         }
       } catch (error) {

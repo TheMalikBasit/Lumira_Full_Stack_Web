@@ -5,6 +5,7 @@ import { useUser } from "@clerk/nextjs";
 import { doc, getDoc } from "firebase/firestore";
 import { useEffect } from "react";
 import { useAppContext } from "../src/Context/AppContext";
+import toast from "react-hot-toast";
 
 export default function CheckAdmin() {
   const { setIsAdmin, setAdminLoading } = useAppContext();
@@ -17,7 +18,7 @@ export default function CheckAdmin() {
       if (!isSignedIn || !user) {
         setIsAdmin(false);
         setAdminLoading(false);
-        console.log("User is not signed in or user data is not available");
+        //console.log("User is not signed in or user data is not available");
         return;
       }
 
@@ -26,10 +27,9 @@ export default function CheckAdmin() {
 
       if (userSnap.exists() && userSnap.data().isAdmin) {
         setIsAdmin(true);
-        console.log("User is an admin");
+        toast.success("Welcome Admin");
       } else {
         setIsAdmin(false);
-        console.log("User is not an admin");
       }
       setAdminLoading(false);
     };

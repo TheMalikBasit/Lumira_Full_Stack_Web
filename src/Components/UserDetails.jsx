@@ -15,8 +15,8 @@ const UserDetails = ({ openAddAddress }) => {
   const [Address, setAddress] = useState();
   const [checked, setchecked] = useState(false);
   const [addressIndex, setaddressIndex] = useState();
-  console.log("user data from app context", userData.address);
-  console.log("user data from clerk", user);
+  //console.log("user data from app context", userData.address);
+  //console.log("user data from clerk", user);
 
   const dropdownHandler = () => {
     if (checked) {

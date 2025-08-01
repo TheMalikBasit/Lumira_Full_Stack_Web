@@ -13,7 +13,7 @@ export default function ClerkFirebaseBridge() {
   useEffect(() => {
     const syncFirebaseAuth = async () => {
       if (!userId) {
-        console.log("ℹ️ No Clerk user signed in. Skipping Firebase Auth sync.");
+        //console.log("ℹ️ No Clerk user signed in. Skipping Firebase Auth sync.");
         return;
       }
 
@@ -22,13 +22,14 @@ export default function ClerkFirebaseBridge() {
         const token = await getToken({ template: "integration_firebase" });
 
         if (!token) {
-          console.log("ℹ️ Clerk returned no Firebase token.");
+          //console.log("ℹ️ Clerk returned no Firebase token.");
           return;
         }
 
         await signInWithCustomToken(firebaseAuth, token);
 
-        console.log("✅ Firebase Auth signed in successfully.");
+        // console.log("✅ Firebase Auth signed in successfully.");
+        toast.success("Sign in success");
       } catch (err) {
         console.error("❌ Error signing in Firebase Auth:", err);
         toast.error("Firebase authentication failed. Check console.");

@@ -17,7 +17,7 @@ export default function ProductsFetcher() {
           ...doc.data(),
         }));
         setProducts(products);
-        console.log("Products fetched successfully:", products);
+        //console.log("Products fetched successfully:", products);
       } catch (error) {
         alert("Failed to fetch products.");
       }

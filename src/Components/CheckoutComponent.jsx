@@ -46,14 +46,13 @@ const Checkout = () => {
   const [selectedShippingData, setSelectedShippingData] = useState({});
   const [Subtotal, setSubtotal] = useState(null);
   const [shipmentCharges, setShipmentCharges] = useState(null);
+  const [paymentOption, setpaymentOption] = useState("");
+  const [transactionId, setTransactionId] = useState("");
+
   //Summarized info that will be used for checkout
   const [AllComponentInfo, setAllComponentInfo] = useState({
     shippingInfo: selectedShippingData,
   });
-
-  const handleReload = () => {
-    setReloadKey((prev) => prev + 1);
-  };
 
   const handleAddressSelection = (index) => {
     const selectedAddress = shipmentData.at(index);
@@ -62,12 +61,27 @@ const Checkout = () => {
     } else {
       setSelectedShippingData(selectedAddress);
     }
-    console.log("Handle Address Selection is called");
+    //console.log("Handle Address Selection is called");
+  };
+
+  const handlePaymentSelection = (Method) => {
+    if (Method != "") {
+      if (Method === "cod" && selectedShippingData.Country != "Pakistan") {
+        setpaymentOption("");
+      } else {
+        setpaymentOption(Method);
+      }
+    } else {
+      setpaymentOption("");
+    }
+  };
+
+  const handleReload = () => {
+    setReloadKey((prev) => prev + 1);
   };
 
   const handleToggle = () => {
     setToggleNewAddress(!toggleNewAddress);
-    console.log("Toggle address function...........", toggleNewAddress);
   };
 
   const handleTotal = (total) => {
@@ -82,7 +96,6 @@ const Checkout = () => {
   }, [userData]);
 
   useEffect(() => {
-    console.log("Selected data by checkout component", selectedShippingData);
     if (selectedShippingData) {
       const country = selectedShippingData.Country;
       const city = selectedShippingData.City;
@@ -105,8 +118,8 @@ const Checkout = () => {
     if (!user) {
       toast.error("Login to complete your order");
     }
-  }, [user]);
-  console.log("Handle Total ", Subtotal);
+  }, [isSignedIn]);
+
   return (
     <>
       <Navbar relative />
@@ -223,7 +236,11 @@ const Checkout = () => {
               </div>
 
               {/* Payment Information */}
-              <Payment />
+              <Payment
+                paymentSelection={handlePaymentSelection}
+                CountryData={selectedShippingData.Country}
+                setTransactionId={setTransactionId}
+              />
             </div>
 
             {/* Order Summary */}
@@ -231,6 +248,7 @@ const Checkout = () => {
               shipmentCharge={shipmentCharges}
               totalCharged={handleTotal}
               selectedShippingData={selectedShippingData}
+              selectedPaymentData={paymentOption}
             />
           </div>
         </div>

@@ -60,7 +60,6 @@ const RenderCart = () => {
     const features = product.features?.slice(0, 2) || [];
 
     const isInStock = product.availableStock > 0;
-    console.log("From RenderCart inStock: ", isInStock);
     return (
       <Card
         key={id}
