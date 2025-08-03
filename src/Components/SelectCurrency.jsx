@@ -8,7 +8,8 @@ import { Country, State, City } from "country-state-city";
 import { Input } from "@/Components/UI/input";
 import { Label } from "@/Components/UI/label";
 import { LottieLoading } from "./Loading";
-const SelectCurrency = () => {
+import toast from "react-hot-toast";
+const SelectCurrency = ({ toggleCurrency }) => {
   const allCountries = Country.getAllCountries();
   const [queryCountry, setQueryCountry] = useState("");
   const [selectedCountry, setSelectedCountry] = useState(null);
@@ -57,29 +58,46 @@ const SelectCurrency = () => {
   }, []);
   const currencies = [
     { code: "USD", name: "US Dollar", symbol: "$", flag: "🇺🇸" },
+    {
+      code: "AED",
+      name: "United Arab Emirates Dirham",
+      symbol: "د.إ",
+      flag: "🇦🇪",
+    },
     { code: "EUR", name: "Euro", symbol: "€", flag: "🇪🇺" },
     { code: "GBP", name: "British Pound", symbol: "£", flag: "🇬🇧" },
     { code: "JPY", name: "Japanese Yen", symbol: "¥", flag: "🇯🇵" },
-    { code: "CAD", name: "Canadian Dollar", symbol: "C$", flag: "🇨🇦" },
-    { code: "AUD", name: "Australian Dollar", symbol: "A$", flag: "🇦🇺" },
-    { code: "PKR", name: "Pakistan Ruppee", symbol: "RS", flag: "🇵🇰" },
+    // { code: "CAD", name: "Canadian Dollar", symbol: "C$", flag: "🇨🇦" },
+    // { code: "AUD", name: "Australian Dollar", symbol: "A$", flag: "🇦🇺" },
+    // { code: "PKR", name: "Pakistan Ruppee", symbol: "RS", flag: "🇵🇰" },
     // { code: "CHF", name: "Swiss Franc", symbol: "Fr", flag: "🇨🇭" },
-    // { code: "CNY", name: "Chinese Yuan", symbol: "¥", flag: "🇨🇳" },
+    { code: "CNY", name: "Chinese Yuan", symbol: "¥", flag: "🇨🇳" },
   ];
-  const { Currency, loading } = useAppContext();
+  const { Currency, loading, setLoading, Symbol } = useAppContext();
   const [selectedCurrency, setSelectedCurrency] = useState("USD");
+  const [selectedSymbol, setSelectedSymbol] = useState("$");
+
   const [isOpen, setIsOpen] = useState(true);
-  const handleCurrencySelect = (currencyCode) => {
+  const handleCurrencySelect = (currencyCode, symbol) => {
     setSelectedCurrency(currencyCode);
+    setSelectedSymbol(symbol);
   };
 
   useEffect(() => {
     setSelectedCurrency(Currency);
+    setSelectedSymbol(Symbol);
   }, [Currency]);
+
+  useEffect(() => {
+    setIsOpen(toggleCurrency);
+  }, [toggleCurrency]);
 
   const handleConfirm = () => {
     localStorage.setItem("selectedCurrency", selectedCurrency);
+    localStorage.setItem("selectedSymbol", selectedSymbol);
+    toast.success("Currency Updated");
     setIsOpen(false);
+    window.location.reload();
   };
 
   useEffect(() => {
@@ -161,7 +179,9 @@ const SelectCurrency = () => {
               {currencies.map((currency) => (
                 <button
                   key={currency.code}
-                  onClick={() => handleCurrencySelect(currency.code)}
+                  onClick={() =>
+                    handleCurrencySelect(currency.code, currency.symbol)
+                  }
                   className={`
                 relative p-4 rounded-xl border-2 transition-all duration-200 hover:scale-105
                 ${
@@ -190,34 +210,26 @@ const SelectCurrency = () => {
 
               {/* Custom Currency */}
             </div>
-            <div ref={countryRef} className="relative mb-4">
-              {/* <Label className="text-sm font-medium">Country</Label> */}
-              <div className="relative p-2 rounded-xl border-2 transition-all duration-200 hover:scale-105 border-n-border bg-n-card hover:border-n-primary/30 hover:bg-n-primary/5 focus:ring-2 focus:ring-n-primary/20 focus:border-n-primary">
-                <Input
-                  type="text"
-                  placeholder={queryCountry ? queryCountry : "Select country"}
-                  value={queryCountry}
-                  onChange={handleCountryInput}
-                  onFocus={() => setDropdownCountry(true)}
-                  className="border-none focus:border-n-foreground"
-                />
-              </div>
-              {dropdownCountry && (
-                <ul className="absolute bottom-full rounded-lg z-10 w-full max-h-60 overflow-auto ring-2 ring-n-primary/20 border-n-primary transition-all duration-300 bg-white border shadow [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
-                  {filteredCountries.map((country) => (
-                    <li
-                      key={country.isoCode}
-                      onClick={() => handleSelectCountry(country)}
-                      className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-                    >
-                      {country.name}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
           </>
         )}
+        <div
+          className={`
+                relative mb-3 p-4 rounded-xl border-2 transition-all duration-300 hover:scale-105
+                ${
+                  selectedCurrency != "USD"
+                    ? "max-h-40 opacity-100 py-2"
+                    : "max-h-0 pointer-events-none opacity-0 py-0"
+                }
+              `}
+        >
+          <p className="font-semibold text-n-foreground text-sm">Note: </p>
+          <p className="text-sm text-n-muted_foreground">
+            Exchanged values from USD to {selectedCurrency} may not be accurate.
+            All prices are shown in your local currency for convenience. Final
+            payment will be processed in USD at the latest exchange rate. Your
+            bank may apply a conversion fee.
+          </p>
+        </div>
 
         {/* Confirm Button */}
         <Button

@@ -1672,3 +1672,33 @@
 //       />
 //       <FooterTwo padLinesHide white /> */
 // }
+
+//Currency Picker
+//<div ref={countryRef} className="relative mb-4">
+{
+  /* <Label className="text-sm font-medium">Country</Label> */
+}
+//            <div className="relative p-2 rounded-xl border-2 transition-all duration-200 hover:scale-105 border-n-border bg-n-card hover:border-n-primary/30 hover:bg-n-primary/5 focus:ring-2 focus:ring-n-primary/20 focus:border-n-primary">
+//             <Input
+//              type="text"
+//               placeholder={queryCountry ? queryCountry : "Select country"}
+//       value={queryCountry}
+//       onChange={handleCountryInput}
+//       onFocus={() => setDropdownCountry(true)}
+//       className="border-none focus:border-n-foreground"
+//     />
+//   </div>
+//   {dropdownCountry && (
+//     <ul className="absolute bottom-full rounded-lg z-10 w-full max-h-60 overflow-auto ring-2 ring-n-primary/20 border-n-primary transition-all duration-300 bg-white border shadow [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+//       {filteredCountries.map((country) => (
+//         <li
+//           key={country.isoCode}
+//           onClick={() => handleSelectCountry(country)}
+//           className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+//         >
+//           {country.name}
+//         </li>
+//       ))}
+//     </ul>
+//   )}
+// </div>

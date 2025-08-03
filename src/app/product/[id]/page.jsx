@@ -7,6 +7,7 @@ import { useAppContext } from "@/Context/AppContext";
 import Navbar from "../../../components/Navbar";
 import Footer from "@/Components/LumiraFooter";
 import { Loading, LottieLoading } from "@/Components/Loading";
+import PriceTag from "@/Components/PriceTag";
 import Image from "next/image";
 import {
   ArrowLeft,
@@ -70,13 +71,14 @@ const Product = () => {
     cartItems,
     addToCart,
     updateCartQuantity,
-    currency,
+    Currency,
     router,
     loading,
     localCart,
     addToLocalCart,
     removeFromLocalCart,
     deleteFromLocalCart,
+    Symbol,
   } = useAppContext();
 
   const [productData, setProductData] = useState(null);
@@ -244,8 +246,20 @@ const Product = () => {
             {/* Pricing */}
             <div className="flex items-baseline gap-3">
               <span className="text-3xl font-bold text-n-foreground">
-                {currency}
-                {productData.price}
+                {/* {currency} */}
+
+                {Currency === "USD" ? (
+                  <>
+                    {productData.price}
+                    {Symbol}
+                  </>
+                ) : (
+                  <PriceTag
+                    basePrice={productData.price}
+                    userCurrency={Currency}
+                    symbol={Symbol}
+                  />
+                )}
               </span>
               {/* {productData.originalPrice && (
                 <>
@@ -262,12 +276,36 @@ const Product = () => {
               {saveOffer(productData.price, productData.originalPrice) && (
                 <>
                   <span className="text-xl text-n-muted_foreground line-through">
-                    {currency}
-                    {productData.originalPrice}
+                    {Currency === "USD" ? (
+                      <>
+                        {productData.originalPrice}
+                        {Symbol}
+                      </>
+                    ) : (
+                      <PriceTag
+                        basePrice={productData.originalPrice}
+                        userCurrency={Currency}
+                        symbol={Symbol}
+                      />
+                    )}
                   </span>
                   <Badge variant="destructive">
-                    Save {currency}
-                    {productData.originalPrice - productData.price}
+                    {Currency === "USD" ? (
+                      <>
+                        Save {Symbol}
+                        {productData.originalPrice - productData.price}
+                      </>
+                    ) : (
+                      <>
+                        Save {Symbol}
+                        <PriceTag
+                          basePrice={
+                            productData.originalPrice - productData.price
+                          }
+                          userCurrency={Currency}
+                        />
+                      </>
+                    )}
                   </Badge>
                 </>
               )}
@@ -515,13 +553,25 @@ const Product = () => {
                         {product.badge}
                       </Badge>
                     )}
-                    {product.originalPrice && (
+                    {product.originalPrice != product.price && (
                       <Badge
                         variant="destructive"
                         className="absolute bottom-3 left-3 bg-n-lumira_coral text-white"
                       >
-                        Save {currency}
-                        {product.originalPrice - product.price}
+                        {Currency === "USD" ? (
+                          <>
+                            Save {Symbol}
+                            {product.originalPrice - product.price}
+                          </>
+                        ) : (
+                          <>
+                            Save {Symbol}
+                            <PriceTag
+                              basePrice={product.originalPrice - product.price}
+                              userCurrency={Currency}
+                            />
+                          </>
+                        )}
                       </Badge>
                     )}
                   </div>
@@ -551,13 +601,33 @@ const Product = () => {
                     </div>
                     <div className="flex items-center gap-2 mb-4">
                       <span className="text-lg font-bold text-n-foreground">
-                        {currency}
-                        {product.price}
+                        {Currency === "USD" ? (
+                          <>
+                            {product.price}
+                            {Symbol}
+                          </>
+                        ) : (
+                          <PriceTag
+                            basePrice={product.price}
+                            userCurrency={Currency}
+                            symbol={Symbol}
+                          />
+                        )}
                       </span>
                       {product.originalPrice && (
                         <span className="text-sm text-n-muted_foreground line-through">
-                          {currency}
-                          {product.originalPrice}
+                          {Currency === "USD" ? (
+                            <>
+                              {product.originalPrice}
+                              {Symbol}
+                            </>
+                          ) : (
+                            <PriceTag
+                              basePrice={product.originalPrice}
+                              userCurrency={Currency}
+                              symbol={Symbol}
+                            />
+                          )}
                         </span>
                       )}
                     </div>

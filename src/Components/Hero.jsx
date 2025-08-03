@@ -98,7 +98,7 @@ const Hero = () => {
                 controls
                 className="w-full h-full object-cover rounded-2xl"
                 style={{ pointerEvents: "auto" }}
-                controlsList="nodownload nofullscreen noremoteplayback"
+                controlsList="nodownload noremoteplayback"
               />
               <style jsx>{`
                 video::-webkit-media-controls-timeline {

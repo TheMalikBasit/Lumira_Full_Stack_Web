@@ -9,13 +9,21 @@ import {
   CardTitle,
 } from "@/Components/UI/card";
 import { Button } from "@/Components/UI/lumiraButton";
-import { ShoppingBag } from "lucide-react";
+import { Currency, ShoppingBag } from "lucide-react";
 import { Separator } from "@/Components/UI/separator";
 import Link from "next/link";
-
+import PriceTag from "./PriceTag";
 const OrderSummaryClassic = () => {
-  const { getCartAmount, currency, darkMode, getLocalCartAmount, products } =
-    useAppContext();
+  const {
+    getCartAmount,
+    Currency,
+    darkMode,
+    getLocalCartAmount,
+    products,
+    Symbol,
+    cartItems,
+    localCart,
+  } = useAppContext();
   const { isSignedIn } = useUser();
 
   //   const [shipmentCharges, setshipmentCharges] = useState(0);
@@ -27,10 +35,28 @@ const OrderSummaryClassic = () => {
   //   }
   // }, [getCartAmount, getLocalCartAmount, products]);
 
-  const subtotal = isSignedIn ? getCartAmount() : getLocalCartAmount();
-  const tax = Math.floor(subtotal * 0.02);
-  const total = subtotal + tax;
+  const currentCart = isSignedIn ? cartItems : localCart;
+  const checkedItems = currentCart.filter((item) => item.checked);
 
+  const orderItems = checkedItems
+    .map((item) => products.find((product) => product.id === item.id))
+    .filter(Boolean);
+
+  const fetchQuantity = (id) => {
+    const item = currentCart.find((item) => item.id === id);
+    return item ? item.quantity : 0;
+  };
+
+  const subtotal = orderItems.reduce(
+    (sum, item) => sum + item.price * fetchQuantity(item.id),
+    0
+  );
+  // const tax = subtotal * 0.02;
+  const total = subtotal;
+
+  console.log("Currency from summary: ", Currency);
+  console.log("getLocalCartAmount from summary: ", getLocalCartAmount);
+  console.log("getCartAmount from summary: ", getCartAmount);
   return (
     <Card
       className="border-n-border/50 sticky shadow-elegant hover:shadow-glow transition-all duration-200 backdrop-blur-sm bg-n-card/90 overflow-hidden group animate-fade-in"
@@ -55,8 +81,17 @@ const OrderSummaryClassic = () => {
               Subtotal
             </span>
             <span className="text-n-foreground font-bold text-lg">
-              {currency}
-              {subtotal.toFixed(2)}
+              {Currency === "USD" ? (
+                <>
+                  {subtotal.toFixed(2)} {Symbol}
+                </>
+              ) : (
+                <PriceTag
+                  basePrice={subtotal.toFixed(2)}
+                  userCurrency={Currency}
+                  symbol={Symbol}
+                />
+              )}
             </span>
           </div>
           <div className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent">
@@ -64,8 +99,8 @@ const OrderSummaryClassic = () => {
               Shipping
             </span>
 
-            <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
-              Depends on your shipment location🤷‍♀️
+            <span className="text-xs text-emerald-700 py-1 text-end">
+              Depends on Shipment Location
             </span>
           </div>
           {/* <div className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent">
@@ -90,12 +125,21 @@ const OrderSummaryClassic = () => {
             </p>
           </div>
           <span className="text-n-foreground font-bold text-3xl relative z-10">
-            {currency}
-            {total.toFixed(2)}
+            {Currency === "USD" ? (
+              <>
+                {total.toFixed(2)} {Symbol}
+              </>
+            ) : (
+              <PriceTag
+                basePrice={total.toFixed(2)}
+                userCurrency={Currency}
+                symbol={Symbol}
+              />
+            )}
           </span>
         </div>
 
-        {subtotal < 200 && (
+        {/* {subtotal < 200 && (
           <div className="p-4 rounded-xl bg-gradient-to-r from-n-lumira_coral/10 to-n-lumira_salmon/10 border border-n-lumira_coral/30 relative overflow-hidden animate-pulse">
             <div className="absolute inset-0 bg-gradient-to-r from-n-lumira_coral/5 to-transparent"></div>
             <div className="relative z-10">
@@ -105,14 +149,13 @@ const OrderSummaryClassic = () => {
               <p className="text-xs text-n-muted_foreground">
                 Add{" "}
                 <span className="font-bold text-n-lumira_coral">
-                  {currency}
-                  {(200 - subtotal).toFixed(2)}
+                  {(200 - subtotal).toFixed(2)} {Symbol}
                 </span>{" "}
                 more for free shipping
               </p>
             </div>
           </div>
-        )}
+        )} */}
       </CardContent>
 
       <CardFooter className="flex flex-col gap-5 p-8 pt-0">

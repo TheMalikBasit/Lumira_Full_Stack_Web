@@ -20,9 +20,9 @@ import { Button } from "@/Components/UI/lumiraButton";
 import { Card, CardContent } from "@/Components/UI/card";
 import { Badge } from "@/Components/UI/badge";
 import { Input } from "@/Components/UI/input";
-
+import PriceTag from "@/Components/PriceTag";
 const AllProducts = ({ hidden }) => {
-  const { products, router } = useAppContext();
+  const { products, router, Symbol, Currency } = useAppContext();
   const [loading, setloading] = useState(true);
 
   useEffect(() => {
@@ -151,7 +151,20 @@ const AllProducts = ({ hidden }) => {
                         variant="destructive"
                         className="absolute bottom-3 left-3 bg-n-lumira_coral text-white"
                       >
-                        Save ${product.originalPrice - product.price}
+                        {Currency === "USD" ? (
+                          <>
+                            Save {Symbol}
+                            {product.originalPrice - product.price}
+                          </>
+                        ) : (
+                          <>
+                            Save {Symbol}
+                            <PriceTag
+                              basePrice={product.originalPrice - product.price}
+                              userCurrency={Currency}
+                            />
+                          </>
+                        )}
                       </Badge>
                     )}
                   </div>
@@ -201,11 +214,33 @@ const AllProducts = ({ hidden }) => {
 
                     <div className="flex items-center gap-2 mb-4">
                       <span className="text-lg font-bold text-n-foreground">
-                        ${product.price}
+                        {Currency === "USD" ? (
+                          <>
+                            {product.price}
+                            {Symbol}
+                          </>
+                        ) : (
+                          <PriceTag
+                            basePrice={product.price}
+                            userCurrency={Currency}
+                            symbol={Symbol}
+                          />
+                        )}
                       </span>
-                      {product.originalPrice && (
+                      {product.originalPrice != product.price && (
                         <span className="text-sm text-n-muted_foreground line-through">
-                          ${product.originalPrice}
+                          {Currency === "USD" ? (
+                            <>
+                              {product.originalPrice}
+                              {Symbol}
+                            </>
+                          ) : (
+                            <PriceTag
+                              basePrice={product.originalPrice}
+                              userCurrency={Currency}
+                              symbol={Symbol}
+                            />
+                          )}
                         </span>
                       )}
                     </div>

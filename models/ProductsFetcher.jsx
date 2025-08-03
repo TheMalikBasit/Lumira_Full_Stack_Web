@@ -2,8 +2,9 @@
 
 import { useAppContext } from "@/Context/AppContext";
 import { db } from "../Config/firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, doc, getDocs, getDoc } from "firebase/firestore";
 import { useEffect } from "react";
+import toast from "react-hot-toast";
 
 export default function ProductsFetcher() {
   const { setProducts } = useAppContext();
@@ -12,6 +13,7 @@ export default function ProductsFetcher() {
     const fetchProducts = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "products"));
+
         const products = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
@@ -19,10 +21,9 @@ export default function ProductsFetcher() {
         setProducts(products);
         //console.log("Products fetched successfully:", products);
       } catch (error) {
-        alert("Failed to fetch products.");
+        toast.error("We are facing issues 🤦‍♀️🤦");
       }
     };
-
     fetchProducts();
   }, [setProducts]);
 

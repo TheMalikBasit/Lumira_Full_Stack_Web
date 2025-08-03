@@ -13,6 +13,8 @@ import Image from "next/image";
 import { SignInButton, SignOutButton, UserButton } from "@clerk/nextjs";
 import { useAppContext } from "@/Context/AppContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import SelectCurrency from "./SelectCurrency";
+import { X, Globe, Check } from "lucide-react";
 import {
   faMoon,
   faSun,
@@ -36,7 +38,7 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
   const { isAdmin, router, user, darkMode, loading, setLoading } =
     useAppContext();
   const [openNavigation, setopenNavigation] = useState(false);
-
+  const [showCurrency, setshowCurrency] = useState(false);
   const toggleNavigation = () => {
     if (openNavigation) {
       setopenNavigation(false);
@@ -44,6 +46,14 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
     } else {
       setopenNavigation(true);
       disableBodyScroll(navRef.current);
+    }
+  };
+
+  const toggleCurrency = (option) => {
+    if (option) {
+      setshowCurrency(option);
+    } else {
+      setshowCurrency(!showCurrency);
     }
   };
 
@@ -70,6 +80,7 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
   if (loading) <LottieLoading />;
   return (
     <>
+      {showCurrency && <SelectCurrency toggleCurrency={showCurrency} />}
       <div
         className={`
         ${relative ? "relative" : "fixed"} ${hidden ? "hidden" : "block"} ${
@@ -148,7 +159,7 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
         >
           New Account
         </a> */}
-          {darkMode ? (
+          {/* {darkMode ? (
             <button
               onClick={ToggleMode}
               className="max-w-2xl cursor-pointer Z-10"
@@ -170,7 +181,14 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
                 size="2xl"
               />
             </button>
-          )}
+          )} */}
+
+          <button
+            onClick={toggleCurrency}
+            className="max-w-2xl cursor-pointer Z-10"
+          >
+            <Globe />
+          </button>
           <Button clerk user={user} router={router} className="hidden lg:flex">
             Sign IN
           </Button>

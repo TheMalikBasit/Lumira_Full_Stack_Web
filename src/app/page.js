@@ -56,7 +56,6 @@ export default function Home() {
           />
         </div>
       )}
-      <SelectCurrency />
       <BackLights L1 />
       <div className="pt-[4.75rem] lg:pt-[5.25rem] overflow-hidden">
         <Navbar bgBlur />

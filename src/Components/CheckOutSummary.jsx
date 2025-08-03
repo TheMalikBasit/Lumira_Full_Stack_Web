@@ -8,6 +8,7 @@ import { LottieLoading } from "./Loading";
 import { Separator } from "@/Components/UI/separator";
 import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
+import PriceTag from "./PriceTag";
 import Image from "next/image";
 const CheckOutSummary = ({
   shipmentCharge,
@@ -16,8 +17,16 @@ const CheckOutSummary = ({
   selectedPaymentData,
 }) => {
   const { user, isSignedIn } = useUser();
-  const { router, products, cartItems, localCart, loading, setLoading } =
-    useAppContext();
+  const {
+    router,
+    products,
+    cartItems,
+    localCart,
+    loading,
+    setLoading,
+    Symbol,
+    Currency,
+  } = useAppContext();
 
   const currentCart = isSignedIn ? cartItems : localCart;
   const checkedItems = currentCart.filter((item) => item.checked);
@@ -31,17 +40,20 @@ const CheckOutSummary = ({
     return item ? item.quantity : 0;
   };
 
+  const [total, settotal] = useState(null);
+
   const subtotal = orderItems.reduce(
     (sum, item) => sum + item.price * fetchQuantity(item.id),
     0
   );
   // const tax = subtotal * 0.02;
-  const total = subtotal + shipmentCharge;
 
   useEffect(() => {
-    totalCharged(total);
-  }, [subtotal, total, shipmentCharge]);
+    const temptotal = subtotal + shipmentCharge;
 
+    settotal(temptotal);
+    totalCharged(temptotal);
+  }, [subtotal, total, shipmentCharge]);
   return (
     <>
       <div className="lg:sticky lg:top-8 lg:h-fit">
@@ -104,7 +116,20 @@ const CheckOutSummary = ({
                         </span>
                       </div>
                       <div className="text-lg font-bold bg-text-gradient bg-clip-text text-transparent">
-                        RS{(item.price * fetchQuantity(item.id)).toFixed(2)}
+                        {Currency === "USD" ? (
+                          <>
+                            {(item.price * fetchQuantity(item.id)).toFixed(2)}
+                            {Symbol}
+                          </>
+                        ) : (
+                          <PriceTag
+                            basePrice={(
+                              item.price * fetchQuantity(item.id)
+                            ).toFixed(2)}
+                            userCurrency={Currency}
+                            symbol={Symbol}
+                          />
+                        )}
                       </div>
                     </div>
                   </div>
@@ -122,7 +147,17 @@ const CheckOutSummary = ({
                     Subtotal
                   </span>
                   <span className="text-n-foreground font-bold text-lg">
-                    RS{subtotal.toFixed(2)}
+                    {Currency === "USD" ? (
+                      <>
+                        {subtotal.toFixed(2)} {Symbol}
+                      </>
+                    ) : (
+                      <PriceTag
+                        basePrice={subtotal}
+                        userCurrency={Currency}
+                        symbol={Symbol}
+                      />
+                    )}
                   </span>
                 </div>
                 <div className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent">
@@ -142,7 +177,7 @@ const CheckOutSummary = ({
                       </span>
                     ) : shipmentCharge === 0 ? (
                       <span className="flex items-center">
-                        <span className="text-center text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-lg">
+                        <span className="text-center text-xs text-emerald-700 px-2 py-1">
                           Please note that international shipping rates may be
                           higher due to the fragile nature of the items, which
                           require premium handling and packaging. You will pay
@@ -152,7 +187,21 @@ const CheckOutSummary = ({
                         </span>
                       </span>
                     ) : (
-                      `RS${shipmentCharge}`
+                      <>
+                        <span className="text-n-foreground font-bold text-lg">
+                          {Currency === "USD" ? (
+                            <>
+                              {shipmentCharge} {Symbol}
+                            </>
+                          ) : (
+                            <PriceTag
+                              basePrice={shipmentCharge}
+                              userCurrency={Currency}
+                              symbol={Symbol}
+                            />
+                          )}
+                        </span>
+                      </>
                     )}
                   </span>
                 </div>
@@ -179,7 +228,17 @@ const CheckOutSummary = ({
                   </p>
                 </div>
                 <span className="bg-text-gradient bg-clip-text text-transparent font-bold text-3xl relative z-10">
-                  RS{total.toFixed(2)}
+                  {Currency === "USD" ? (
+                    <>
+                      {total.toFixed(2)} {Symbol}
+                    </>
+                  ) : (
+                    <PriceTag
+                      basePrice={total}
+                      userCurrency={Currency}
+                      symbol={Symbol}
+                    />
+                  )}
                 </span>
               </div>
 

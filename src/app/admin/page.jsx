@@ -7,15 +7,31 @@ import Image from "next/image";
 import StockAddForm from "@/Components/StockAddForm";
 import StockUpdateForm from "@/Components/StockUpdateForm";
 import { useState } from "react";
+import Button from "@/Components/Button";
+import { updateExchangeRates } from "../../../models/updateExchangeRates";
+
 const page = () => {
   const { isAdmin, adminLoading } = useAppContext();
-
+  const [status, setStatus] = useState(null);
   const { products } = useAppContext();
   const [id, setId] = useState("");
 
   const handleUpdateForm = (id) => {
     setId(id);
     //console.log("Selected product ID:", id);
+  };
+
+  const handleUpdate = async () => {
+    setStatus("Updating...");
+    const result = await updateExchangeRates();
+
+    if (result.success) {
+      setStatus(
+        `✅ Rates updated at ${new Date(result.timestamp).toLocaleString()}`
+      );
+    } else {
+      setStatus("❌ Failed to update rates.");
+    }
   };
 
   if (adminLoading) return <LottieLoading />;
@@ -42,6 +58,15 @@ const page = () => {
           </h1>
         </div>
         <div className="container w-full border-t border-gray-700 my-8" />
+        <div className="flex flex-col my-5">
+          <button
+            onClick={handleUpdate}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+          >
+            Update Rates
+          </button>
+          {status && <p className="mt-4 text-gray-800">{status}</p>}
+        </div>
         <div className="flex flex-col lg:justify-around lg:flex-row justify-start">
           <StockAddForm />
           <StockUpdateForm id={id} />

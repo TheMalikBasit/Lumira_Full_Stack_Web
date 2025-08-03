@@ -10,6 +10,7 @@ import { Trash2, Minus, Plus, BaggageClaim } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquare, faCheckSquare } from "@fortawesome/free-regular-svg-icons";
 import toast from "react-hot-toast";
+import PriceTag from "./PriceTag";
 const RenderCart = () => {
   const {
     products,
@@ -26,6 +27,7 @@ const RenderCart = () => {
     deleteFromLocalCart,
     toggleItemChecked,
     toggleLocalItemCheck,
+    Symbol,
   } = useAppContext();
   const { isSignedIn } = useUser();
 
@@ -124,21 +126,43 @@ const RenderCart = () => {
 
               <div className="space-y-3">
                 <div className="flex items-baseline gap-3 space-y-3">
-                  <p className="text-3xl font-bold text-n-foreground">
-                    {product.price}
-                    {Currency}
-                  </p>
+                  <span className="text-3xl font-bold text-n-foreground">
+                    {Currency === "USD" ? (
+                      <>
+                        {product.price}
+                        {Symbol}
+                      </>
+                    ) : (
+                      <PriceTag
+                        basePrice={product.price}
+                        userCurrency={Currency}
+                        symbol={Symbol}
+                      />
+                    )}
+                    {/* {Currency} */}
+                  </span>
                   <p className="text-sm text-n-muted_foreground">per item</p>
                 </div>
                 <div className="flex flex-col md:flex-row gap-4">
-                  <div className="p-4 rounded-xl bg-gradient-to-r from-n-primary/5 to-n-lumira_coral/5 border border-n-primary/10">
+                  <div className="w-full gap-4 p-4 flex items-center rounded-xl bg-gradient-to-r from-n-primary/5 to-n-lumira_coral/5 border border-n-primary/10">
                     <p className="text-sm font-medium text-n-foreground">
                       Subtotal:{" "}
-                      <span className="text-lg text-n-foreground font-bold">
-                        {product.price * quantity}
-                        {Currency}
-                      </span>
                     </p>
+                    <span className="text-lg text-n-foreground font-bold">
+                      {Currency === "USD" ? (
+                        <>
+                          {product.price * quantity}
+                          {Symbol}
+                        </>
+                      ) : (
+                        <PriceTag
+                          basePrice={product.price * quantity}
+                          userCurrency={Currency}
+                          symbol={Symbol}
+                        />
+                      )}
+                      {/* {Currency} */}
+                    </span>
                   </div>
                   <div className="flex flex-row w-full gap-4 justify-center items-center">
                     <div className="flex items-center justify-center w-full gap-4 bg-gradient-to-r from-n-muted/50 to-n-muted/30 rounded-2xl p-4 backdrop-blur-sm border border-n-border/50">

@@ -270,7 +270,7 @@ const StockAddForm = () => {
             />
           </div>
         </div>
-        <div className="w-full flex flex-row gap-4">
+        <div className="w-full flex flex-col gap-4">
           {/* Special Badges Input */}
           <div className="w-full">
             <label className="text-sm text-gray-400">

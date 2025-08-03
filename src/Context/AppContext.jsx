@@ -34,22 +34,28 @@ export const AppContextProvider = (props) => {
   const [adminLoading, setAdminLoading] = useState(true);
   const [darkMode, setdarkMode] = useState(false);
   const [Currency, setCurrency] = useState("");
+  const [Symbol, setSymbol] = useState("");
+  const [CurrencyRates, setCurrencyRates] = useState({});
 
   //console.log("Curency from App Context", Currency);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("selectedCurrency");
+      const symbol = localStorage.getItem("selectedSymbol");
       if (stored) {
         setCurrency(stored);
-
+        setSymbol(symbol);
         //console.log("Currency from localStorage:", stored);
       } else {
         //console.log("No currency found in localStorage");
       }
     }
-  }, []); // empty dependency array: runs ONCE on initial mount
+  }); // empty dependency array: runs ONCE on initial mount
 
+  // console.log("CurrencyRates from app context", CurrencyRates);
+  // const ratesData = CurrencyRates.rates;
+  // console.log("rates : ", ratesData);
   const addToCart = async (id) => {
     let cartData = structuredClone(cartItems);
 
@@ -240,6 +246,10 @@ export const AppContextProvider = (props) => {
     getLocalCartAmount,
     Currency,
     setCurrency,
+    Symbol,
+    setSymbol,
+    CurrencyRates,
+    setCurrencyRates,
   };
 
   return (

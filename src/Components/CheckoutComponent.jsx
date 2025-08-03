@@ -104,9 +104,9 @@ const Checkout = () => {
         setShipmentCharges(null);
       } else if (country === "Pakistan") {
         if (city === "Lahore") {
-          setShipmentCharges(200);
+          setShipmentCharges(6);
         } else {
-          setShipmentCharges(500);
+          setShipmentCharges(12);
         }
       } else {
         setShipmentCharges(0);
