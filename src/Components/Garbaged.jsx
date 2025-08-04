@@ -1702,3 +1702,142 @@
 //     </ul>
 //   )}
 // </div>
+
+//Currency Coverter
+
+// import toast from "react-hot-toast";
+
+// export const currencyConverter = async (amount, from, to) => {
+//   try {
+//     if (from.toUpperCase() === to.toUpperCase()) return amount;
+
+//     const res = await fetch(
+//       `https://api.frankfurter.app/latest?amount=${amount}&from=${from.toUpperCase()}&to=${to.toUpperCase()}`
+//     );
+
+//     const data = await res.json();
+
+//     const rate = data.rates?.[to.toUpperCase()];
+//     if (rate === undefined) {
+//       toast.error(`Rate for ${to} not found in response`);
+//     }
+
+//     return rate;
+//   } catch (error) {
+//     console.error("Currency conversion failed:", error.message);
+//     return null;
+//   }
+// };
+
+//Featured Products code
+{
+  /* <div className="flex flex-col items-center mb-6">
+            <h2 className="text-3xl font-semibold text-n-foreground">
+              Featured <span className="text-orange-600">Products</span>
+            </h2>
+            <div className="w-28 h-0.5 bg-orange-600 mt-2"></div>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-8 pb-14">
+            {products.slice(0, 5).map((product, index) => (
+              <Card key={index} className="card-lumira hover-lift group">
+                <CardContent className="p-0">
+                  <div className="relative overflow-hidden rounded-t-lg">
+                    <Image
+                      src={product.image || product.mainImage}
+                      alt={product.name}
+                      width={320}
+                      height={320}
+                      className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    {product.badge && (
+                      <Badge className="absolute top-3 left-3 bg-n-primary text-n-primary_foreground">
+                        {product.badge}
+                      </Badge>
+                    )}
+                    {product.originalPrice != product.price && (
+                      <Badge
+                        variant="destructive"
+                        className="absolute bottom-3 left-3 bg-n-lumira_coral text-white"
+                      >
+                        {Currency === "USD" ? (
+                          <>
+                            Save {Symbol}
+                            {product.originalPrice - product.price}
+                          </>
+                        ) : (
+                          <>
+                            Save {Symbol}
+                            <PriceTag
+                              basePrice={product.originalPrice - product.price}
+                              userCurrency={Currency}
+                            />
+                          </>
+                        )}
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <Badge variant="secondary" className="mb-2 text-xs">
+                      {product.category}
+                    </Badge>
+                    <h3 className="font-semibold text-n-foreground mb-2 line-clamp-2 min-h-[2.5rem]">
+                      {product.name}
+                    </h3>
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="flex items-center">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`w-4 h-4 ${
+                              i < Math.floor(product.rating || 0)
+                                ? "text-yellow-400 fill-current"
+                                : "text-gray-300"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-sm text-n-muted_foreground">
+                        {product.rating} ({product.reviews})
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className="text-lg font-bold text-n-foreground">
+                        {Currency === "USD" ? (
+                          <>
+                            {product.price}
+                            {Symbol}
+                          </>
+                        ) : (
+                          <PriceTag
+                            basePrice={product.price}
+                            userCurrency={Currency}
+                            symbol={Symbol}
+                          />
+                        )}
+                      </span>
+                      {product.originalPrice && (
+                        <span className="text-sm text-n-muted_foreground line-through">
+                          {Currency === "USD" ? (
+                            <>
+                              {product.originalPrice}
+                              {Symbol}
+                            </>
+                          ) : (
+                            <PriceTag
+                              basePrice={product.originalPrice}
+                              userCurrency={Currency}
+                              symbol={Symbol}
+                            />
+                          )}
+                        </span>
+                      )}
+                    </div>
+                    <Button className="w-full" variant="coral">
+                      <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div> */
+}

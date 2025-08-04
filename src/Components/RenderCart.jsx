@@ -71,7 +71,7 @@ const RenderCart = () => {
         <CardContent className="p-8">
           <div className="flex flex-col sm:flex-row gap-8 sm:items-center">
             {/* ✅ Checkbox to left */}
-            <div className="flex items-start justify-center items-center sm:flex-col gap-4">
+            <div className="flex justify-center items-center sm:flex-col gap-4">
               <FontAwesomeIcon
                 icon={item.checked ? faCheckSquare : faSquare}
                 onClick={toggleCheck}

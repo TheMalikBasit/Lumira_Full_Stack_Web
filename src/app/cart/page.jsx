@@ -47,9 +47,10 @@ const cart = () => {
     removeFromLocalCart,
     deleteFromLocalCart,
   } = useAppContext();
-
+  const { isSignedIn } = useUser();
   const [loading, setloading] = useState(true);
   const [addAddressPopUp, setaddAddressPopUp] = useState(false);
+  const [CART, setCART] = useState([]);
 
   useEffect(() => {
     if (cartItems === undefined || cartItems === null) {
@@ -63,7 +64,10 @@ const cart = () => {
     } else {
       document.body.style.backgroundColor = "#FFFFF4";
     }
-  }, [cartItems, darkMode]);
+
+    const tempCart = isSignedIn ? cartItems : localCart;
+    setCART(tempCart);
+  }, [cartItems, darkMode, isSignedIn]);
 
   if (loading) return <LottieLoading />;
 
@@ -100,8 +104,8 @@ const cart = () => {
                 className="text-n-muted_foreground text-lg animate-fade-in"
                 style={{ animationDelay: "200ms" }}
               >
-                {cartItems.length} {cartItems.length === 1 ? "item" : "items"}{" "}
-                ready for checkout
+                {CART.length} {CART.length === 1 ? "item" : "items"} ready for
+                checkout
               </p>
             </div>
             <div
@@ -111,7 +115,7 @@ const cart = () => {
               <div className="text-right">
                 <p className="text-sm text-n-muted_foreground">Total Items</p>
                 <p className="text-2xl font-bold text-n-foreground">
-                  {cartItems.reduce((sum, item) => sum + item.quantity, 0)}
+                  {CART.reduce((sum, item) => sum + item.quantity, 0)}
                 </p>
               </div>
             </div>

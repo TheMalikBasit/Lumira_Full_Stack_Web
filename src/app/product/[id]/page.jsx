@@ -34,6 +34,8 @@ import { Button } from "@/Components/UI/lumiraButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/UI/card";
 import ProductCard from "../../../Components/ProductCard";
 import { useUser } from "@clerk/nextjs";
+import ProductHighlights from "@/Components/ProductsHighlights";
+import FeaturedProducts from "@/Components/FeaturedProducts";
 // import {
 //   fetchLocalCart,
 //   addLocalProducts,
@@ -97,25 +99,29 @@ const Product = () => {
   const cartProduct = cartItems.find((item) => item.id === id);
   const cartQuantity = cartProduct?.quantity || 0;
 
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % productData.imageUrl.length);
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex(
-      (prev) =>
-        (prev - 1 + productData.imageUrl.length) % productData.imageUrl.length
-    );
-  };
-
   const localCartProduct = localCart.find((item) => item.id === id);
   const localCartQuantity = localCartProduct?.quantity || 0;
+  const isInStock = productData.availableStock > 0;
 
   console.log("Local cart product:", localCartProduct);
   const saveOffer = (price, originalPrice) => {
     if (originalPrice - price > 0) {
       return true;
     }
+  };
+
+  const images = [productData.mainImage, ...(productData.imageUrl || [])];
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  const goToImage = (index) => {
+    setCurrentImageIndex(index);
   };
 
   // const handleAddLocalProduct = () => {
@@ -156,18 +162,18 @@ const Product = () => {
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Image Carousel */}
           <div className="space-y-4">
-            <div className="relative aspect-square rounded-2xl overflow-hidden bg-n-secondary/20 group">
-              <Image
-                src={
-                  productData.imageUrl[currentImageIndex] ||
-                  productData.mainImage
-                }
-                alt={`${productData.name}`}
-                width={720}
-                height={720}
-                className="w-full h-full object-cover"
-              />
-              {productData.imageUrl.length > 1 && (
+            <div className="relative rounded-3xl overflow-hidden bg-n-secondary/20 group">
+              <div className="h-96 w-full flex items-center justify-center">
+                <Image
+                  src={images[currentImageIndex]}
+                  alt={`${productData.name} image ${currentImageIndex + 1}`}
+                  width={720}
+                  height={520}
+                  className="h-full w-auto object-contain transition-all duration-300"
+                />
+              </div>
+
+              {images.length > 1 && (
                 <>
                   <Button
                     variant="ghost"
@@ -185,17 +191,20 @@ const Product = () => {
                   >
                     <ChevronRight className="w-5 h-5" />
                   </Button>
+                  <div className="absolute bottom-4 right-4 bg-n-background/80 px-3 py-1 rounded-full text-sm text-n-foreground">
+                    {currentImageIndex + 1} / {images.length}
+                  </div>
                 </>
               )}
             </div>
 
             {/* Thumbnails */}
-            <div className="grid grid-cols-4 gap-2">
-              {[productData.mainImage, ...productData.imageUrl].map(
-                (img, idx) => (
+            {images.length > 1 && (
+              <div className="grid grid-cols-4 gap-2">
+                {images.map((img, idx) => (
                   <button
                     key={idx}
-                    onClick={() => setCurrentImageIndex(idx)}
+                    onClick={() => goToImage(idx)}
                     className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
                       currentImageIndex === idx
                         ? "border-n-primary ring-2 ring-n-primary/20"
@@ -210,9 +219,9 @@ const Product = () => {
                       className="w-full h-full object-cover"
                     />
                   </button>
-                )
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Product Info */}
@@ -261,18 +270,6 @@ const Product = () => {
                   />
                 )}
               </span>
-              {/* {productData.originalPrice && (
-                <>
-                  <span className="text-xl text-n-muted_foreground line-through">
-                    {currency}
-                    {productData.originalPrice}
-                  </span>
-                  <Badge variant="destructive">
-                    Save {currency}
-                    {productData.originalPrice - productData.price}
-                  </Badge>
-                </>
-              )} */}
               {saveOffer(productData.price, productData.originalPrice) && (
                 <>
                   <span className="text-xl text-n-muted_foreground line-through">
@@ -317,25 +314,16 @@ const Product = () => {
             </p>
 
             {/* Features */}
-            <div>
-              <h3 className="font-semibold text-n-foreground mb-2">
-                Key Features:
-              </h3>
-              <div className="grid grid-cols-1 gap-1">
-                {/* {productData.features?.map((feature, i) => (
-                  <div key={i} className="flex gap-2 items-center">
-                    <div className="w-2 h-2 rounded-full bg-primary" />
-                    <span className="text-muted-foreground">{feature}</span>
+
+            <div className="space-y-4 mb-8">
+              <h3 className="font-semibold text-foreground">Key Features:</h3>
+              <div className="grid grid-cols-1 gap-2">
+                {productData.features.map((feature, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-n-primary" />
+                    <span className="text-n-muted_foreground">{feature}</span>
                   </div>
-                ))} */}
-                <div className="flex gap-2 items-center">
-                  <div className="w-2 h-2 rounded-full bg-primary" />
-                  <span className="text-n-muted_foreground">
-                    <Badge variant="secondary" className="text-xs">
-                      {productData.features}
-                    </Badge>
-                  </span>
-                </div>
+                ))}
               </div>
             </div>
 
@@ -406,6 +394,28 @@ const Product = () => {
               <Button variant="outline">
                 <Heart className="w-5 h-5" />
               </Button>
+            </div>
+            <div className="text-sm text-n-muted_foreground">
+              <div className="flex items-center gap-2 mb-1">
+                <span
+                  className={`w-2 h-2 rounded-full ${
+                    isInStock ? "bg-green-500" : "bg-red-500"
+                  }`}
+                />
+                {isInStock ? "In Stock" : "Out of Stock"}
+                <span
+                  className={`${
+                    productData.availableStock > 20
+                      ? "text-emerald-700"
+                      : "text-cyan-900"
+                  }`}
+                >
+                  {"("}
+                  {productData.availableStock}
+                  {")"}
+                  {productData.availableStock > 20 ? "" : " Almost Out 🔥🔥"}
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -536,112 +546,14 @@ const Product = () => {
             </h2>
             <div className="w-28 h-0.5 bg-orange-600 mt-2"></div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-8 pb-14">
-            {products.slice(0, 5).map((product, index) => (
-              <Card key={index} className="card-lumira hover-lift group">
-                <CardContent className="p-0">
-                  <div className="relative overflow-hidden rounded-t-lg">
-                    <Image
-                      src={product.image || product.mainImage}
-                      alt={product.name}
-                      width={320}
-                      height={320}
-                      className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    {product.badge && (
-                      <Badge className="absolute top-3 left-3 bg-n-primary text-n-primary_foreground">
-                        {product.badge}
-                      </Badge>
-                    )}
-                    {product.originalPrice != product.price && (
-                      <Badge
-                        variant="destructive"
-                        className="absolute bottom-3 left-3 bg-n-lumira_coral text-white"
-                      >
-                        {Currency === "USD" ? (
-                          <>
-                            Save {Symbol}
-                            {product.originalPrice - product.price}
-                          </>
-                        ) : (
-                          <>
-                            Save {Symbol}
-                            <PriceTag
-                              basePrice={product.originalPrice - product.price}
-                              userCurrency={Currency}
-                            />
-                          </>
-                        )}
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <Badge variant="secondary" className="mb-2 text-xs">
-                      {product.category}
-                    </Badge>
-                    <h3 className="font-semibold text-n-foreground mb-2 line-clamp-2 min-h-[2.5rem]">
-                      {product.name}
-                    </h3>
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`w-4 h-4 ${
-                              i < Math.floor(product.rating || 0)
-                                ? "text-yellow-400 fill-current"
-                                : "text-gray-300"
-                            }`}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-sm text-n-muted_foreground">
-                        {product.rating} ({product.reviews})
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 mb-4">
-                      <span className="text-lg font-bold text-n-foreground">
-                        {Currency === "USD" ? (
-                          <>
-                            {product.price}
-                            {Symbol}
-                          </>
-                        ) : (
-                          <PriceTag
-                            basePrice={product.price}
-                            userCurrency={Currency}
-                            symbol={Symbol}
-                          />
-                        )}
-                      </span>
-                      {product.originalPrice && (
-                        <span className="text-sm text-n-muted_foreground line-through">
-                          {Currency === "USD" ? (
-                            <>
-                              {product.originalPrice}
-                              {Symbol}
-                            </>
-                          ) : (
-                            <PriceTag
-                              basePrice={product.originalPrice}
-                              userCurrency={Currency}
-                              symbol={Symbol}
-                            />
-                          )}
-                        </span>
-                      )}
-                    </div>
-                    <Button className="w-full" variant="coral">
-                      <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-          <div className="text-center">
-            <Button size="lg" variant="outline" className="min-w-[200px] mb-12">
-              See More
+          <FeaturedProducts id={id} />
+          <div className="text-center my-12">
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => router.push("/all-products")}
+            >
+              View All Products
             </Button>
           </div>
         </div>

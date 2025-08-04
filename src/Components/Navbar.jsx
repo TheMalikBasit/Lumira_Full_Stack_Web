@@ -86,7 +86,7 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
         ${relative ? "relative" : "fixed"} ${hidden ? "hidden" : "block"} ${
           classic ? "border-black" : ""
         } ${
-          bgBlur ? "backdrop-blur-xl border-b border-black" : ""
+          bgBlur ? "lg:backdrop-blur-xl border-b border-black" : ""
         } w-full top-0 left-0 right-0 z-50`}
       >
         <div className="flex items-center px-5 sm:px-10 lg:px-[75px] xl:px-40 max-lg:py-4">
@@ -185,7 +185,7 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
 
           <button
             onClick={toggleCurrency}
-            className="max-w-2xl cursor-pointer Z-10"
+            className="max-w-2xl cursor-pointer Z-10 mr-5"
           >
             <Globe />
           </button>

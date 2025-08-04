@@ -10,6 +10,9 @@ import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
 import PriceTag from "./PriceTag";
 import Image from "next/image";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../../Config/firebase";
+import toast from "react-hot-toast";
 const CheckOutSummary = ({
   shipmentCharge,
   totalCharged,
@@ -54,6 +57,82 @@ const CheckOutSummary = ({
     settotal(temptotal);
     totalCharged(temptotal);
   }, [subtotal, total, shipmentCharge]);
+
+  const handleCheckout = async () => {
+    if (!user || !selectedShippingData) {
+      toast.error("Missing shipping or user data");
+      return;
+    }
+
+    if (checkedItems.length === 0) {
+      toast.error("No items selected for checkout.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const itemsToSend = checkedItems.map((ci) => {
+        const product = orderItems.find((p) => p.id === ci.id);
+        if (!product) throw new Error("Product not found in orderItems.");
+
+        return {
+          id: ci.id,
+          quantity: ci.quantity,
+          price: Math.round(product.price * 100), // cents for Stripe
+          name: product.name,
+        };
+      });
+
+      const totalAmount =
+        checkedItems.reduce((acc, curr) => {
+          const product = orderItems.find((p) => p.id === curr.id);
+          return acc + (product?.price || 0) * curr.quantity;
+        }, 0) + shipmentCharge;
+
+      if (selectedPaymentData === "stripe") {
+        const res = await fetch("/api/create-checkout-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            items: itemsToSend,
+            userId: user.id,
+            shippingInfo: selectedShippingData,
+          }),
+        });
+
+        if (!res.ok) throw new Error("Failed to create Stripe session");
+
+        const data = await res.json();
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          toast.error("Stripe URL missing in response");
+        }
+      } else if (selectedPaymentData === "cod") {
+        // 🔧 Enhanced COD order object
+        const orderData = {
+          userId: user.id,
+          shippingInfo: selectedShippingData,
+          cartItems: checkedItems, // Use full item info if needed
+          total: totalAmount,
+          paymentStatus: "COD",
+          isPaid: false,
+          createdAt: new Date().toISOString(),
+        };
+
+        await addDoc(collection(db, "placedOrders"), orderData);
+        toast.success("Order placed with Cash on Delivery.");
+        router.push("/payment-success?method=cod");
+      }
+    } catch (error) {
+      console.error("Checkout error:", error);
+      toast.error(error.message || "An unexpected error occurred.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <div className="lg:sticky lg:top-8 lg:h-fit">
@@ -230,7 +309,7 @@ const CheckOutSummary = ({
                 <span className="bg-text-gradient bg-clip-text text-transparent font-bold text-3xl relative z-10">
                   {Currency === "USD" ? (
                     <>
-                      {total.toFixed(2)} {Symbol}
+                      {total} {Symbol}
                     </>
                   ) : (
                     <PriceTag
@@ -307,7 +386,10 @@ const CheckOutSummary = ({
                 </>
               ) : (
                 <>
-                  <Button className="w-full bg-gradient-warm hover:shadow-glow transition-all duration-500 text-lg py-8 rounded-xl font-bold tracking-wide hover-lift relative overflow-hidden group">
+                  <Button
+                    onClick={handleCheckout}
+                    className="w-full bg-gradient-warm hover:shadow-glow transition-all duration-500 text-lg py-8 rounded-xl font-bold tracking-wide hover-lift relative overflow-hidden group"
+                  >
                     <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                     <span className="relative z-10 flex items-center justify-center gap-3">
                       <Lock className="h-5 w-5" />
