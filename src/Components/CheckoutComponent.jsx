@@ -120,6 +120,7 @@ const Checkout = () => {
     }
   }, [isSignedIn]);
 
+  console.log("payment method", paymentOption);
   return (
     <>
       <Navbar relative />

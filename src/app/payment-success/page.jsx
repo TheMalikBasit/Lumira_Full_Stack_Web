@@ -1,55 +1,385 @@
 "use client";
-
-import { useEffect } from "react";
+import { CheckCircle, Package, CreditCard, Truck, Clock } from "lucide-react";
+import { Button } from "@/Components/UI/lumiraButton";
+import { Card, CardContent, CardHeader, CardTitle } from "@/Components/UI/card";
+import { Badge } from "@/Components/UI/badge";
+import { Separator } from "@/Components/UI/separator";
+import Navbar from "@/Components/Navbar";
+// import { useState as useModalState } from "react";
+// import SupportModal, { SupportSection } from "@/components/SupportModal";
+import { useEffect, useState } from "react";
 import { db } from "../../../Config/firebase";
-import { useSearchParams, useRouter } from "next/navigation";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import { useSearchParams } from "next/navigation";
+import Image from "next/image";
+import { Loader2 } from "lucide-react";
 import { useAppContext } from "@/Context/AppContext";
-import toast from "react-hot-toast";
-
+import BackLights from "@/Components/BackLights";
 export default function PaymentSuccess() {
-  const { cartItems, shippingInfo, user } = useAppContext();
-  const params = useSearchParams();
-  const router = useRouter();
-
+  const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const { products, router } = useAppContext();
+  const [orderedProducts, setOrderedProducts] = useState([]);
+  const searchParams = useSearchParams();
+  const orderId = searchParams.get("orderId");
+  const method = searchParams.get("method");
+  const [newDateVar, setNewDateVar] = useState(null);
   useEffect(() => {
-    const placeOrder = async () => {
+    if (!orderId) return;
+
+    const fetchOrder = async () => {
       try {
-        const isStripe = params.get("session_id");
-        const isCOD = params.get("method") === "cod";
+        const docRef = doc(db, "placedOrders", orderId);
+        const docSnap = await getDoc(docRef);
 
-        if (!cartItems || !shippingInfo || !user) return;
-
-        const newOrder = {
-          userId: user.id,
-          shippingInfo,
-          cartItems,
-          total: cartItems.reduce(
-            (acc, curr) => acc + curr.price * curr.quantity,
-            0
-          ),
-          paymentStatus: isStripe ? "Paid" : "COD",
-          isPaid: !!isStripe,
-          createdAt: serverTimestamp(),
-        };
-
-        await addDoc(collection(db, "placedOrders"), newOrder);
-        toast.success("Order placed successfully! 🎉");
-
-        router.push("/order-confirmed");
+        if (docSnap.exists()) {
+          setOrder({ id: docSnap.id, ...docSnap.data() });
+        }
       } catch (err) {
-        toast.error("Failed to place order!");
-        console.error(err);
+        console.error("Error fetching order:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
-    placeOrder();
-  }, []);
+    fetchOrder();
+  }, [orderId]);
+  const dateObj = new Date(newDateVar);
+  const date = dateObj.toLocaleDateString();
+  const time = dateObj.toLocaleTimeString();
+  useEffect(() => {
+    if (order) {
+      const filteredProducts = products
+        .map((prod) => {
+          const cartItem = order?.cartItems?.find(
+            (item) => item.id === prod.id
+          );
+          return cartItem ? { ...prod, ...cartItem } : null;
+        })
+        .filter(Boolean);
+      const timeStamp = order.orderDate;
+
+      setNewDateVar(timeStamp);
+      setOrderedProducts(filteredProducts);
+    }
+  }, [order]);
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin text-n-primary" />
+        <p className="mt-2 text-n-muted_foreground">
+          Loading your order summary...
+        </p>
+      </div>
+    );
+  }
+
+  if (!order) {
+    return (
+      <div className="p-8 text-center text-red-500">
+        Order not found. Please contact support if you believe this is an error.
+      </div>
+    );
+  }
 
   return (
     <>
-      <div className="p-8 text-center">Your order is placed successfully</div>
-      <div></div>
+      <BackLights L1 L2 L3 />
+      <Navbar bgBlur />
+      <div className="min-h-screen backdrop-blur-2xl mt-20">
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-4xl mx-auto">
+            {/* Success Header */}
+            <div className="text-center mb-8">
+              <CheckCircle className="h-20 w-20 text-n-foreground mx-auto mb-4" />
+              {method == "stripe" ? (
+                <>
+                  <h1 className="text-4xl font-bold text-n-foreground mb-2">
+                    Payment Successful!
+                  </h1>
+                  <p className="text-lg text-n-muted_foreground">
+                    Thank you for your order. Your payment has been processed
+                    successfully.
+                  </p>
+                </>
+              ) : (
+                <>
+                  {" "}
+                  <h1 className="text-4xl font-bold text-n-foreground mb-2">
+                    Order Placed
+                  </h1>
+                  <p className="text-lg text-n-muted_foreground">
+                    Thank you for your order. You will be asked for order
+                    confirmation shortly!
+                  </p>
+                </>
+              )}
+            </div>
+
+            <div className="grid lg:grid-cols-3 gap-8">
+              {/* Order Details */}
+              <div className="lg:col-span-2 space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-n-foreground">
+                      <Package className="h-5 w-5" />
+                      Order Details
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium text-n-foreground">
+                          Order ID:
+                        </span>
+                        <span className="font-mono text-n-foreground">
+                          {orderId}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium text-n-foreground">
+                          Order Date:
+                        </span>
+                        <span className="text-n-foreground">{date}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium text-n-foreground">
+                          Estimated Delivery:
+                        </span>
+                        <span className="text-n-foreground">
+                          {order.estimatedDelivery}
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Products Ordered */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-n-foreground">
+                      Products Ordered
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {orderedProducts.map((product) => (
+                        <div
+                          key={product.id}
+                          className="flex items-center gap-4 p-4 border rounded-lg"
+                        >
+                          <Image
+                            src={product.mainImage}
+                            alt={product.name}
+                            height={200}
+                            width={200}
+                            className="h-16 w-16 object-cover rounded-md"
+                          />
+                          <div className="flex-1">
+                            <h3 className="font-medium text-n-foreground">
+                              {product.name}
+                            </h3>
+                            <p className="text-sm text-n-muted_foreground">
+                              Qty: {product.quantity}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-medium text-n-foreground">
+                              ${product.price * product.quantity}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Status & Summary */}
+              <div className="space-y-6">
+                {/* Status Cards */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <CreditCard className="h-5 w-5 text-n-foreground" />
+                      Payment Status
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-n-foreground">Payment:</span>
+                        <Badge
+                          variant="default"
+                          className="bg-n-foreground text-n-primary_foreground"
+                        >
+                          {order.paymentStatus}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-n-foreground">Method:</span>
+                        <span className="text-n-foreground">
+                          {order.paymentType}
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Truck className="h-5 w-5 text-n-foreground" />
+                      Order Status
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-n-foreground">Order:</span>
+                        <Badge
+                          variant="default"
+                          className="bg-n-foreground text-n-primary_foreground"
+                        >
+                          {order.orderStatus}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-n-foreground">Delivery:</span>
+                        <Badge
+                          variant="secondary"
+                          className="flex items-center gap-1"
+                        >
+                          <Clock className="h-3 w-3" />
+                          {order.deliveryStatus}
+                        </Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Order Summary */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-n-foreground">
+                      Order Summary
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-n-foreground">Subtotal:</span>
+                        <span className="text-n-foreground">
+                          {order.total - order.shippingCost} $
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-n-foreground">Shipping:</span>
+                        <span className="text-n-foreground">
+                          ${order.shippingCost}
+                        </span>
+                      </div>
+                      <Separator />
+                      <div className="flex justify-between font-bold text-lg">
+                        <span className="text-n-foreground">Total:</span>
+                        <span className="text-n-foreground">
+                          {order.total} $
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Action Buttons */}
+                <div className="space-y-3">
+                  <Button
+                    // onClick={() => Router.push("/order-history")}
+                    className="w-full"
+                    variant="outline"
+                  >
+                    View Order History
+                  </Button>
+                  <Button onClick={() => router.push("/")} className="w-full">
+                    Continue Shopping
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* <div className="max-w-4xl mx-auto py-12 px-4">
+      <h1 className="text-3xl font-bold text-n-foreground mb-6">
+        Thank you for your purchase!
+      </h1>
+      <p className="text-n-muted_foreground mb-4">
+        Order ID: <span className="font-mono">{order.id}</span>
+      </p>
+
+      <div className="bg-n-card rounded-lg shadow p-6 mb-6">
+        <h2 className="text-xl font-semibold mb-3 text-n-foreground">
+          Shipping Info
+        </h2>
+        <div className="grid grid-cols-2 gap-4 text-sm text-n-muted_foreground">
+          <p>
+            <strong>Name:</strong> {order.shippingInfo.FirstName}{" "}
+            {order.shippingInfo.LastName}
+          </p>
+          <p>
+            <strong>Email:</strong> {order.shippingInfo.Email}
+          </p>
+          <p>
+            <strong>Phone:</strong> {order.shippingInfo.Phone}
+          </p>
+          <p>
+            <strong>Method</strong> {method}
+          </p>
+          <p>
+            <strong>Address:</strong> {order.shippingInfo.FullAddress},{" "}
+            {order.shippingInfo.City}, {order.shippingInfo.State},{" "}
+            {order.shippingInfo.ZipCode}, {order.shippingInfo.Country}
+          </p>
+          <p>
+            <strong>order Status</strong> {order.orderStatus}
+          </p>
+          <p>
+            <strong>paymentStatus</strong> {order.paymentStatus}
+          </p>
+          <p>
+            <strong>paymentType</strong> {order.paymentType}
+          </p>
+          <p>
+            <strong>Date</strong> {date}
+          </p>
+          <p>
+            <strong>Time</strong> {time}
+          </p>
+        </div>
+      </div>
+
+      <div className="bg-n-card rounded-lg shadow p-6">
+        <h2 className="text-xl font-semibold mb-3 text-n-foreground">
+          Order Summary
+        </h2>
+        {orderedProducts.map((item, idx) => (
+          <div
+            key={idx}
+            className="flex justify-between items-center border-b py-2 text-sm"
+          >
+            <span>{item.name || item.id}</span>
+            <span className="text-n-foreground">
+              {item.quantity} × ${item.price} = ${item.quantity * item.price}
+            </span>
+          </div>
+        ))}
+        <div className="flex justify-between font-bold text-lg mt-4 border-t pt-4 text-n-foreground">
+          <span>Shipping Cost</span>
+          <span>${order.shippingCost}</span>
+          <span>Total Paid</span>
+          <span>${order.total}</span>
+        </div>
+      </div>
+    </div> */}
     </>
   );
 }

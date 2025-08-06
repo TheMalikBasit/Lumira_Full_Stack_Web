@@ -58,6 +58,7 @@ const CheckOutSummary = ({
     totalCharged(temptotal);
   }, [subtotal, total, shipmentCharge]);
 
+  // Checkout functionality Logic
   const handleCheckout = async () => {
     if (!user || !selectedShippingData) {
       toast.error("Missing shipping or user data");
@@ -79,7 +80,7 @@ const CheckOutSummary = ({
         return {
           id: ci.id,
           quantity: ci.quantity,
-          price: Math.round(product.price * 100), // cents for Stripe
+          price: Math.round(product.price * 100), // Stripe needs cents
           name: product.name,
         };
       });
@@ -105,25 +106,29 @@ const CheckOutSummary = ({
 
         const data = await res.json();
         if (data.url) {
-          window.location.href = data.url;
+          window.location.href = data.url; // Stripe-hosted payment page
         } else {
           toast.error("Stripe URL missing in response");
         }
       } else if (selectedPaymentData === "cod") {
-        // 🔧 Enhanced COD order object
         const orderData = {
           userId: user.id,
-          shippingInfo: selectedShippingData,
-          cartItems: checkedItems, // Use full item info if needed
+          orderDate: new Date().toISOString(),
+          orderStatus: "Confirmed",
+          deliveryStatus: "Processing",
+          paymentStatus: "Pending",
+          paymentType: "Cash_On_Delivery",
           total: totalAmount,
-          paymentStatus: "COD",
-          isPaid: false,
-          createdAt: new Date().toISOString(),
+          shippingCost: shipmentCharge,
+          shippingInfo: selectedShippingData,
+          cartItems: checkedItems,
+          estimatedDelivery: "3-12 Business days",
         };
 
-        await addDoc(collection(db, "placedOrders"), orderData);
+        const docRef = await addDoc(collection(db, "placedOrders"), orderData);
+
         toast.success("Order placed with Cash on Delivery.");
-        router.push("/payment-success?method=cod");
+        router.push(`/payment-success?orderId=${docRef.id}&method=cod`);
       }
     } catch (error) {
       console.error("Checkout error:", error);
