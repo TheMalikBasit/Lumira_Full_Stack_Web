@@ -8,25 +8,38 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { items, userId, shippingInfo } = body;
+    const { items, userId, shippingInfo, shippingCost } = body;
 
-    if (!userId || !items || !shippingInfo) {
+    if (!userId || !items || !shippingInfo || !shippingCost) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
       );
     }
 
-    const lineItems = items.map((item) => ({
-      price_data: {
-        currency: "usd",
-        product_data: {
-          name: item.name || "Unknown Product",
+    const lineItems = [
+      ...items.map((item) => ({
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: item.name || "Unknown Product",
+          },
+          unit_amount: Math.round(item.price * 100), // already in cents
         },
-        unit_amount: item.price, // price is already in cents
+        quantity: item.quantity,
+      })),
+      {
+        // Add shipping as a separate line item
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: "Shipping Cost",
+          },
+          unit_amount: Math.round(shippingCost * 100), // Converting into cents
+        },
+        quantity: 1,
       },
-      quantity: item.quantity,
-    }));
+    ];
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -35,7 +48,7 @@ export async function POST(req) {
       success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/verify-payment?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/my-checkout`,
       shipping_address_collection: {
-        allowed_countries: ["US", "CA", "PK", "OM"],
+        allowed_countries: ["PK", "IN", "CN", "JP", "AF", "AE"],
       },
       metadata: {
         userId,
@@ -59,6 +72,7 @@ export async function POST(req) {
             name: item.name,
           }))
         ),
+        shippingCost: JSON.stringify(shippingCost),
       },
     });
 

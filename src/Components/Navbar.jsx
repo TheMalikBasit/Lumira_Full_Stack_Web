@@ -87,7 +87,7 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
           classic ? "border-black" : ""
         } ${
           bgBlur ? "lg:backdrop-blur-xl border-b border-black" : ""
-        } w-full top-0 left-0 right-0 z-50`}
+        } w-full top-0 left-0 right-0 z-40`}
       >
         <div className="flex items-center px-5 sm:px-10 lg:px-[75px] xl:px-40 max-lg:py-4">
           <a className="flex flex-row items-center w-[12rem]" href="/">

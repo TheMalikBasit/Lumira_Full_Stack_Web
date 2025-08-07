@@ -59,19 +59,52 @@ const SelectCurrency = ({ toggleCurrency }) => {
   const currencies = [
     { code: "USD", name: "US Dollar", symbol: "$", flag: "🇺🇸" },
     {
+      code: "PKR",
+      name: "Pakistani Rupee",
+      symbol: "₨",
+      flag: "🇵🇰",
+    },
+    {
+      code: "INR",
+      name: "Indian Rupee",
+      symbol: "₹",
+      flag: "🇮🇳",
+    },
+    {
+      code: "CNY",
+      name: "Chinese Yuan",
+      symbol: "¥",
+      flag: "🇨🇳",
+    },
+    {
+      code: "JPY",
+      name: "Japanese Yen",
+      symbol: "¥",
+      flag: "🇯🇵",
+    },
+    {
+      code: "AFN",
+      name: "Afghan Afghani",
+      symbol: "؋",
+      flag: "🇦🇫",
+    },
+    {
+      code: "IRR",
+      name: "Iranian Rial",
+      symbol: "﷼",
+      flag: "🇮🇷",
+    },
+    {
       code: "AED",
       name: "United Arab Emirates Dirham",
       symbol: "د.إ",
       flag: "🇦🇪",
     },
-    { code: "EUR", name: "Euro", symbol: "€", flag: "🇪🇺" },
-    { code: "GBP", name: "British Pound", symbol: "£", flag: "🇬🇧" },
-    { code: "JPY", name: "Japanese Yen", symbol: "¥", flag: "🇯🇵" },
+    // { code: "EUR", name: "Euro", symbol: "€", flag: "🇪🇺" },
+    // { code: "GBP", name: "British Pound", symbol: "£", flag: "🇬🇧" },
     // { code: "CAD", name: "Canadian Dollar", symbol: "C$", flag: "🇨🇦" },
     // { code: "AUD", name: "Australian Dollar", symbol: "A$", flag: "🇦🇺" },
-    // { code: "PKR", name: "Pakistan Ruppee", symbol: "RS", flag: "🇵🇰" },
     // { code: "CHF", name: "Swiss Franc", symbol: "Fr", flag: "🇨🇭" },
-    { code: "CNY", name: "Chinese Yuan", symbol: "¥", flag: "🇨🇳" },
   ];
   const { Currency, loading, setLoading, Symbol } = useAppContext();
   const [selectedCurrency, setSelectedCurrency] = useState("USD");
@@ -120,7 +153,7 @@ const SelectCurrency = ({ toggleCurrency }) => {
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        // onClick={() => setIsOpen(false)}
+        onClick={() => setIsOpen(false)}
       />
 
       {/* Floating particles */}
@@ -175,14 +208,15 @@ const SelectCurrency = ({ toggleCurrency }) => {
           </>
         ) : (
           <>
-            <div className="grid grid-cols-2 gap-3 mb-3">
-              {currencies.map((currency) => (
-                <button
-                  key={currency.code}
-                  onClick={() =>
-                    handleCurrencySelect(currency.code, currency.symbol)
-                  }
-                  className={`
+            <div className="max-h-60 border border-n-foreground rounded-xl mb-3 hover:overflow-y-auto scrollbar-thin scrollbar-thumb-n-muted_foreground scrollbar-track-transparent">
+              <div className="grid grid-cols-2 gap-3 p-2">
+                {currencies.map((currency) => (
+                  <button
+                    key={currency.code}
+                    onClick={() =>
+                      handleCurrencySelect(currency.code, currency.symbol)
+                    }
+                    className={`
                 relative p-4 rounded-xl border-2 transition-all duration-200 hover:scale-105
                 ${
                   selectedCurrency === currency.code
@@ -190,25 +224,26 @@ const SelectCurrency = ({ toggleCurrency }) => {
                     : "border-n-border bg-n-card hover:border-n-primary/30 hover:bg-n-primary/5"
                 }
               `}
-                >
-                  <div className="flex items-center space-x-3">
-                    <span className="text-2xl">{currency.flag}</span>
-                    <div className="text-left flex-1">
-                      <div className="font-semibold text-n-foreground text-sm">
-                        {currency.code}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <span className="text-2xl">{currency.flag}</span>
+                      <div className="text-left flex-1">
+                        <div className="font-semibold text-n-foreground text-sm">
+                          {currency.code}
+                        </div>
+                        <div className="text-xs text-n-muted_foreground">
+                          {currency.symbol}
+                        </div>
                       </div>
-                      <div className="text-xs text-n-muted_foreground">
-                        {currency.symbol}
-                      </div>
+                      {selectedCurrency === currency.code && (
+                        <Check className="h-4 w-4 text-n-primary" />
+                      )}
                     </div>
-                    {selectedCurrency === currency.code && (
-                      <Check className="h-4 w-4 text-n-primary" />
-                    )}
-                  </div>
-                </button>
-              ))}
+                  </button>
+                ))}
 
-              {/* Custom Currency */}
+                {/* Custom Currency */}
+              </div>
             </div>
           </>
         )}

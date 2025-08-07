@@ -29,8 +29,9 @@ export default function PaymentSuccess() {
 
     const fetchOrder = async () => {
       try {
+        // Client-side fetch (respects Firestore rules)
         const docRef = doc(db, "placedOrders", orderId);
-        const docSnap = await getDoc(docRef);
+        const docSnap = await getDoc(docRef, { source: "server" }); // avoid cache
 
         if (docSnap.exists()) {
           setOrder({ id: docSnap.id, ...docSnap.data() });
@@ -73,15 +74,16 @@ export default function PaymentSuccess() {
       </div>
     );
   }
+  console.log("Method", method);
+  console.log("Payment Type", order.paymentType);
 
-  if (!order) {
+  if (!order || method === null || method !== order.paymentType) {
     return (
       <div className="p-8 text-center text-red-500">
         Order not found. Please contact support if you believe this is an error.
       </div>
     );
   }
-
   return (
     <>
       <BackLights L1 L2 L3 />
@@ -92,7 +94,7 @@ export default function PaymentSuccess() {
             {/* Success Header */}
             <div className="text-center mb-8">
               <CheckCircle className="h-20 w-20 text-n-foreground mx-auto mb-4" />
-              {method == "stripe" ? (
+              {method == "Card/Stripe" && order.paymentType == "Card/Stripe" ? (
                 <>
                   <h1 className="text-4xl font-bold text-n-foreground mb-2">
                     Payment Successful!

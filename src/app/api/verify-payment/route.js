@@ -34,7 +34,14 @@ export async function GET(req) {
         userId: session.metadata?.userId || null,
         shippingInfo: session.metadata?.shippingInfo || null,
         cartItems: session.metadata?.cartItems || null,
-        attemptedAt: serverTimestamp(),
+        total,
+        paymentStatus: "Failed",
+        orderStatus: "Nil",
+        deliveryStatus: "Nil",
+        paymentType: "Card/Stripe",
+        estimatedDelivery: "Nil",
+        shippingCost: shippingCost,
+        orderDate: new Date().toISOString(),
       };
 
       const ref = await addDoc(collection(db, "failedOrders"), failedOrder);
@@ -48,12 +55,12 @@ export async function GET(req) {
     const userId = session.metadata?.userId;
     const shippingInfo = JSON.parse(session.metadata?.shippingInfo || "{}");
     const cartItems = JSON.parse(session.metadata?.cartItems || "[]");
-
+    const shippingCost = JSON.parse(session.metadata?.shippingCost || "");
     console.log("Session metadata:", session.metadata);
     console.log("Shipping Info Parsed:", shippingInfo);
 
     const total = cartItems.reduce(
-      (sum, item) => sum + item.price * item.quantity,
+      (sum, item) => sum + item.price * item.quantity + shippingCost,
       0
     );
 
@@ -62,15 +69,19 @@ export async function GET(req) {
       shippingInfo,
       cartItems,
       total,
-      isPaid: true,
       paymentStatus: "Paid",
-      createdAt: serverTimestamp(),
+      orderStatus: "Confirmed",
+      deliveryStatus: "Processing",
+      paymentType: "Card/Stripe",
+      estimatedDelivery: "International Shipping 12-28 Days",
+      shippingCost: shippingCost,
+      orderDate: new Date().toISOString(),
     };
 
     const docRef = await addDoc(collection(db, "placedOrders"), orderData);
 
     return NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/payment-success?orderId=${docRef.id}`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/payment-success?orderId=${docRef.id}&method=Card/Stripe`,
       302
     );
   } catch (err) {
@@ -86,7 +97,7 @@ export async function GET(req) {
     const ref = await addDoc(collection(db, "failedOrders"), fallback);
 
     return NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/payment-failed?failId=${ref.id}`
+      `${process.env.NEXT_PUBLIC_BASE_URL}/payment-failed?failId=${ref.id}&method=Card/Stripe`
     );
   }
 }

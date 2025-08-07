@@ -104,12 +104,12 @@ const Checkout = () => {
         setShipmentCharges(null);
       } else if (country === "Pakistan") {
         if (city === "Lahore") {
-          setShipmentCharges(6);
+          setShipmentCharges(5);
         } else {
           setShipmentCharges(12);
         }
       } else {
-        setShipmentCharges(0);
+        setShipmentCharges(20);
       }
     }
   }, [selectedShippingData]);

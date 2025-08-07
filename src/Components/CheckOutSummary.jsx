@@ -80,7 +80,7 @@ const CheckOutSummary = ({
         return {
           id: ci.id,
           quantity: ci.quantity,
-          price: Math.round(product.price * 100), // Stripe needs cents
+          price: Math.round(product.price), // Stripe needs cents
           name: product.name,
         };
       });
@@ -99,6 +99,7 @@ const CheckOutSummary = ({
             items: itemsToSend,
             userId: user.id,
             shippingInfo: selectedShippingData,
+            shippingCost: shipmentCharge,
           }),
         });
 
@@ -117,7 +118,7 @@ const CheckOutSummary = ({
           orderStatus: "Confirmed",
           deliveryStatus: "Processing",
           paymentStatus: "Pending",
-          paymentType: "Cash_On_Delivery",
+          paymentType: "cod",
           total: totalAmount,
           shippingCost: shipmentCharge,
           shippingInfo: selectedShippingData,
