@@ -12,7 +12,7 @@ import { Input } from "@/Components/UI/input";
 import { assets } from "@/assets/assets";
 import Image from "next/image";
 
-const Footer = () => {
+const Footer = ({ onSupportClick }) => {
   return (
     <footer className="bg-n-primary text-n-primary_foreground">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -120,7 +120,7 @@ const Footer = () => {
               <ul className="space-y-3">
                 <li>
                   <a
-                    href="#"
+                    onClick={() => onSupportClick("help-center")}
                     className="text-n-primary_foreground/80 hover:text-n-primary_foreground transition-colors"
                   >
                     Help Center
@@ -128,7 +128,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    onClick={() => onSupportClick("shipping-info")}
                     className="text-n-primary_foreground/80 hover:text-n-primary_foreground transition-colors"
                   >
                     Shipping Info
@@ -136,7 +136,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    onClick={() => onSupportClick("returns-exchanges")}
                     className="text-n-primary_foreground/80 hover:text-n-primary_foreground transition-colors"
                   >
                     Returns & Exchanges
@@ -144,7 +144,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    onClick={() => onSupportClick("warranty")}
                     className="text-n-primary_foreground/80 hover:text-n-primary_foreground transition-colors"
                   >
                     Warranty
@@ -152,7 +152,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    onClick={() => onSupportClick("installation-guide")}
                     className="text-n-primary_foreground/80 hover:text-n-primary_foreground transition-colors"
                   >
                     Installation Guide
@@ -160,7 +160,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    onClick={() => onSupportClick("contact-us")}
                     className="text-n-primary_foreground/80 hover:text-n-primary_foreground transition-colors"
                   >
                     Contact Us

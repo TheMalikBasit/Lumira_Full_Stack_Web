@@ -129,7 +129,7 @@ const CheckOutSummary = ({
         const docRef = await addDoc(collection(db, "placedOrders"), orderData);
 
         toast.success("Order placed with Cash on Delivery.");
-        router.push(`/payment-success?orderId=${docRef.id}&method=cod`);
+        router.push(`/order-success?orderId=${docRef.id}&method=cod`);
       }
     } catch (error) {
       console.error("Checkout error:", error);

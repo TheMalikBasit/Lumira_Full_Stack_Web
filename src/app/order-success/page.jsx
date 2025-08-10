@@ -9,12 +9,20 @@ import Navbar from "@/Components/Navbar";
 // import SupportModal, { SupportSection } from "@/components/SupportModal";
 import { useEffect, useState } from "react";
 import { db } from "../../../Config/firebase";
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
 import { useAppContext } from "@/Context/AppContext";
 import BackLights from "@/Components/BackLights";
+import { useUser } from "@clerk/nextjs";
+import toast from "react-hot-toast";
 export default function PaymentSuccess() {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -23,6 +31,7 @@ export default function PaymentSuccess() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
   const method = searchParams.get("method");
+  const { isSignedIn, user } = useUser();
   const [newDateVar, setNewDateVar] = useState(null);
   useEffect(() => {
     if (!orderId) return;
@@ -45,9 +54,11 @@ export default function PaymentSuccess() {
 
     fetchOrder();
   }, [orderId]);
+
   const dateObj = new Date(newDateVar);
   const date = dateObj.toLocaleDateString();
   const time = dateObj.toLocaleTimeString();
+
   useEffect(() => {
     if (order) {
       const filteredProducts = products
@@ -64,6 +75,40 @@ export default function PaymentSuccess() {
       setOrderedProducts(filteredProducts);
     }
   }, [order]);
+
+  useEffect(() => {
+    if (user) {
+      const handleOrder = async () => {
+        const userRef = doc(db, "users", user.id);
+        const userSnapshot = await getDoc(userRef);
+        const userData = userSnapshot.data();
+        const ordersData = userData.orders ?? [];
+
+        // Check if the order ID already exists
+        const orderExists = ordersData.some((item) => item.id === orderId);
+
+        if (!orderExists) {
+          const newOrder = {
+            id: orderId,
+            status: "Pending Verification",
+            orderedAt: new Date(),
+          };
+
+          const updatedOrders = [...ordersData, newOrder];
+
+          await updateDoc(userRef, {
+            orders: updatedOrders,
+          });
+          toast.success("Order Placed");
+        } else {
+          console.log(`Order ID ${orderId} already exists. Skipping update.`);
+          toast.error("Order Already Exists");
+        }
+      };
+      handleOrder();
+    }
+  }, [order]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center">
@@ -74,8 +119,6 @@ export default function PaymentSuccess() {
       </div>
     );
   }
-  console.log("Method", method);
-  console.log("Payment Type", order.paymentType);
 
   if (!order || method === null || method !== order.paymentType) {
     return (
@@ -295,7 +338,7 @@ export default function PaymentSuccess() {
                 {/* Action Buttons */}
                 <div className="space-y-3">
                   <Button
-                    // onClick={() => Router.push("/order-history")}
+                    onClick={() => router.push("/order-history")}
                     className="w-full"
                     variant="outline"
                   >
@@ -310,78 +353,6 @@ export default function PaymentSuccess() {
           </div>
         </div>
       </div>
-      {/* <div className="max-w-4xl mx-auto py-12 px-4">
-      <h1 className="text-3xl font-bold text-n-foreground mb-6">
-        Thank you for your purchase!
-      </h1>
-      <p className="text-n-muted_foreground mb-4">
-        Order ID: <span className="font-mono">{order.id}</span>
-      </p>
-
-      <div className="bg-n-card rounded-lg shadow p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-3 text-n-foreground">
-          Shipping Info
-        </h2>
-        <div className="grid grid-cols-2 gap-4 text-sm text-n-muted_foreground">
-          <p>
-            <strong>Name:</strong> {order.shippingInfo.FirstName}{" "}
-            {order.shippingInfo.LastName}
-          </p>
-          <p>
-            <strong>Email:</strong> {order.shippingInfo.Email}
-          </p>
-          <p>
-            <strong>Phone:</strong> {order.shippingInfo.Phone}
-          </p>
-          <p>
-            <strong>Method</strong> {method}
-          </p>
-          <p>
-            <strong>Address:</strong> {order.shippingInfo.FullAddress},{" "}
-            {order.shippingInfo.City}, {order.shippingInfo.State},{" "}
-            {order.shippingInfo.ZipCode}, {order.shippingInfo.Country}
-          </p>
-          <p>
-            <strong>order Status</strong> {order.orderStatus}
-          </p>
-          <p>
-            <strong>paymentStatus</strong> {order.paymentStatus}
-          </p>
-          <p>
-            <strong>paymentType</strong> {order.paymentType}
-          </p>
-          <p>
-            <strong>Date</strong> {date}
-          </p>
-          <p>
-            <strong>Time</strong> {time}
-          </p>
-        </div>
-      </div>
-
-      <div className="bg-n-card rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold mb-3 text-n-foreground">
-          Order Summary
-        </h2>
-        {orderedProducts.map((item, idx) => (
-          <div
-            key={idx}
-            className="flex justify-between items-center border-b py-2 text-sm"
-          >
-            <span>{item.name || item.id}</span>
-            <span className="text-n-foreground">
-              {item.quantity} × ${item.price} = ${item.quantity * item.price}
-            </span>
-          </div>
-        ))}
-        <div className="flex justify-between font-bold text-lg mt-4 border-t pt-4 text-n-foreground">
-          <span>Shipping Cost</span>
-          <span>${order.shippingCost}</span>
-          <span>Total Paid</span>
-          <span>${order.total}</span>
-        </div>
-      </div>
-    </div> */}
     </>
   );
 }

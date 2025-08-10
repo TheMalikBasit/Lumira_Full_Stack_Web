@@ -9,7 +9,8 @@ import StockUpdateForm from "@/Components/StockUpdateForm";
 import { useState } from "react";
 import Button from "@/Components/Button";
 import { updateExchangeRates } from "../../../models/updateExchangeRates";
-
+import { db } from "../../../Config/firebase";
+import { addDoc, collection } from "firebase/firestore";
 const page = () => {
   const { isAdmin, adminLoading } = useAppContext();
   const [status, setStatus] = useState(null);
@@ -24,7 +25,6 @@ const page = () => {
   const handleUpdate = async () => {
     setStatus("Updating...");
     const result = await updateExchangeRates();
-
     if (result.success) {
       setStatus(
         `✅ Rates updated at ${new Date(result.timestamp).toLocaleString()}`

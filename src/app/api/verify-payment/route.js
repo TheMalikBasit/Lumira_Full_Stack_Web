@@ -1,7 +1,14 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { db } from "../../../../Config/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+  updateDoc,
+  getDoc,
+  doc,
+} from "firebase/firestore";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -14,12 +21,22 @@ export async function GET(req) {
     if (!session_id) {
       const failedOrder = {
         reason: "Missing session_id",
-        attemptedAt: serverTimestamp(),
+        userId: session.metadata?.userId || null,
+        shippingInfo: session.metadata?.shippingInfo || null,
+        cartItems: session.metadata?.cartItems || null,
+        total: total ? total : null,
+        paymentStatus: "Failed",
+        orderStatus: "Cancelled ",
+        deliveryStatus: "Nil",
+        paymentType: "Card/Stripe",
+        estimatedDelivery: "Nil",
+        shippingCost: shippingCost ? shippingCost : null,
+        orderDate: serverTimestamp(),
       };
 
       const ref = await addDoc(collection(db, "failedOrders"), failedOrder);
       return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/payment-failed?failId=${ref.id}`
+        `${process.env.NEXT_PUBLIC_BASE_URL}/payment-failed?failId=${ref.id}&method=Card/Stripe`
       );
     }
 
@@ -36,7 +53,7 @@ export async function GET(req) {
         cartItems: session.metadata?.cartItems || null,
         total,
         paymentStatus: "Failed",
-        orderStatus: "Nil",
+        orderStatus: "Cancelled ",
         deliveryStatus: "Nil",
         paymentType: "Card/Stripe",
         estimatedDelivery: "Nil",
@@ -47,7 +64,7 @@ export async function GET(req) {
       const ref = await addDoc(collection(db, "failedOrders"), failedOrder);
 
       return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/payment-failed?failId=${ref.id}`
+        `${process.env.NEXT_PUBLIC_BASE_URL}/payment-failed?failId=${ref.id}&method=Card/Stripe`
       );
     }
 
@@ -70,7 +87,7 @@ export async function GET(req) {
       cartItems,
       total,
       paymentStatus: "Paid",
-      orderStatus: "Confirmed",
+      orderStatus: "Pending Verification",
       deliveryStatus: "Processing",
       paymentType: "Card/Stripe",
       estimatedDelivery: "International Shipping 12-28 Days",
@@ -81,7 +98,7 @@ export async function GET(req) {
     const docRef = await addDoc(collection(db, "placedOrders"), orderData);
 
     return NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/payment-success?orderId=${docRef.id}&method=Card/Stripe`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/order-success?orderId=${docRef.id}&method=Card/Stripe`,
       302
     );
   } catch (err) {

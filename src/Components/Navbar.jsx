@@ -16,6 +16,19 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SelectCurrency from "./SelectCurrency";
 import { X, Globe, Check } from "lucide-react";
 import {
+  Package,
+  Eye,
+  Clock,
+  CheckCircle,
+  Truck,
+  AlertCircle,
+  Calendar,
+  CreditCard,
+  BaggageClaim,
+  ShoppingBag,
+} from "lucide-react";
+import { BagIcon, CartIcon } from "@/assets/assets";
+import {
   faMoon,
   faSun,
   faDroplet,
@@ -86,7 +99,7 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
         ${relative ? "relative" : "fixed"} ${hidden ? "hidden" : "block"} ${
           classic ? "border-black" : ""
         } ${
-          bgBlur ? "lg:backdrop-blur-xl border-b border-black" : ""
+          bgBlur ? "lg:backdrop-blur-xl border-b" : ""
         } w-full top-0 left-0 right-0 z-40`}
       >
         <div className="flex items-center px-5 sm:px-10 lg:px-[75px] xl:px-40 max-lg:py-4">
@@ -112,9 +125,31 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
             ref={navRef}
             className={`${
               openNavigation ? "flex" : "hidden"
-            } fixed left-0 right-0 bottom-0 top-[5rem] bg-n-8 lg:static lg:flex lg:mx-auto lg:bg-transparent`}
+            } fixed left-0 right-0 bottom-0 top-[5rem] lg:static lg:flex lg:mx-auto lg:bg-transparent`}
           >
             <div className="relative z-2 flex flex-col items-center justify-center lg:flex-row m-auto">
+              <button className="lg:hidden relative inline-flex justify-center border-2 border-orange-500 rounded-full p-[2px]">
+                <UserButton
+                  appearance={{
+                    elements: {
+                      userButtonAvatarBox: "w-9 h-9", // Adjust width & height
+                    },
+                  }}
+                >
+                  <UserButton.MenuItems>
+                    <UserButton.Action
+                      label="Cart"
+                      labelIcon={<CartIcon />}
+                      onClick={() => router.push("/cart")}
+                    />
+                    <UserButton.Action
+                      label="My Orders"
+                      labelIcon={<BagIcon />}
+                      onClick={() => router.push("/order-history")}
+                    />
+                  </UserButton.MenuItems>
+                </UserButton>
+              </button>
               {navigation.map((item) => (
                 <a
                   key={item.id}
@@ -123,7 +158,7 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
                     e.preventDefault();
                     handleClick(item.url);
                   }}
-                  className={`block uppercase relative font-ubuntu text-xl text-n-1 transition-colors cursor-pointer ${
+                  className={`block uppercase relative font-ubuntu text-xl text-n-foreground transition-colors cursor-pointer ${
                     item.onlyMobile ? "lg:hidden" : ""
                   } ${
                     item.url === pathname
@@ -182,23 +217,35 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
               />
             </button>
           )} */}
-
-          <button
-            onClick={toggleCurrency}
-            className="max-w-2xl cursor-pointer Z-10 mr-5"
-          >
-            <Globe />
-          </button>
-          <Button clerk user={user} router={router} className="hidden lg:flex">
-            Sign IN
-          </Button>
-          <Button
-            onclick={toggleNavigation}
-            className="ml-auto lg:hidden"
-            px="px-3"
-          >
-            <MenuSvg openNavigation={openNavigation} />
-          </Button>
+          <div className="flex flex-row ml-auto">
+            <button
+              onClick={() => router.push("/order-history")}
+              className="max-w-2xl cursor-pointer Z-10 mr-5"
+            >
+              <ShoppingBag />
+            </button>
+            <button
+              onClick={toggleCurrency}
+              className="max-w-2xl cursor-pointer Z-10 mr-5"
+            >
+              <Globe />
+            </button>
+            <Button
+              clerk
+              user={user}
+              router={router}
+              className="hidden lg:flex"
+            >
+              Sign IN
+            </Button>
+            <Button
+              onclick={toggleNavigation}
+              className="ml-auto lg:hidden"
+              px="px-3"
+            >
+              <MenuSvg openNavigation={openNavigation} />
+            </Button>
+          </div>
         </div>
       </div>
     </>

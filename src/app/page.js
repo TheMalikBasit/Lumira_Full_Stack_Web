@@ -11,13 +11,17 @@ import Footer from "@/Components/LumiraFooter";
 import ProductHighlights from "@/Components/ProductsHighlights";
 import { useAppContext } from "@/Context/AppContext";
 import { LottieLoading } from "@/Components/Loading";
+import SupportModal from "@/Components/SupportModal";
 import SelectCurrency from "@/Components/SelectCurrency";
 export default function Home() {
   const [showVideo, setShowVideo] = useState(false);
   const [fade, setFade] = useState(false);
   const { loading } = useAppContext();
   const [showCurrencyModal, setShowCurrencyModal] = useState(true); // initially true
-
+  const [supportModal, setSupportModal] = useState({
+    isOpen: false,
+    section: "",
+  });
   useEffect(() => {
     const hasPlayed = sessionStorage.getItem("introPlayed");
 
@@ -64,7 +68,17 @@ export default function Home() {
         <ProductHighlights />
         {/* <FooterOne crosses />
         <FooterTwo crosses /> */}
-        <Footer />
+        <Footer
+          onSupportClick={(section) =>
+            setSupportModal({ isOpen: true, section })
+          }
+        />
+
+        <SupportModal
+          isOpen={supportModal.isOpen}
+          onClose={() => setSupportModal({ isOpen: false, section: "" })}
+          initialSection={supportModal.section}
+        />
       </div>
       <ButtonGradient />
     </>

@@ -5,10 +5,17 @@ import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "../Config/firebase";
 import { useUser } from "@clerk/nextjs";
 import { useAppContext } from "@/Context/AppContext";
+import OrderHistory from "@/app/order-history/page";
 const AutoSaveUser = () => {
   const { isSignedIn, user } = useUser();
-  const { setUserData, setCartItems, setLoading, setdarkMode } =
-    useAppContext();
+  const {
+    setUserData,
+    setCartItems,
+    setLoading,
+    setdarkMode,
+    orderHistory,
+    setorderHistory,
+  } = useAppContext();
 
   useEffect(() => {
     const saveUserToFirestore = async () => {
@@ -40,6 +47,10 @@ const AutoSaveUser = () => {
           setLoading(false);
         } else {
           const userData = userSnapshot.data();
+
+          let orderHistoryData = Array.isArray(userData.orders)
+            ? userData.orders
+            : [];
           let cartData = Array.isArray(userData.cart) ? userData.cart : [];
           let userShippingInfo = Array.isArray(userData.ShippingInfo)
             ? userData.ShippingInfo
@@ -47,7 +58,6 @@ const AutoSaveUser = () => {
 
           let mode = userData.darkMode;
 
-          setdarkMode(mode);
           // Ensure each item has 'checked' field
           cartData = cartData.map((item) => ({
             ...item,
@@ -61,8 +71,10 @@ const AutoSaveUser = () => {
             imageUrl: user.imageUrl,
             ShippingInfo: userShippingInfo,
           });
-
+          setdarkMode(mode);
           setCartItems(cartData);
+          setorderHistory(orderHistoryData);
+          console.log("Order history ", orderHistoryData);
           //console.log("Updated cart data: ", cartData);
           //console.log("User userShippingInfo: ", userShippingInfo);
           setLoading(false);

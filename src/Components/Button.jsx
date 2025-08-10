@@ -34,7 +34,7 @@ const Button = ({
 
   const renderClerkButton = () =>
     isSignedIn ? (
-      <button className="relative ml-5 inline-flex justify-center border-2 border-orange-500 rounded-full p-[2px]">
+      <button className="hidden relative ml-5 lg:inline-flex justify-center border-2 border-orange-500 rounded-full p-[2px]">
         <UserButton
           appearance={{
             elements: {
@@ -51,7 +51,7 @@ const Button = ({
             <UserButton.Action
               label="My Orders"
               labelIcon={<BagIcon />}
-              onClick={() => router.push("/my-orders")}
+              onClick={() => router.push("/order-history")}
             />
           </UserButton.MenuItems>
         </UserButton>

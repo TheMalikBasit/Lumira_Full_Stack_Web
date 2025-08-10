@@ -228,147 +228,333 @@
 // };
 
 // export default PaymentFailed;
-
 "use client";
-
-import { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { db } from "@/Config/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import {
+  CheckCircle,
+  Package,
+  CreditCard,
+  Truck,
+  Clock,
+  Loader2,
+  XCircle,
+  AlertTriangle,
+  RefreshCw,
+} from "lucide-react";
 import { Button } from "@/Components/UI/lumiraButton";
-import { Loader2 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/Components/UI/card";
+import { Badge } from "@/Components/UI/badge";
+import { Separator } from "@/Components/UI/separator";
+import Navbar from "@/Components/Navbar";
+// import { useState as useModalState } from "react";
+// import SupportModal, { SupportSection } from "@/components/SupportModal";
+import { useEffect, useState } from "react";
+import { db } from "../../../Config/firebase";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import Image from "next/image";
+import { useAppContext } from "@/Context/AppContext";
+import BackLights from "@/Components/BackLights";
+import { useSearchParams, useRouter } from "next/navigation";
 
 export default function PaymentFailed() {
-  const params = useSearchParams();
-  const router = useRouter();
-  const orderId = params.get("orderId");
-
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
-
+  const { products, router } = useAppContext();
+  const [orderedProducts, setOrderedProducts] = useState([]);
+  const searchParams = useSearchParams();
+  const orderId = searchParams.get("orderId");
+  const method = searchParams.get("method");
+  const [newDateVar, setNewDateVar] = useState(null);
   useEffect(() => {
-    const fetchOrder = async () => {
-      if (!orderId) {
-        setNotFound(true);
-        setLoading(false);
-        return;
-      }
+    if (!orderId) return;
 
+    const fetchOrder = async () => {
       try {
+        // Client-side fetch (respects Firestore rules)
         const docRef = doc(db, "failedOrders", orderId);
-        const snapshot = await getDoc(docRef);
-        if (snapshot.exists()) {
-          setOrder(snapshot.data());
-          setLoading(false);
-        } else {
-          setNotFound(true);
+        const docSnap = await getDoc(docRef, { source: "server" });
+
+        if (docSnap.exists()) {
+          setOrder({ id: docSnap.id, ...docSnap.data() });
         }
       } catch (err) {
-        console.error("Failed to load failed order", err);
-        setNotFound(true);
-        setLoading(false);
+        console.error("Error fetching order:", err);
       } finally {
         setLoading(false);
       }
     };
-    setLoading(false);
+
     fetchOrder();
   }, [orderId]);
+  const dateObj = new Date(newDateVar);
+  const date = dateObj.toLocaleDateString();
+  const time = dateObj.toLocaleTimeString();
+  useEffect(() => {
+    if (order) {
+      const filteredProducts = products
+        .map((prod) => {
+          const cartItem = order?.cartItems?.find(
+            (item) => item.id === prod.id
+          );
+          return cartItem ? { ...prod, ...cartItem } : null;
+        })
+        .filter(Boolean);
+      const timeStamp = order.orderDate;
 
-  if (!loading) {
+      setNewDateVar(timeStamp);
+      setOrderedProducts(filteredProducts);
+    }
+  }, [order]);
+  if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[50vh]">
-        <Loader2 className="animate-spin w-8 h-8 text-n-primary" />
+      <div className="min-h-screen flex flex-col items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin text-n-primary" />
+        <p className="mt-2 text-n-muted_foreground">
+          Loading your order summary...
+        </p>
       </div>
     );
   }
 
-  if (notFound || !order) {
+  if (!order || method === null || method !== order.paymentType) {
     return (
-      <div className="p-8 text-center">
-        <h1 className="text-2xl font-bold text-red-600">Payment Failed</h1>
-        <p className="text-n-muted_foreground mt-2">
-          We couldn't find any failed order. Please try again.
-        </p>
-        <Button onClick={() => router.push("/my-checkout")} className="mt-6">
-          Try Checkout Again
-        </Button>
+      <div className="p-8 text-center text-red-500">
+        Order not found. Please contact support if you believe this is an error.
       </div>
     );
   }
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-n-foreground mb-2">
-          Payment Failed
-        </h1>
-        <p className="text-lg text-n-muted_foreground">
-          {" "}
-          Unfortunately, your payment did not go through. Here's a summary of
-          what you tried to order.
-        </p>
-      </div>
-      {/* Shipping Info */}
-      <div className="bg-red-50 p-4 rounded-lg border border-red-200 mb-6">
-        <h2 className="text-xl font-semibold mb-2 text-red-700">
-          Shipping Information
-        </h2>
-        <div className="text-sm space-y-1">
-          <p>
-            <strong>Name:</strong> {order.shippingInfo?.FirstName}{" "}
-            {order.shippingInfo?.LastName}
-          </p>
-          <p>
-            <strong>Email:</strong> {order.shippingInfo?.Email}
-          </p>
-          <p>
-            <strong>Phone:</strong> {order.shippingInfo?.Phone}
-          </p>
-          <p>
-            <strong>Address:</strong> {order.shippingInfo?.FullAddress}
-          </p>
-          <p>
-            <strong>City/State:</strong> {order.shippingInfo?.City},{" "}
-            {order.shippingInfo?.State}
-          </p>
-          <p>
-            <strong>Country:</strong> {order.shippingInfo?.Country}
-          </p>
-          <p>
-            <strong>Zip Code:</strong> {order.shippingInfo?.ZipCode}
-          </p>
-        </div>
-      </div>
-
-      {/* Items */}
-      <div className="bg-white p-4 rounded-lg shadow-md mb-6">
-        <h2 className="text-lg font-semibold mb-3">Order Items</h2>
-        <div className="space-y-2">
-          {order.cartItems?.map((item, idx) => (
-            <div
-              key={idx}
-              className="flex justify-between border-b py-1 text-sm"
-            >
-              <span>{item.name}</span>
-              <span>
-                {item.quantity} × ${item.price} = ${item.price * item.quantity}
-              </span>
+    <>
+      <BackLights L1 L2 L3 />
+      <Navbar bgBlur />
+      <div className="min-h-screen backdrop-blur-2xl mt-20">
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-4xl mx-auto">
+            {/* Success Header */}
+            <div className="text-center mb-8">
+              <XCircle className="h-20 w-20 text-destructive mx-auto mb-4" />
+              {method == "Card/Stripe" && order.paymentType == "Card/Stripe" ? (
+                <>
+                  <h1 className="text-4xl font-bold text-n-foreground mb-2">
+                    Payment Failed!
+                  </h1>
+                  <p className="text-lg text-n-muted_foreground">
+                    We were unable to process your payment. Please try again or
+                    contact support.
+                  </p>
+                </>
+              ) : (
+                <>
+                  {" "}
+                  <h1 className="text-4xl font-bold text-n-foreground mb-2">
+                    Failed To Place Order
+                  </h1>
+                  <p className="text-lg text-n-muted_foreground">
+                    We were unable to place your order. Please try again or
+                    contact support if problem persists.
+                  </p>
+                </>
+              )}
             </div>
-          ))}
+
+            <div className="grid lg:grid-cols-3 gap-8">
+              {/* Order Details */}
+              <div className="lg:col-span-2 space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-n-foreground">
+                      <Package className="h-5 w-5" />
+                      Order Details
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium text-n-foreground">
+                          Order ID:
+                        </span>
+                        <span className="font-mono text-n-foreground">
+                          {orderId}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium text-n-foreground">
+                          Order Date:
+                        </span>
+                        <span className="text-n-foreground">{date}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium text-n-foreground">
+                          Order Time:
+                        </span>
+                        <span className="text-n-foreground">{time}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium text-n-foreground">
+                          Estimated Delivery:
+                        </span>
+                        <span className="text-n-foreground">
+                          {order.estimatedDelivery}
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Products Ordered */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-n-foreground">
+                      Products Ordered
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {orderedProducts.map((product) => (
+                        <div
+                          key={product.id}
+                          className="flex items-center gap-4 p-4 border rounded-lg"
+                        >
+                          <Image
+                            src={product.mainImage}
+                            alt={product.name}
+                            height={200}
+                            width={200}
+                            className="h-16 w-16 object-cover rounded-md"
+                          />
+                          <div className="flex-1">
+                            <h3 className="font-medium text-n-foreground">
+                              {product.name}
+                            </h3>
+                            <p className="text-sm text-n-muted_foreground">
+                              Qty: {product.quantity}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-medium text-n-foreground">
+                              ${product.price * product.quantity}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Status & Summary */}
+              <div className="space-y-6">
+                {/* Status Cards */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <CreditCard className="h-5 w-5 text-n-foreground" />
+                      Payment Status
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-n-foreground">Payment:</span>
+                        <Badge
+                          variant="default"
+                          className="bg-n-foreground text-n-primary_foreground"
+                        >
+                          {order.paymentStatus}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-n-foreground">Method:</span>
+                        <span className="text-n-foreground">
+                          {order.paymentType}
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Truck className="h-5 w-5 text-n-foreground" />
+                      Order Status
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-n-foreground">Order:</span>
+                        <Badge
+                          variant="default"
+                          className="bg-n-foreground text-n-primary_foreground"
+                        >
+                          {order.orderStatus}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-n-foreground">Delivery:</span>
+                        <Badge
+                          variant="secondary"
+                          className="flex items-center gap-1"
+                        >
+                          <Clock className="h-3 w-3" />
+                          {order.deliveryStatus}
+                        </Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Order Summary */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-n-foreground">
+                      Order Summary
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-n-foreground">Subtotal:</span>
+                        <span className="text-n-foreground">
+                          {order.total - order.shippingCost} $
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-n-foreground">Shipping:</span>
+                        <span className="text-n-foreground">
+                          ${order.shippingCost}
+                        </span>
+                      </div>
+                      <Separator />
+                      <div className="flex justify-between font-bold text-lg">
+                        <span className="text-n-foreground">Total:</span>
+                        <span className="text-n-foreground">
+                          {order.total} $
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Action Buttons */}
+                <div className="space-y-3">
+                  <Button
+                    // onClick={() => Router.push("/order-history")}
+                    className="w-full"
+                    variant="outline"
+                  >
+                    View Order History
+                  </Button>
+                  <Button onClick={() => router.push("/")} className="w-full">
+                    Continue Shopping
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-
-      {/* Total */}
-      <div className="text-xl font-bold text-red-600">
-        Total: ${order.total?.toFixed(2)}
-      </div>
-
-      {/* Try Again Button */}
-      <Button onClick={() => router.push("/my-checkout")} className="mt-6">
-        Try Again
-      </Button>
-    </div>
+    </>
   );
 }
