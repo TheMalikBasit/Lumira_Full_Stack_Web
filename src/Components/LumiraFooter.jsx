@@ -114,14 +114,17 @@ const Footer = ({ onSupportClick }) => {
 
             {/* Support Column */}
             <div>
-              <h4 className="font-semibold text-n-primary_foreground mb-6">
+              <h4
+                onClick={() => onSupportClick("help-center")}
+                className="cursor-pointer font-semibold text-n-primary_foreground mb-6"
+              >
                 Support
               </h4>
               <ul className="space-y-3">
                 <li>
                   <a
                     onClick={() => onSupportClick("help-center")}
-                    className="text-n-primary_foreground/80 hover:text-n-primary_foreground transition-colors"
+                    className="cursor-pointer text-n-primary_foreground/80 hover:text-n-primary_foreground transition-colors"
                   >
                     Help Center
                   </a>
@@ -129,7 +132,7 @@ const Footer = ({ onSupportClick }) => {
                 <li>
                   <a
                     onClick={() => onSupportClick("shipping-info")}
-                    className="text-n-primary_foreground/80 hover:text-n-primary_foreground transition-colors"
+                    className="cursor-pointer text-n-primary_foreground/80 hover:text-n-primary_foreground transition-colors"
                   >
                     Shipping Info
                   </a>
@@ -137,7 +140,7 @@ const Footer = ({ onSupportClick }) => {
                 <li>
                   <a
                     onClick={() => onSupportClick("returns-exchanges")}
-                    className="text-n-primary_foreground/80 hover:text-n-primary_foreground transition-colors"
+                    className="cursor-pointer text-n-primary_foreground/80 hover:text-n-primary_foreground transition-colors"
                   >
                     Returns & Exchanges
                   </a>
@@ -145,7 +148,7 @@ const Footer = ({ onSupportClick }) => {
                 <li>
                   <a
                     onClick={() => onSupportClick("warranty")}
-                    className="text-n-primary_foreground/80 hover:text-n-primary_foreground transition-colors"
+                    className="cursor-pointer text-n-primary_foreground/80 hover:text-n-primary_foreground transition-colors"
                   >
                     Warranty
                   </a>
@@ -153,7 +156,7 @@ const Footer = ({ onSupportClick }) => {
                 <li>
                   <a
                     onClick={() => onSupportClick("installation-guide")}
-                    className="text-n-primary_foreground/80 hover:text-n-primary_foreground transition-colors"
+                    className="cursor-pointer text-n-primary_foreground/80 hover:text-n-primary_foreground transition-colors"
                   >
                     Installation Guide
                   </a>
@@ -161,7 +164,7 @@ const Footer = ({ onSupportClick }) => {
                 <li>
                   <a
                     onClick={() => onSupportClick("contact-us")}
-                    className="text-n-primary_foreground/80 hover:text-n-primary_foreground transition-colors"
+                    className="cursor-pointer text-n-primary_foreground/80 hover:text-n-primary_foreground transition-colors"
                   >
                     Contact Us
                   </a>

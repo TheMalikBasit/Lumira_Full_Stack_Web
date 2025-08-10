@@ -98,11 +98,14 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
         className={`
         ${relative ? "relative" : "fixed"} ${hidden ? "hidden" : "block"} ${
           classic ? "border-black" : ""
-        } ${
-          bgBlur ? "lg:backdrop-blur-xl border-b" : ""
         } w-full top-0 left-0 right-0 z-40`}
       >
-        <div className="flex items-center px-5 sm:px-10 lg:px-[75px] xl:px-40 max-lg:py-4">
+        {bgBlur && (
+          <div className="absolute inset-0 backdrop-blur-xl z-[-100] pointer-events-none" />
+        )}
+        <div
+          className={` flex items-center px-5 sm:px-10 lg:px-[75px] xl:px-40 max-lg:py-4`}
+        >
           <a className="flex flex-row items-center w-[12rem]" href="/">
             {/* <Image src={brainwave} alt="Brainwave Logo" width={190} height={40} /> */}
             <div className="max-w-2xl">
@@ -125,7 +128,7 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
             ref={navRef}
             className={`${
               openNavigation ? "flex" : "hidden"
-            } fixed left-0 right-0 bottom-0 top-[5rem] lg:static lg:flex lg:mx-auto lg:bg-transparent`}
+            } fixed left-0 right-0 bottom-0 top-[4.75rem] lg:static lg:flex lg:mx-auto`}
           >
             <div className="relative z-2 flex flex-col items-center justify-center lg:flex-row m-auto">
               <button className="lg:hidden relative inline-flex justify-center border-2 border-orange-500 rounded-full p-[2px]">
@@ -162,11 +165,11 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
                     item.onlyMobile ? "lg:hidden" : ""
                   } ${
                     item.url === pathname
-                      ? "z-2 lg:text-orange-500"
+                      ? "z-2 lg:text-orange-500 text-stone-900"
                       : darkMode
                       ? "lg:text-n-1"
                       : "lg:text-neutral-950"
-                  } px-6 py-6 md:py-8 lg:mr-2 lg:text-sm lg:font-semibold lg:leading-5  lg:hover:text-orange-500 xl:px-10`}
+                  } px-6 py-6 md:py-8 lg:mr-2 lg:text-sm lg:font-semibold lg:leading-5 hover:text-white lg:hover:text-orange-500 xl:px-10`}
                 >
                   {item.clerk ? (
                     user ? (

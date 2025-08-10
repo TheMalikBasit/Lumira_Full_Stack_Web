@@ -31,14 +31,14 @@ const Hero = () => {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Content */}
           <div className="space-y-8">
-            <div className="space-y-4">
+            <div className="space-y-4 text-center md:text-start">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-n-foreground leading-tight">
                 Illuminate Your
                 <span className="text-n-spaceGradient block">
                   Perfect Space
                 </span>
               </h1>
-              <p className="text-lg sm:text-xl text-n-muted_foreground max-w-lg">
+              <p className="text-lg sm:text-xl text-n-muted_foreground max-w-lg mx-auto md:mx-0">
                 Discover LUMIRA's collection of premium lighting solutions that
                 blend modern design with exceptional functionality for your home
                 and office.

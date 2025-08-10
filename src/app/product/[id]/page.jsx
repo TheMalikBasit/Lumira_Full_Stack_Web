@@ -136,8 +136,8 @@ const Product = () => {
 
   return (
     <>
-      <Navbar relative />
-      <div className="min-h-screen bg-n-background px-4 lg:px-16 xl:px-32 pt-16 space-y-10">
+      <Navbar bgBlur />
+      <div className="min-h-screen bg-n-background px-4 lg:px-16 xl:px-32 pt-16 space-y-10 mt-10">
         {/* Breadcrumb */}
         {/* <div className="text-sm text-n-muted_foreground mb-4">
           <Link href="/" className="hover:text-n-foreground">

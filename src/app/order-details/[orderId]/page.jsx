@@ -108,7 +108,7 @@ const OrderConfirmation = () => {
       <div className="min-h-screen bg-n-background flex items-center justify-center">
         <div className="text-center">
           <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-n-foreground" />
-          <p>Order Not Found....</p>
+          <p>Loading Order Details....</p>
         </div>
       </div>
     );
@@ -135,9 +135,6 @@ const OrderConfirmation = () => {
                 <h1 className="text-3xl font-bold text-n-foreground">
                   Order Confirmation
                 </h1>
-                <p className="text-n-muted_foreground">
-                  Order #{orderDetails.id}
-                </p>
               </div>
             </div>
 
@@ -180,6 +177,9 @@ const OrderConfirmation = () => {
                       </div>
                       {orderDetails.trackingNumber && (
                         <div className="mt-4 p-4 bg-n-muted/50 rounded-lg">
+                          <p className="text-sm font-medium mb-1 text-n-muted_foreground">
+                            Order ID: #{orderDetails.id}
+                          </p>
                           <p className="text-sm font-medium mb-1 text-n-foreground">
                             Tracking Number:
                           </p>

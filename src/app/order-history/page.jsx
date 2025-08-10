@@ -128,7 +128,7 @@ const OrderHistory = () => {
                   Track and manage your orders
                 </p>
               </div>
-              <Button onClick={() => navigate("/")} variant="outline">
+              <Button onClick={() => router.push("/")} variant="outline">
                 Continue Shopping
               </Button>
             </div>
@@ -210,6 +210,7 @@ const OrderHistory = () => {
                 </div>
 
                 {/* Orders Table */}
+
                 <Card className="overflow-hidden">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -315,10 +316,11 @@ const OrderHistory = () => {
                                           alt={product.name}
                                           width={800}
                                           height={800}
-                                          className="h-8 w-8 rounded-full border-2 border-background object-cover"
+                                          className="min-h-2 min-w-2 max-h-8 max-w-8 rounded-full border-2 border-background object-cover"
                                           style={{ zIndex: 10 - index }}
                                         />
                                       ))}
+
                                     {order.cartItems.length > 3 && (
                                       <div className="h-8 w-8 rounded-full border-2 border-background bg-n-muted flex items-center justify-center text-xs font-medium">
                                         +{order.cartItems.length - 3}
