@@ -1,8 +1,6 @@
 "use client";
 import React from "react";
 import { useEffect } from "react";
-import { assets } from "@/assets/assets";
-import Navbar from "@/components/Navbar";
 import { useAppContext } from "../../Context/AppContext";
 import Image from "next/image";
 import { faXmark, faHeart } from "@fortawesome/free-solid-svg-icons";
@@ -10,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquare, faCheckSquare } from "@fortawesome/free-regular-svg-icons";
 import FooterOne from "@/Components/Footer";
 import FooterTwo from "@/Components/FooterTwo";
-import { Loading, LottieLoading } from "@/Components/Loading";
+import { LottieLoading } from "@/Components/Loading";
 import { useState } from "react";
 import OrderSummaryClassic from "@/Components/OrderSummaryClassic";
 import BackLights from "@/Components/BackLights";
@@ -28,6 +26,7 @@ import {
   removeLocalProducts,
   deleteLocalProducts,
 } from "../../../models/OfflineModules";
+import Navbar from "@/Components/Navbar";
 import RenderCart from "@/Components/RenderCart";
 const cart = () => {
   const {

@@ -24,7 +24,7 @@ import {
 } from "@/Components/UI/table";
 import Navbar from "@/Components/Navbar";
 import Footer from "@/Components/LumiraFooter";
-import SupportModal from "@/components/SupportModal";
+import SupportModal from "@/Components/SupportModal";
 import { useAppContext } from "@/Context/AppContext";
 import { db } from "../../../Config/firebase";
 import { getDoc, doc, collection } from "firebase/firestore";
