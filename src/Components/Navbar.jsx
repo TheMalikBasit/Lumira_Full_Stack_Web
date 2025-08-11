@@ -71,8 +71,12 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
   };
 
   const handleClick = (url) => {
-    setLoading(true);
-    window.location.href = url;
+    if (url != undefined) {
+      setLoading(true);
+      window.location.href = url;
+    } else {
+      return;
+    }
   };
 
   const handleLinkClick = () => {
