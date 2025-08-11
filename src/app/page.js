@@ -14,7 +14,7 @@ import { LottieLoading } from "@/Components/Loading";
 import SupportModal from "@/Components/SupportModal";
 import SelectCurrency from "@/Components/SelectCurrency";
 export default function Home() {
-  const [showVideo, setShowVideo] = useState(false);
+  const [showVideo, setShowVideo] = useState(true);
   const [fade, setFade] = useState(false);
   const { loading } = useAppContext();
   const [showCurrencyModal, setShowCurrencyModal] = useState(true); // initially true
@@ -45,7 +45,7 @@ export default function Home() {
     <>
       {showVideo && (
         <div
-          className={`pointer-events-none fixed inset-0 flex items-center justify-center bg-black transition-opacity duration-1000 z-50 ${
+          className={`pointer-events-none fixed inset-0 flex items-center justify-center bg-black transition-opacity duration-1000 z-30 ${
             fade ? "opacity-0" : "opacity-100"
           }`}
         >
@@ -60,7 +60,6 @@ export default function Home() {
           />
         </div>
       )}
-      <BackLights L1 />
       <div className="pt-[4.75rem] lg:pt-[5.25rem] overflow-hidden">
         <Navbar bgBlur />
         <Hero />

@@ -11,6 +11,7 @@ import Button from "@/Components/Button";
 import { updateExchangeRates } from "../../../models/updateExchangeRates";
 import { db } from "../../../Config/firebase";
 import { addDoc, collection } from "firebase/firestore";
+import AddCJProduct from "@/Components/AddCJProduct";
 const page = () => {
   const { isAdmin, adminLoading } = useAppContext();
   const [status, setStatus] = useState(null);
@@ -32,6 +33,18 @@ const page = () => {
     } else {
       setStatus("❌ Failed to update rates.");
     }
+  };
+
+  const getAccessToken = async () => {
+    const res = await fetch("/api/get-cj-token", { method: "POST" });
+    const data = await res.json();
+    console.log(data);
+  };
+
+  const fetchProductDetails = async () => {
+    const res = await fetch(`/api/cj-product?pid=CJSN164392802BY`);
+    const data = await res.json();
+    console.log(data);
   };
 
   if (adminLoading) return <LottieLoading />;
@@ -66,6 +79,25 @@ const page = () => {
             Update Rates
           </button>
           {status && <p className="mt-4 text-gray-800">{status}</p>}
+        </div>
+        <div className="flex flex-col my-5">
+          <button
+            onClick={fetchProductDetails}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+          >
+            Get Product By Id
+          </button>
+        </div>
+        <div className="flex flex-col my-5">
+          <button
+            onClick={getAccessToken}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+          >
+            Get Access Token
+          </button>
+        </div>
+        <div>
+          <AddCJProduct />
         </div>
         <div className="flex flex-col lg:justify-around lg:flex-row justify-start">
           <StockAddForm />

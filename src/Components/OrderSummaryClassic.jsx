@@ -59,7 +59,7 @@ const OrderSummaryClassic = () => {
   console.log("getCartAmount from summary: ", getCartAmount);
   return (
     <Card
-      className="border-n-border/50 sticky shadow-elegant hover:shadow-glow transition-all duration-200 backdrop-blur-sm bg-n-card/90 overflow-hidden group animate-fade-in"
+      className="border-n-border/50 shadow-elegant hover:shadow-glow transition-all duration-200 backdrop-blur-sm bg-n-card/90 overflow-hidden group animate-fade-in"
       style={{ animationDelay: "600ms" }}
     >
       <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-n-primary via-n-lumira_coral to-n-lumira_salmon"></div>

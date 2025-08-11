@@ -115,8 +115,8 @@ const CheckOutSummary = ({
         const orderData = {
           userId: user.id,
           orderDate: new Date().toISOString(),
-          orderStatus: "Confirmed",
-          deliveryStatus: "Processing",
+          orderStatus: "Pending Verification",
+          deliveryStatus: "Pending",
           paymentStatus: "Pending",
           paymentType: "cod",
           total: totalAmount,

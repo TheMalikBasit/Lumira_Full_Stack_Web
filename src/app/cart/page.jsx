@@ -73,13 +73,10 @@ const cart = () => {
 
   return (
     <>
-      <BackLights L1 L2 />
-      <Navbar relative classic />
+      <BackLights L2 />
 
-      {addAddressPopUp && (
-        <AddAddressComponent onClose={() => setaddAddressPopUp(false)} />
-      )}
-      <div className="min-h-screen relative overflow-hidden ">
+      <Navbar bgBlur />
+      <div className="min-h-screen relative overflow-hidden mt-20">
         <div className="container mx-auto px-4 py-8 relative z-10">
           <div className="flex items-center gap-6 mb-16">
             <div

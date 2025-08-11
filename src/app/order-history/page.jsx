@@ -344,11 +344,13 @@ const OrderHistory = () => {
                                   </p>
                                   <p className="text-xs text-n-muted_foreground">
                                     Avg: $
-                                    {order.total /
+                                    {(
+                                      order.total /
                                       order.cartItems.reduce(
                                         (sum, item) => sum + item.quantity,
                                         0
-                                      )}
+                                      )
+                                    ).toFixed(2)}
                                   </p>
                                 </div>
                               </TableCell>
