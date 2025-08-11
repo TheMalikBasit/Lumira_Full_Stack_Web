@@ -71,7 +71,6 @@ export const navigation = [
   {
     id: "5",
     title: "Sign in",
-    url: null,
     clerk: true,
     onlyMobile: true,
   },
