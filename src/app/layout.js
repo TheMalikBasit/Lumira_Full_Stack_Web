@@ -8,6 +8,7 @@ import CheckAdmin from "../../models/CheckAdmin";
 import FetchProducts from "../../models/ProductsFetcher";
 import { Toaster } from "react-hot-toast";
 import CurrencyFetcher from "../../models/CurrencyFetcher";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -31,6 +32,7 @@ export default function RootLayout({ children }) {
             <FetchProducts />
             <CurrencyFetcher />
             {children}
+            <SpeedInsights />
             <Toaster position="top-center" />
           </AppContextProvider>
         </body>
