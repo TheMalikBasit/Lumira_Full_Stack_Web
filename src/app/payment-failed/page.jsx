@@ -16,7 +16,7 @@ import { Badge } from "@/Components/UI/badge";
 import { Separator } from "@/Components/UI/separator";
 import Navbar from "@/Components/Navbar";
 // import { useState as useModalState } from "react";
-import SupportModal, { SupportSection } from "@/components/SupportModal";
+import SupportModal from "@/Components/SupportModal";
 import { useEffect, useState } from "react";
 import { db } from "../../../Config/firebase";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
@@ -24,7 +24,7 @@ import Image from "next/image";
 import { useAppContext } from "@/Context/AppContext";
 import BackLights from "@/Components/BackLights";
 import { useSearchParams, useRouter } from "next/navigation";
-
+import Footer from "@/Components/LumiraFooter";
 export default function PaymentFailed() {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
