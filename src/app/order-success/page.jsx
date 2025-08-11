@@ -6,7 +6,7 @@ import { Badge } from "@/Components/UI/badge";
 import { Separator } from "@/Components/UI/separator";
 import Navbar from "@/Components/Navbar";
 // import { useState as useModalState } from "react";
-// import SupportModal, { SupportSection } from "@/components/SupportModal";
+import SupportModal, { SupportSection } from "@/Components/SupportModal";
 import { useEffect, useState } from "react";
 import { db } from "../../../Config/firebase";
 import {
@@ -23,6 +23,7 @@ import { useAppContext } from "@/Context/AppContext";
 import BackLights from "@/Components/BackLights";
 import { useUser } from "@clerk/nextjs";
 import toast from "react-hot-toast";
+import Footer from "@/Components/LumiraFooter";
 export default function PaymentSuccess() {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -33,6 +34,10 @@ export default function PaymentSuccess() {
   const method = searchParams.get("method");
   const { isSignedIn, user } = useUser();
   const [newDateVar, setNewDateVar] = useState(null);
+  const [supportModal, setSupportModal] = useState({
+    isOpen: false,
+    section: "",
+  });
   useEffect(() => {
     if (!orderId) return;
 
@@ -353,6 +358,15 @@ export default function PaymentSuccess() {
           </div>
         </div>
       </div>
+      <Footer
+        onSupportClick={(section) => setSupportModal({ isOpen: true, section })}
+      />
+
+      <SupportModal
+        isOpen={supportModal.isOpen}
+        onClose={() => setSupportModal({ isOpen: false, section: "" })}
+        initialSection={supportModal.section}
+      />
     </>
   );
 }

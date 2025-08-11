@@ -1,10 +1,8 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import Link from "next/link";
 import { useAppContext } from "@/Context/AppContext";
-import Navbar from "../../../components/Navbar";
+import Navbar from "@/Components/Navbar";
 import Footer from "@/Components/LumiraFooter";
 import { Loading, LottieLoading } from "@/Components/Loading";
 import PriceTag from "@/Components/PriceTag";

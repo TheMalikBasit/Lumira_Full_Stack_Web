@@ -1,233 +1,3 @@
-// import { useEffect, useState } from "react";
-// import { useNavigate, useSearchParams } from "react-router-dom";
-// import { XCircle, Package, CreditCard, AlertTriangle, RefreshCw } from "lucide-react";
-// import { Button } from "@/components/ui/button";
-// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { Badge } from "@/components/ui/badge";
-// import { Separator } from "@/components/ui/separator";
-// import { Alert, AlertDescription } from "@/components/ui/alert";
-// import Header from "@/components/Header";
-// import Footer from "@/components/Footer";
-// import { useState as useModalState } from "react";
-// import SupportModal from "@/components/SupportModal";
-
-// // Mock order data generator
-// const generateFailedOrderData = () => {
-//   const orderId = `LUM-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
-//   const products = [
-//     {
-//       id: "1",
-//       name: "Modern Floor Lamp",
-//       price: 249.99,
-//       quantity: 1,
-//       image: "/src/assets/floor-lamp.jpg"
-//     },
-//     {
-//       id: "2",
-//       name: "Pendant Light",
-//       price: 189.99,
-//       quantity: 2,
-//       image: "/src/assets/pendant-lamp.jpg"
-//     }
-//   ];
-
-//   const subtotal = products.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-//   const shipping = 15.00;
-//   const tax = subtotal * 0.08;
-//   const total = subtotal + shipping + tax;
-
-//   const failureReasons = [
-//     "Payment was declined by your bank",
-//     "Insufficient funds in your account",
-//     "Card expired or invalid",
-//     "Payment processing timeout",
-//     "Security verification failed"
-//   ];
-
-//   return {
-//     orderId,
-//     products,
-//     subtotal,
-//     shipping,
-//     tax,
-//     total,
-//     paymentStatus: "Failed",
-//     paymentType: "Credit Card",
-//     orderStatus: "Payment Failed",
-//     failureReason: failureReasons[Math.floor(Math.random() * failureReasons.length)],
-//     orderDate: new Date().toLocaleDateString()
-//   };
-// };
-
-// const PaymentFailed = () => {
-//   const navigate = useNavigate();
-//   const [searchParams] = useSearchParams();
-//   const [orderData] = useState(() => generateFailedOrderData());
-//   const [supportModal, setSupportModal] = useModalState({ isOpen: false, section: "" });
-
-//   const handleRetryPayment = () => {
-//     navigate("/checkout");
-//   };
-
-//   const handleContactSupport = () => {
-//     setSupportModal({ isOpen: true, section: "contact" });
-//   };
-
-//   return (
-//     <div className="min-h-screen bg-background">
-//       <Header />
-
-//       <div className="container mx-auto px-4 py-12">
-//         <div className="max-w-4xl mx-auto">
-//           <div className="text-center mb-8">
-//             <XCircle className="h-20 w-20 text-destructive mx-auto mb-4" />
-//             <h1 className="text-4xl font-bold text-n-foreground mb-2">Payment Failed</h1>
-//             <p className="text-lg text-n-muted_foreground">We were unable to process your payment. Please try again or contact support.</p>
-//           </div>
-
-//           <Alert className="mb-8 border-destructive/50 bg-destructive/10">
-//             <AlertTriangle className="h-4 w-4" />
-//             <AlertDescription className="text-destructive">
-//               <strong>Payment Error:</strong> {orderData.failureReason}
-//             </AlertDescription>
-//           </Alert>
-
-//           <div className="grid lg:grid-cols-3 gap-8">
-//             <div className="lg:col-span-2 space-y-6">
-//               <Card>
-//                 <CardHeader>
-//                   <CardTitle className="flex items-center gap-2">
-//                     <Package className="h-5 w-5" />
-//                     Order Details
-//                   </CardTitle>
-//                 </CardHeader>
-//                 <CardContent>
-//                   <div className="space-y-4">
-//                     <div className="flex justify-between items-center">
-//                       <span className="font-medium">Order ID:</span>
-//                       <span className="font-mono text-muted-foreground">{orderId}</span>
-//                     </div>
-//                     <div className="flex justify-between items-center">
-//                       <span className="font-medium">Attempt Date:</span>
-//                       <span>{order.attemptedAt}</span>
-//                     </div>
-//                   </div>
-//                 </CardContent>
-//               </Card>
-
-//               <Card>
-//                 <CardHeader>
-//                   <CardTitle>Items in Your Cart</CardTitle>
-//                 </CardHeader>
-//                 <CardContent>
-//                   <div className="space-y-4">
-//                     {order.cartItems?.map((product) => (
-//                       <div key={product.id} className="flex items-center gap-4 p-4 border rounded-lg">
-//                         <img
-//                           src={product.mainImage}
-//                           alt={product.name}
-//                           className="h-16 w-16 object-cover rounded-md"
-//                         />
-//                         <div className="flex-1">
-//                           <h3 className="font-medium">{product.name}</h3>
-//                           <p className="text-sm text-muted-foreground">Qty: {product.quantity}</p>
-//                         </div>
-//                         <div className="text-right">
-//                           <p className="font-medium">${(product.price * product.quantity)}</p>
-//                         </div>
-//                       </div>
-//                     ))}
-//                   </div>
-//                 </CardContent>
-//               </Card>
-//             </div>
-
-//             <div className="space-y-6">
-//               <Card>
-//                 <CardHeader>
-//                   <CardTitle className="flex items-center gap-2">
-//                     <CreditCard className="h-5 w-5" />
-//                     Payment Status
-//                   </CardTitle>
-//                 </CardHeader>
-//                 <CardContent>
-//                   <div className="space-y-3">
-//                     <div className="flex justify-between items-center">
-//                       <span>Payment:</span>
-//                       <Badge variant="destructive">
-//                         {order.paymentStatus}
-//                       </Badge>
-//                     </div>
-//                     <div className="flex justify-between items-center">
-//                       <span>Method:</span>
-//                       <span>{orderData.paymentType}</span>
-//                     </div>
-//                     <div className="flex justify-between items-center">
-//                       <span>Order:</span>
-//                       <Badge variant="destructive">
-//                         {orderData.orderStatus}
-//                       </Badge>
-//                     </div>
-//                   </div>
-//                 </CardContent>
-//               </Card>
-
-//               <Card>
-//                 <CardHeader>
-//                   <CardTitle>Order Summary</CardTitle>
-//                 </CardHeader>
-//                 <CardContent>
-//                   <div className="space-y-2">
-//                     <div className="flex justify-between">
-//                       <span>Subtotal:</span>
-//                       <span>${orderData.subtotal.toFixed(2)}</span>
-//                     </div>
-//                     <div className="flex justify-between">
-//                       <span>Shipping:</span>
-//                       <span>${orderData.shipping.toFixed(2)}</span>
-//                     </div>
-//                     <div className="flex justify-between">
-//                       <span>Tax:</span>
-//                       <span>${orderData.tax.toFixed(2)}</span>
-//                     </div>
-//                     <Separator />
-//                     <div className="flex justify-between font-bold text-lg">
-//                       <span>Total:</span>
-//                       <span>${orderData.total.toFixed(2)}</span>
-//                     </div>
-//                   </div>
-//                 </CardContent>
-//               </Card>
-
-//               <div className="space-y-3">
-//                 <Button onClick={handleRetryPayment} className="w-full">
-//                   <RefreshCw className="h-4 w-4 mr-2" />
-//                   Retry Payment
-//                 </Button>
-//                 <Button onClick={handleContactSupport} variant="outline" className="w-full">
-//                   Contact Support
-//                 </Button>
-//                 <Button onClick={() => navigate("/")} variant="ghost" className="w-full">
-//                   Continue Shopping
-//                 </Button>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-
-//       <Footer onSupportClick={(section) => setSupportModal({ isOpen: true, section })} />
-
-//       <SupportModal
-//         isOpen={supportModal.isOpen}
-//         onClose={() => setSupportModal({ isOpen: false, section: "" })}
-//         initialSection={supportModal.section}
-//       />
-//     </div>
-//   );
-// };
-
-// export default PaymentFailed;
 "use client";
 import {
   CheckCircle,
@@ -246,7 +16,7 @@ import { Badge } from "@/Components/UI/badge";
 import { Separator } from "@/Components/UI/separator";
 import Navbar from "@/Components/Navbar";
 // import { useState as useModalState } from "react";
-// import SupportModal, { SupportSection } from "@/components/SupportModal";
+import SupportModal, { SupportSection } from "@/components/SupportModal";
 import { useEffect, useState } from "react";
 import { db } from "../../../Config/firebase";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
@@ -263,6 +33,10 @@ export default function PaymentFailed() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
   const method = searchParams.get("method");
+  const [supportModal, setSupportModal] = useState({
+    isOpen: false,
+    section: "",
+  });
   const [newDateVar, setNewDateVar] = useState(null);
   useEffect(() => {
     if (!orderId) return;
@@ -555,6 +329,15 @@ export default function PaymentFailed() {
           </div>
         </div>
       </div>
+      <Footer
+        onSupportClick={(section) => setSupportModal({ isOpen: true, section })}
+      />
+
+      <SupportModal
+        isOpen={supportModal.isOpen}
+        onClose={() => setSupportModal({ isOpen: false, section: "" })}
+        initialSection={supportModal.section}
+      />
     </>
   );
 }
