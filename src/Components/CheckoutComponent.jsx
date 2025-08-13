@@ -2,6 +2,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import { AddShippingInfo } from "../../models/AddrerssHandler";
+import { SignInButton } from "@clerk/nextjs";
+import Link from "next/link";
 import {
   ArrowLeft,
   CreditCard,
@@ -23,6 +25,7 @@ import {
   SelectValue,
 } from "@/Components/UI/select";
 import { Separator } from "@/Components/UI/separator";
+import { Alert, AlertDescription } from "./UI/alert";
 import { Checkbox } from "@/Components/UI/checkbox";
 import Navbar from "./Navbar";
 import { useAppContext } from "@/Context/AppContext";
@@ -193,6 +196,24 @@ const Checkout = () => {
               </div>
             </div>
           </div>
+          {!user && (
+            <Alert
+              className="mb-8 border-amber-200/50 bg-gradient-to-r from-amber-50/50 to-orange-50/50 backdrop-blur-sm animate-fade-in"
+              style={{ animationDelay: "600ms" }}
+            >
+              <User className="h-5 w-5 text-amber-600" />
+              <AlertDescription className="text-amber-800 text-base font-medium ml-2">
+                Please{" "}
+                <Link
+                  href="/login"
+                  className="underline hover:text-amber-900 transition-colors font-semibold"
+                >
+                  log in to your account
+                </Link>{" "}
+                to complete your order and access faster checkout options.
+              </AlertDescription>
+            </Alert>
+          )}
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
             {/* Checkout Form */}

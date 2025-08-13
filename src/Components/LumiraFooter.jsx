@@ -14,7 +14,7 @@ import Image from "next/image";
 
 const Footer = ({ onSupportClick }) => {
   return (
-    <footer className="bg-n-primary text-n-primary_foreground">
+    <footer className="bg-n-primary text-n-primary_foreground w-full">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Footer Content */}
         <div className="py-16">

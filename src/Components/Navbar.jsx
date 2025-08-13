@@ -108,7 +108,7 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
           <div className="absolute inset-0 backdrop-blur-xl z-[-100] pointer-events-none" />
         )}
         <div
-          className={` flex items-center px-5 sm:px-10 lg:px-[75px] xl:px-40 max-lg:py-4`}
+          className={` flex items-center px-5 sm:px-10 lg:px-[75px] xl:px-40 max-lg:py-3`}
         >
           <a className="flex flex-row items-center w-[12rem]" href="/">
             {/* <Image src={brainwave} alt="Brainwave Logo" width={190} height={40} /> */}
@@ -173,7 +173,7 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
                       : darkMode
                       ? "lg:text-n-1"
                       : "lg:text-neutral-950"
-                  } px-6 py-6 md:py-8 lg:mr-2 lg:text-sm lg:font-semibold lg:leading-5 hover:text-white lg:hover:text-orange-500 xl:px-10`}
+                  } px-6 py-6 md:py-6 xl:px-10 lg:mr-2 lg:text-sm lg:font-semibold lg:leading-5 hover:text-white lg:hover:text-orange-500`}
                 >
                   {item.clerk ? (
                     user ? (

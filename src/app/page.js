@@ -14,7 +14,7 @@ import { LottieLoading } from "@/Components/Loading";
 import SupportModal from "@/Components/SupportModal";
 import SelectCurrency from "@/Components/SelectCurrency";
 export default function Home() {
-  const [showVideo, setShowVideo] = useState(true);
+  const [showVideo, setShowVideo] = useState(false);
   const [fade, setFade] = useState(false);
   const { loading } = useAppContext();
   const [showCurrencyModal, setShowCurrencyModal] = useState(true); // initially true

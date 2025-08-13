@@ -234,6 +234,7 @@ const ShipmentForm = ({ onReload, handleToggle }) => {
                 First Name
               </Label>
               <Input
+                required
                 id="firstName"
                 placeholder="John"
                 value={getUserInfo.FirstName}
@@ -251,6 +252,7 @@ const ShipmentForm = ({ onReload, handleToggle }) => {
                 Last Name
               </Label>
               <Input
+                required
                 id="lastName"
                 placeholder="Doe"
                 value={getUserInfo.LastName}
@@ -269,6 +271,7 @@ const ShipmentForm = ({ onReload, handleToggle }) => {
               Email
             </Label>
             <Input
+              required
               id="email"
               type="email"
               placeholder="john@example.com"
@@ -284,6 +287,7 @@ const ShipmentForm = ({ onReload, handleToggle }) => {
               Phone Number
             </Label>
             <Input
+              required
               id="phone"
               type="tel"
               placeholder="+1 (555) 000-0000"
@@ -300,6 +304,7 @@ const ShipmentForm = ({ onReload, handleToggle }) => {
                 Full Address
               </Label>
               <Input
+                required
                 id="address"
                 placeholder="123 Main Street"
                 value={getUserInfo.FullAddress}
@@ -334,7 +339,9 @@ const ShipmentForm = ({ onReload, handleToggle }) => {
             {/* Country div     */}
             <div ref={countryRef} className="relative space-y-2">
               <Label className="text-sm font-medium">Country</Label>
+
               <Input
+                required
                 type="text"
                 placeholder={countryName ? countryName : "Select country"}
                 value={queryCountry}
@@ -374,6 +381,7 @@ const ShipmentForm = ({ onReload, handleToggle }) => {
                 )}
               </div>
               <Input
+                required
                 type="text"
                 placeholder="Select state"
                 value={queryState}
@@ -416,6 +424,7 @@ const ShipmentForm = ({ onReload, handleToggle }) => {
               )}
 
               <Input
+                required
                 type="text"
                 placeholder="Select city"
                 value={queryCity}
@@ -450,14 +459,15 @@ const ShipmentForm = ({ onReload, handleToggle }) => {
             </>
           ) : (
             <>
-              <Button
+              <div
                 data-tooltip-id="login-user-tooltip"
                 data-tooltip-content="Login to add shipment info"
-                className={"cursor-default opacity-25 text-center w-full mt-3"}
-                type="submit"
+                className={
+                  "cursor-default opacity-25 text-center w-full mt-3 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-n-primary text-n-primary_foreground hover:bg-n-primary/90 shadow-warm transition-all duration-300 h-10 px-4 py-2"
+                }
               >
                 Add Shipment Infomation
-              </Button>
+              </div>
               <Tooltip id="login-user-tooltip" />
             </>
           )}

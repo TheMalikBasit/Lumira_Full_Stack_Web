@@ -99,9 +99,9 @@ export default function PaymentFailed() {
 
   return (
     <>
-      <BackLights L1 L2 L3 />
       <Navbar bgBlur />
       <div className="min-h-screen backdrop-blur-2xl mt-20">
+        <BackLights L2 L3 />
         <div className="container mx-auto px-4 py-12">
           <div className="max-w-4xl mx-auto">
             {/* Success Header */}

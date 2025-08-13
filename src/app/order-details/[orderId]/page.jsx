@@ -34,8 +34,22 @@ const OrderConfirmation = () => {
     section: "",
   });
   const [deliveryProgress, setDeliveryProgress] = useState(null);
+  const [deliveryProgress1, setDeliveryProgress1] = useState(null);
+  const [deliveryProgress2, setDeliveryProgress2] = useState(null);
   const [orderedProducts, setOrderedProducts] = useState([]);
   const [newDateVar, setNewDateVar] = useState(null);
+  const [width, setWidth] = useState(0); // safe default for SSR
+
+  useEffect(() => {
+    if (!loading) {
+      const handleResize = () => setWidth(window.innerWidth);
+
+      handleResize(); // set initial width
+      window.addEventListener("resize", handleResize);
+
+      return () => window.removeEventListener("resize", handleResize);
+    }
+  });
 
   const trackingSteps = [
     { label: "Pending", completed: deliveryProgress >= 0 },
@@ -44,6 +58,18 @@ const OrderConfirmation = () => {
     { label: "Dispatched", completed: deliveryProgress >= 75 },
     { label: "Shipped", completed: deliveryProgress >= 95 },
     { label: "Delivered", completed: deliveryProgress >= 100 },
+  ];
+
+  const trackingStepsMobile1 = [
+    { label: "Pending", completed: deliveryProgress1 >= 0 },
+    { label: "Order Confirmed", completed: deliveryProgress1 >= 50 },
+    { label: "Processing", completed: deliveryProgress1 >= 100 },
+  ];
+
+  const trackingStepsMobile2 = [
+    { label: "Dispatched", completed: deliveryProgress2 > 10 },
+    { label: "Shipped", completed: deliveryProgress2 >= 50 },
+    { label: "Delivered", completed: deliveryProgress2 >= 100 },
   ];
 
   useEffect(() => {
@@ -81,17 +107,31 @@ const OrderConfirmation = () => {
         })
         .filter(Boolean);
       const timeStamp = orderDetails.orderDate;
-      if (orderDetails.deliveryStatus === "Pending") setDeliveryProgress(0);
-      else if (orderDetails.deliveryStatus === "Order Confirmed")
+      if (orderDetails.deliveryStatus === "Pending") {
+        setDeliveryProgress(0);
+        setDeliveryProgress1(35);
+        setDeliveryProgress2(0);
+      } else if (orderDetails.deliveryStatus === "Order Confirmed") {
         setDeliveryProgress(25);
-      else if (orderDetails.deliveryStatus === "Processing")
+        setDeliveryProgress1(50);
+        setDeliveryProgress2(0);
+      } else if (orderDetails.deliveryStatus === "Processing") {
         setDeliveryProgress(50);
-      else if (orderDetails.deliveryStatus === "Dispatched")
+        setDeliveryProgress1(100);
+        setDeliveryProgress2(0);
+      } else if (orderDetails.deliveryStatus === "Dispatched") {
         setDeliveryProgress(75);
-      else if (orderDetails.deliveryStatus === "Shipped")
+        setDeliveryProgress1(100);
+        setDeliveryProgress2(35);
+      } else if (orderDetails.deliveryStatus === "Shipped") {
         setDeliveryProgress(95);
-      else if (orderDetails.deliveryStatus === "Delivered")
+        setDeliveryProgress1(100);
+        setDeliveryProgress2(50);
+      } else if (orderDetails.deliveryStatus === "Delivered") {
         setDeliveryProgress(100);
+        setDeliveryProgress1(100);
+        setDeliveryProgress2(100);
+      }
       setNewDateVar(timeStamp);
       setOrderedProducts(filteredProducts);
     }
@@ -116,12 +156,12 @@ const OrderConfirmation = () => {
 
   return (
     <>
-      <BackLights L1 L2 L3 />
-      <Navbar relative bgBlur />
-      <div className="min-h-screen backdrop-blur-3xl">
-        <div className="container mx-auto px-4 py-12 ">
+      <Navbar bgBlur />
+      <div className="min-h-screen backdrop-blur-3xl mt-20 overflow-hidden">
+        <div className="container mx-auto px-4 py-12 mt-10">
+          {/* <BackLights L2 L3 /> */}
           <div className="max-w-6xl mx-auto">
-            <div className="flex items-center gap-4 mb-8">
+            <div className="flex items-start md:items-center flex-col md:flex-row gap-4 mb-8">
               <Button
                 variant="ghost"
                 size="sm"
@@ -138,8 +178,8 @@ const OrderConfirmation = () => {
               </div>
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2 space-y-6">
+            <div className="grid lg:grid-cols-3 gap-8 ">
+              <div className="lg:col-span-2 space-y-6 overflow-hidden">
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-n-foreground">
@@ -148,33 +188,100 @@ const OrderConfirmation = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
-                      <Progress value={deliveryProgress} className="h-2" />
-                      <div className="flex justify-between">
-                        {trackingSteps.map((step) => (
-                          <div
-                            key={step.label}
-                            className="flex flex-col items-center text-center"
-                          >
-                            <div
-                              className={`w-3 h-3 rounded-full mb-2 ${
-                                step.completed
-                                  ? "bg-n-foreground"
-                                  : "bg-n-muted"
-                              }`}
-                            />
-                            <span
-                              className={`text-xs ${
-                                step.completed
-                                  ? "text-n-foreground font-medium"
-                                  : "text-n-muted_foreground"
-                              }`}
-                            >
-                              {step.label}
-                            </span>
+                    <div className={`space-y-4`}>
+                      {width > 600 ? (
+                        <>
+                          <Progress value={deliveryProgress} className="h-2" />
+                          <div className="flex justify-between">
+                            {trackingSteps.map((step) => (
+                              <div
+                                key={step.label}
+                                className="flex flex-col items-center text-center"
+                              >
+                                <div
+                                  className={`w-3 h-3 rounded-full mb-2 ${
+                                    step.completed
+                                      ? "bg-n-foreground"
+                                      : "bg-n-muted"
+                                  }`}
+                                />
+                                <span
+                                  className={`text-xs ${
+                                    step.completed
+                                      ? "text-n-foreground font-medium"
+                                      : "text-n-muted_foreground"
+                                  }`}
+                                >
+                                  {step.label}
+                                </span>
+                              </div>
+                            ))}
                           </div>
-                        ))}
-                      </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="flex flex-col justify-between space-y-3">
+                            <Progress
+                              value={deliveryProgress1}
+                              className="h-2"
+                            />
+                            <div className="flex justify-between">
+                              {trackingStepsMobile1.map((step) => (
+                                <div
+                                  key={step.label}
+                                  className="flex flex-col items-center text-center"
+                                >
+                                  <div
+                                    className={`w-3 h-3 rounded-full mb-2 ${
+                                      step.completed
+                                        ? "bg-n-foreground"
+                                        : "bg-n-muted"
+                                    }`}
+                                  />
+                                  <span
+                                    className={`text-xs ${
+                                      step.completed
+                                        ? "text-n-foreground font-medium"
+                                        : "text-n-muted_foreground"
+                                    }`}
+                                  >
+                                    {step.label}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                            <Progress
+                              value={deliveryProgress2}
+                              className="h-2"
+                            />
+                            <div className="flex justify-between">
+                              {trackingStepsMobile2.map((stepdad) => (
+                                <div
+                                  key={stepdad.label}
+                                  className="flex flex-col items-center text-center"
+                                >
+                                  <div
+                                    className={`w-3 h-3 rounded-full mb-2 ${
+                                      stepdad.completed
+                                        ? "bg-n-foreground"
+                                        : "bg-n-muted"
+                                    }`}
+                                  />
+                                  <span
+                                    className={`text-xs ${
+                                      stepdad.completed
+                                        ? "text-n-foreground font-medium"
+                                        : "text-n-muted_foreground"
+                                    }`}
+                                  >
+                                    {stepdad.label}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </>
+                      )}
                       {orderDetails.trackingNumber && (
                         <div className="mt-4 p-4 bg-n-muted/50 rounded-lg">
                           <p className="text-sm font-medium mb-1 text-n-muted_foreground">
@@ -291,6 +398,15 @@ const OrderConfirmation = () => {
                           {orderDetails.paymentStatus}
                         </Badge>
                       </div>
+                      <div className="flex justify-between items-center text-n-foreground">
+                        <span>Method:</span>
+                        <Badge
+                          variant="default"
+                          className="bg-n-foreground text-n-primary_foreground"
+                        >
+                          {orderDetails.paymentType}
+                        </Badge>
+                      </div>
                       <div className="flex justify-between items-center">
                         <span className="text-n-foreground">Delivery:</span>
                         <Badge variant="secondary">
@@ -383,16 +499,17 @@ const OrderConfirmation = () => {
             </div>
           </div>
         </div>
+        <SupportModal
+          isOpen={supportModal.isOpen}
+          onClose={() => setSupportModal({ isOpen: false, section: "" })}
+          initialSection={supportModal.section}
+        />
+        <Footer
+          onSupportClick={(section) =>
+            setSupportModal({ isOpen: true, section })
+          }
+        />
       </div>
-      <Footer
-        onSupportClick={(section) => setSupportModal({ isOpen: true, section })}
-      />
-
-      <SupportModal
-        isOpen={supportModal.isOpen}
-        onClose={() => setSupportModal({ isOpen: false, section: "" })}
-        initialSection={supportModal.section}
-      />
     </>
   );
 };

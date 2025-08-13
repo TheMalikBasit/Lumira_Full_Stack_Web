@@ -10,6 +10,10 @@ import {
   AlertCircle,
   Calendar,
   CreditCard,
+  DollarSignIcon,
+  Wallet,
+  Wallet2,
+  WalletCards,
 } from "lucide-react";
 import { Button } from "@/Components/UI/lumiraButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/UI/card";
@@ -30,10 +34,14 @@ import { db } from "../../../Config/firebase";
 import { getDoc, doc, collection } from "firebase/firestore";
 import Image from "next/image";
 import { Loading, LottieLoading } from "@/Components/Loading";
+import { useUser } from "@clerk/nextjs";
 const OrderHistory = () => {
   const { orderHistory, router, loading, products } = useAppContext();
-  // const navigate = useNavigate();
+  const { user } = useUser();
   const [orders, setOrders] = useState([]);
+  const [toPay, setToPay] = useState(null);
+  const [unsorted, setUnsorted] = useState([]);
+
   const [supportModal, setSupportModal] = useState({
     isOpen: false,
     section: "",
@@ -45,41 +53,49 @@ const OrderHistory = () => {
   console.log("OrderIds", orderIds);
 
   useEffect(() => {
-    const fetchAllOrders = async () => {
-      try {
-        const orderPromises = orderIds.map(async (itemId) => {
-          const ordersRef = doc(db, "placedOrders", itemId);
-          const ordersSnapshot = await getDoc(ordersRef);
+    if (user) {
+      const fetchAllOrders = async () => {
+        try {
+          const orderPromises = orderIds.map(async (itemId) => {
+            const ordersRef = doc(db, "placedOrders", itemId);
+            const ordersSnapshot = await getDoc(ordersRef);
 
-          if (!ordersSnapshot.exists()) return null;
+            if (!ordersSnapshot.exists()) return null;
 
-          const orderData = ordersSnapshot.data();
-          return {
-            ...orderData,
-            orderId: itemId,
-          };
-        });
+            const orderData = ordersSnapshot.data();
+            return {
+              ...orderData,
+              orderId: itemId,
+            };
+          });
 
-        const results = await Promise.all(orderPromises);
-        const validOrders = results.filter((order) => order !== null);
-        setOrders(validOrders);
-      } catch (error) {
-        console.error("Error fetching orders:", error);
+          const results = await Promise.all(orderPromises);
+          const validOrders = results.filter((order) => order !== null);
+          setUnsorted(validOrders);
+        } catch (error) {
+          console.error("Error fetching orders:", error);
+        }
+      };
+
+      if (orderIds.length > 0) {
+        fetchAllOrders();
       }
-    };
-
-    if (orderIds.length > 0) {
-      fetchAllOrders();
     }
-  }, [orderHistory]);
+  }, [orderHistory, user]);
+
+  useEffect(() => {
+    const sortedOrders = [...unsorted].sort(
+      (a, b) => new Date(b.orderDate) - new Date(a.orderDate)
+    );
+    const totalUnpaid = unsorted
+      .filter((item) => item.paymentStatus !== "Paid")
+      .reduce((acc, item) => acc + item.total, 0);
+
+    setOrders(sortedOrders);
+    setToPay(totalUnpaid);
+  }, [unsorted]);
 
   console.log("Orders Data from db", orders);
-  console.log("Products ", products);
-  // useEffect(() => {
-  //   const savedOrders = JSON.parse(localStorage.getItem("userOrders") || "[]");
-  //   savedOrders.sort((a, b) => b.timestamp - a.timestamp);
-  //   setOrders(savedOrders);
-  // }, []);
 
   const getStatusIcon = (status) => {
     switch (status.toLowerCase()) {
@@ -115,11 +131,11 @@ const OrderHistory = () => {
   if (loading) return <LottieLoading />;
   return (
     <>
-      <Navbar relative />
+      <Navbar bgBlur />
       <div className="min-h-screen bg-n-background">
-        <div className="container mx-auto px-4 py-12">
+        <div className="container mx-auto px-4 py-12 mt-15">
           <div className="max-w-6xl mx-auto">
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex items-start md:items-center flex-col md:flex-row justify-between spa mb-8 space-y-4">
               <div>
                 <h1 className="text-3xl font-bold text-n-foreground mb-2">
                   Order History
@@ -170,17 +186,31 @@ const OrderHistory = () => {
                   <Card className="bg-gradient-to-br from-green-500/5 to-green-500/10 border-green-500/20">
                     <CardContent className="p-6">
                       <div className="flex items-center gap-3">
-                        <CreditCard className="h-8 w-8 text-green-600" />
-                        <div>
-                          <p className="text-2xl font-bold text-n-foreground">
-                            $
-                            {orders
-                              .reduce((sum, order) => sum + order.total, 0)
-                              .toFixed(2)}
-                          </p>
-                          <p className="text-sm text-n-muted_foreground">
-                            Total Spent
-                          </p>
+                        <div className="flex flex-col">
+                          <div className="mr-5 flex flex-row items-center">
+                            <CreditCard className="h-8 w-8 text-green-600 mr-5" />
+                            <p className="text-2xl font-bold text-n-foreground mr-2">
+                              $
+                              {orders.reduce(
+                                (sum, order) => sum + order.total,
+                                0
+                              ) - toPay.toFixed(1)}
+                            </p>
+                            <p className="text-sm text-n-muted_foreground">
+                              Total Spent
+                            </p>
+                          </div>
+                          <div className="flex flex-row items-center">
+                            <Wallet2 className="h-8 w-8 text-green-600 mr-5" />
+                            <p className="text-2xl font-bold text-n-foreground mr-2">
+                              {"$"}
+                              {toPay.toFixed(1)}
+                              {""}
+                            </p>
+                            <p className="text-sm text-n-muted_foreground">
+                              Yet To Pay!
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </CardContent>
@@ -222,6 +252,9 @@ const OrderHistory = () => {
                     <Table>
                       <TableHeader>
                         <TableRow className="bg-n-muted/50">
+                          <TableHead className="font-semibold text-center">
+                            Actions
+                          </TableHead>
                           <TableHead className="font-semibold">
                             Order Details
                           </TableHead>
@@ -234,9 +267,6 @@ const OrderHistory = () => {
                           <TableHead className="font-semibold">Items</TableHead>
                           <TableHead className="font-semibold text-right">
                             Total
-                          </TableHead>
-                          <TableHead className="font-semibold text-center">
-                            Actions
                           </TableHead>
                         </TableRow>
                       </TableHeader>
@@ -257,6 +287,21 @@ const OrderHistory = () => {
                               key={index}
                               className="hover:bg-n-muted/30 transition-colors"
                             >
+                              <TableCell className="text-center">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    router.push(
+                                      "/order-details/" + order.orderId
+                                    );
+                                  }}
+                                  className="flex items-center gap-2 hover:bg-n-primary/10"
+                                >
+                                  <Eye className="h-4 w-4" />
+                                  View
+                                </Button>
+                              </TableCell>
                               <TableCell>
                                 <div className="space-y-1">
                                   <div className="flex items-center gap-2">
@@ -353,22 +398,6 @@ const OrderHistory = () => {
                                     ).toFixed(2)}
                                   </p>
                                 </div>
-                              </TableCell>
-
-                              <TableCell className="text-center">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => {
-                                    router.push(
-                                      "/order-details/" + order.orderId
-                                    );
-                                  }}
-                                  className="flex items-center gap-2 hover:bg-n-primary/10"
-                                >
-                                  <Eye className="h-4 w-4" />
-                                  View
-                                </Button>
                               </TableCell>
                             </TableRow>
                           );
