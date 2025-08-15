@@ -10,18 +10,18 @@ export async function GET(req) {
 
   try {
     const res = await fetch(
-      `https://developers.cjdropshipping.com/api/product/detail?pid=${pid}`,
+      `https://developers.cjdropshipping.com/api2.0/v1/product/query?pid=${pid}`,
       {
         method: "GET",
         headers: {
-          "CJ-APIKEY": process.env.CJ_API_KEY,
+          "CJ-ACCESS-TOKEN": process.env.CJ_ACCESS_TOKEN,
           "Content-Type": "application/json",
         },
       }
     );
 
     const data = await res.json();
-
+    console.log("Data of product");
     return new Response(JSON.stringify(data), {
       status: 200,
       headers: { "Content-Type": "application/json" },

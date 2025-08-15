@@ -19,14 +19,6 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-// import {
-//   Badge,
-//   Button,
-//   Card,
-//   CardContent,
-//   CardHeader,
-//   CardTitle,
-// } from "@/Components/UI";
 import { Badge } from "@/Components/UI/badge";
 import { Button } from "@/Components/UI/lumiraButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/UI/card";
@@ -34,6 +26,8 @@ import ProductCard from "../../../Components/ProductCard";
 import { useUser } from "@clerk/nextjs";
 import ProductHighlights from "@/Components/ProductsHighlights";
 import FeaturedProducts from "@/Components/FeaturedProducts";
+import { db } from "../../../../Config/firebase";
+import { collection, getDocs, doc } from "firebase/firestore";
 // import {
 //   fetchLocalCart,
 //   addLocalProducts,
@@ -84,6 +78,7 @@ const Product = () => {
   const [productData, setProductData] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { isSignedIn } = useUser();
+  const [allVariants, setAllVariants] = useState([]);
 
   useEffect(() => {
     if (Array.isArray(products)) {
@@ -91,6 +86,28 @@ const Product = () => {
       setProductData(found || null);
     }
   }, [id, products]);
+
+  useEffect(() => {
+    if (!productData) return; // prevent running if no ID
+
+    const fetchVariants = async () => {
+      try {
+        const variantsRef = collection(db, "products", id, "variants");
+        const snapshot = await getDocs(variantsRef);
+
+        const variantsData = snapshot.docs.map((doc) => ({
+          id: doc.id, // variant doc id
+          ...doc.data(),
+        }));
+
+        setAllVariants(variantsData);
+      } catch (error) {
+        console.error("Error fetching variants:", error);
+      }
+    };
+
+    fetchVariants();
+  }, [productData]); // re-run when productId changes
 
   if (!productData) return <LottieLoading />;
 
@@ -161,13 +178,13 @@ const Product = () => {
           {/* Image Carousel */}
           <div className="space-y-4">
             <div className="relative rounded-3xl overflow-hidden bg-n-secondary/20 group">
-              <div className="h-96 w-full flex items-center justify-center">
+              <div className="flex items-center justify-center">
                 <Image
                   src={images[currentImageIndex]}
                   alt={`${productData.name} image ${currentImageIndex + 1}`}
                   width={720}
                   height={520}
-                  className="h-full w-auto object-contain transition-all duration-300"
+                  className="w-full h-auto max-h-[500px] object-contain transition-all duration-300"
                 />
               </div>
 
@@ -176,7 +193,7 @@ const Product = () => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-n-background/80 hover:bg-n-background opacity-0 group-hover:opacity-100"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-n-background/80 hover:bg-n-background opacity-100"
                     onClick={prevImage}
                   >
                     <ChevronLeft className="w-5 h-5" />
@@ -184,7 +201,7 @@ const Product = () => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-n-background/80 hover:bg-n-background opacity-0 group-hover:opacity-100"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-n-background/80 hover:bg-n-background opacity-100"
                     onClick={nextImage}
                   >
                     <ChevronRight className="w-5 h-5" />
@@ -198,12 +215,12 @@ const Product = () => {
 
             {/* Thumbnails */}
             {images.length > 1 && (
-              <div className="grid grid-cols-4 gap-2">
+              <div className="flex flex-wrap gap-2">
                 {images.map((img, idx) => (
                   <button
                     key={idx}
                     onClick={() => goToImage(idx)}
-                    className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
+                    className={`w-16 h-16 sm:w-20 sm:h-20 border-n-border aspect-square rounded-lg overflow-hidden border-2 transition-all ${
                       currentImageIndex === idx
                         ? "border-n-primary ring-2 ring-n-primary/20"
                         : "border-n-border hover:border-n-primary/50"
@@ -212,14 +229,15 @@ const Product = () => {
                     <Image
                       src={img}
                       alt={`thumb-${idx}`}
-                      width={128}
-                      height={128}
+                      width={100}
+                      height={100}
                       className="w-full h-full object-cover"
                     />
                   </button>
                 ))}
               </div>
             )}
+            {/* Product Detailed Description */}
           </div>
 
           {/* Product Info */}
@@ -229,7 +247,7 @@ const Product = () => {
                 {productData.badge}
               </Badge>
             )}
-            <h1 className="text-4xl font-bold text-n-foreground">
+            <h1 className="text-2xl font-bold text-n-foreground">
               {productData.name}
             </h1>
 
@@ -305,11 +323,28 @@ const Product = () => {
                 </>
               )}
             </div>
+            <p className="text-xl text-n-muted_foreground font-bold">
+              Select Varient
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {allVariants.map((v) => (
+                <div
+                  key={v.id}
+                  className="w-16 h-16 sm:w-20 sm:h-20 border border-n-border rounded overflow-hidden"
+                >
+                  <img
+                    src={v.cjImage}
+                    alt={v.cjKey}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+              ))}
+            </div>
 
             {/* Description */}
-            <p className="text-n-muted_foreground text-lg leading-relaxed">
+            {/* <p className="text-n-muted_foreground text-lg leading-relaxed">
               {productData.description}
-            </p>
+            </p> */}
 
             {/* Features */}
 
@@ -416,8 +451,18 @@ const Product = () => {
               </div>
             </div>
           </div>
+          <div>
+            <p className="text-xl text-n-muted_foreground font-bold mb-3">
+              Product Description
+            </p>
+            {productData.description && (
+              <div
+                className="bg-n-background border border-n-foreground rounded-xl p-4 space-y-2 max-h-[800px] overflow-y-auto scrollbar-thin scrollbar-thumb-n-muted_foreground scrollbar-track-transparent"
+                dangerouslySetInnerHTML={{ __html: productData.description }}
+              />
+            )}
+          </div>
         </div>
-
         {/* Tabs / Sections */}
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Specifications */}

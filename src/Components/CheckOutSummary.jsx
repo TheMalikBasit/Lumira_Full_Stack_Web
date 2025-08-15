@@ -2,7 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useAppContext } from "@/Context/AppContext";
 import { useUser } from "@clerk/nextjs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/UI/card";
-import { ArrowLeft, CreditCard, Lock, MapPin, User } from "lucide-react";
+import {
+  ArrowLeft,
+  CreditCard,
+  Lock,
+  MapPin,
+  User,
+  Repeat,
+} from "lucide-react";
 import { Button } from "@/Components/UI/lumiraButton";
 import { LottieLoading } from "./Loading";
 import { Separator } from "@/Components/UI/separator";
@@ -13,6 +20,8 @@ import Image from "next/image";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "../../Config/firebase";
 import toast from "react-hot-toast";
+import SupportModal from "./SupportModal";
+import Footer from "./LumiraFooter";
 const CheckOutSummary = ({
   shipmentCharge,
   totalCharged,
@@ -33,7 +42,10 @@ const CheckOutSummary = ({
 
   const currentCart = isSignedIn ? cartItems : localCart;
   const checkedItems = currentCart.filter((item) => item.checked);
-
+  const [supportModal, setSupportModal] = useState({
+    isOpen: false,
+    section: "",
+  });
   const orderItems = checkedItems
     .map((item) => products.find((product) => product.id === item.id))
     .filter(Boolean);
@@ -220,10 +232,19 @@ const CheckOutSummary = ({
                   </div>
                 ))}
               </div>
-
-              <div className="cursor-pointer">
-                <p className="text-md text-green-700 underline">ReturnPolicy</p>
-              </div>
+              <Button
+                className="w-full text-n-foreground"
+                variant="outline"
+                onClick={() =>
+                  setSupportModal({
+                    isOpen: true,
+                    section: "returns-exchanges",
+                  })
+                }
+              >
+                <Repeat className="h-4 w-4 mr-2" />
+                Return Policy
+              </Button>
               <Separator className="my-6" />
               {/* Price Breakdown */}
               <div className="space-y-4">
@@ -253,22 +274,19 @@ const CheckOutSummary = ({
                   ) : (
                     <></>
                   )}
-                  <span className={`font-bold text-lg "text-emerald-600"}`}>
+                  <span
+                    className={`font-bold text-lg "text-emerald-600 text-end"}`}
+                  >
                     {shipmentCharge === null ? (
-                      <span className="flex items-center gap-2">
-                        <span className="text-center text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-lg">
-                          Select an address first or add a new one.
+                      <span className="flex items-center gap-2 text-end">
+                        <span className="text-center text-xs text-emerald-700 px-2 py-1 rounded-lg">
+                          Select an address or add a new one.
                         </span>
                       </span>
                     ) : shipmentCharge === 0 ? (
                       <span className="flex items-center">
                         <span className="text-center text-xs text-emerald-700 px-2 py-1">
-                          Please note that international shipping rates may be
-                          higher due to the fragile nature of the items, which
-                          require premium handling and packaging. You will pay
-                          additional shipment ammout that DHL provide you with a
-                          detailed breakdown of the shipping charges applicable
-                          to your order.
+                          One of the order is not shippable.
                         </span>
                       </span>
                     ) : (
@@ -408,6 +426,12 @@ const CheckOutSummary = ({
           )}
         </Card>
       </div>
+
+      <SupportModal
+        isOpen={supportModal.isOpen}
+        onClose={() => setSupportModal({ isOpen: false, section: "" })}
+        initialSection={supportModal.section}
+      />
     </>
   );
 };

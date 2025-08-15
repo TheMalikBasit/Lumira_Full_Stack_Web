@@ -42,7 +42,7 @@ const page = () => {
   };
 
   const fetchProductDetails = async () => {
-    const res = await fetch(`/api/cj-product?pid=CJSN164392802BY`);
+    const res = await fetch(`/api/cj-product?pid=1727138943994441728`);
     const data = await res.json();
     console.log(data);
   };

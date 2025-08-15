@@ -121,9 +121,11 @@ const Checkout = () => {
     if (!user) {
       toast.error("Login to complete your order");
     }
-  }, [isSignedIn]);
+  }, [user]);
 
   console.log("payment method", paymentOption);
+
+  if (loading) return <LottieLoading />;
   return (
     <>
       <Navbar relative />
@@ -203,14 +205,13 @@ const Checkout = () => {
             >
               <User className="h-5 w-5 text-amber-600" />
               <AlertDescription className="text-amber-800 text-base font-medium ml-2">
-                Please{" "}
-                <Link
-                  href="/login"
-                  className="underline hover:text-amber-900 transition-colors font-semibold"
-                >
-                  log in to your account
-                </Link>{" "}
-                to complete your order and access faster checkout options.
+                <p>
+                  Please{" "}
+                  <SignInButton className="underline hover:text-amber-900 transition-colors font-semibold">
+                    log in to your account
+                  </SignInButton>{" "}
+                  to complete your order and access faster checkout options.
+                </p>
               </AlertDescription>
             </Alert>
           )}

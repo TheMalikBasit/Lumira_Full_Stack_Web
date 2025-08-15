@@ -499,17 +499,17 @@ const OrderConfirmation = () => {
             </div>
           </div>
         </div>
-        <SupportModal
-          isOpen={supportModal.isOpen}
-          onClose={() => setSupportModal({ isOpen: false, section: "" })}
-          initialSection={supportModal.section}
-        />
         <Footer
           onSupportClick={(section) =>
             setSupportModal({ isOpen: true, section })
           }
         />
       </div>
+      <SupportModal
+        isOpen={supportModal.isOpen}
+        onClose={() => setSupportModal({ isOpen: false, section: "" })}
+        initialSection={supportModal.section}
+      />
     </>
   );
 };

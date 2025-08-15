@@ -12,6 +12,7 @@ import { Button } from "@/Components/UI/lumiraButton";
 import { Currency, ShoppingBag } from "lucide-react";
 import { Separator } from "@/Components/UI/separator";
 import Link from "next/link";
+import { LottieLoading } from "./Loading";
 import PriceTag from "./PriceTag";
 const OrderSummaryClassic = () => {
   const {
@@ -23,6 +24,7 @@ const OrderSummaryClassic = () => {
     Symbol,
     cartItems,
     localCart,
+    loading,
   } = useAppContext();
   const { isSignedIn } = useUser();
 
@@ -74,36 +76,42 @@ const OrderSummaryClassic = () => {
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="space-y-8 p-8">
-        <div className="space-y-6">
-          <div className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent">
-            <span className="text-n-muted_foreground font-medium">
-              Subtotal
-            </span>
-            <span className="text-n-foreground font-bold text-lg">
-              {Currency === "USD" ? (
-                <>
-                  {subtotal.toFixed(2)} {Symbol}
-                </>
-              ) : (
-                <PriceTag
-                  basePrice={subtotal.toFixed(2)}
-                  userCurrency={Currency}
-                  symbol={Symbol}
-                />
-              )}
-            </span>
-          </div>
-          <div className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent">
-            <span className="text-n-muted_foreground font-medium">
-              Shipping
-            </span>
+      {loading ? (
+        <div className="flex min-h-[400px] justify-center py-8">
+          <LottieLoading />
+        </div>
+      ) : (
+        <>
+          <CardContent className="space-y-8 p-8">
+            <div className="space-y-6">
+              <div className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent">
+                <span className="text-n-muted_foreground font-medium">
+                  Subtotal
+                </span>
+                <span className="text-n-foreground font-bold text-lg">
+                  {Currency === "USD" ? (
+                    <>
+                      {subtotal.toFixed(2)} {Symbol}
+                    </>
+                  ) : (
+                    <PriceTag
+                      basePrice={subtotal.toFixed(2)}
+                      userCurrency={Currency}
+                      symbol={Symbol}
+                    />
+                  )}
+                </span>
+              </div>
+              <div className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent">
+                <span className="text-n-muted_foreground font-medium">
+                  Shipping
+                </span>
 
-            <span className="text-xs text-emerald-700 py-1 text-end">
-              Depends on Shipment Location
-            </span>
-          </div>
-          {/* <div className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent">
+                <span className="text-xs text-emerald-700 py-1 text-end">
+                  Depends on Shipment Location
+                </span>
+              </div>
+              {/* <div className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent">
             <span className="text-n-muted_foreground font-medium">
               Tax <span className="text-orange-500">(2%)</span>
             </span>
@@ -112,34 +120,36 @@ const OrderSummaryClassic = () => {
               {tax.toFixed(2)}
             </span>
           </div> */}
-        </div>
+            </div>
 
-        <Separator className="my-6" />
+            <Separator className="my-6" />
 
-        <div className="flex justify-between items-center p-6 rounded-2xl bg-gradient-to-r from-n-primary/10 via-n-lumira_coral/5 to-n-lumira_salmon/10 border border-n-primary/20 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-n-primary/5 to-transparent animate-pulse"></div>
-          <div className="relative z-10">
-            <span className="text-n-foreground font-bold text-xl">Total</span>
-            <p className="text-xs text-n-muted_foreground">
-              including all taxes
-            </p>
-          </div>
-          <span className="text-n-foreground font-bold text-3xl relative z-10">
-            {Currency === "USD" ? (
-              <>
-                {total.toFixed(2)} {Symbol}
-              </>
-            ) : (
-              <PriceTag
-                basePrice={total.toFixed(2)}
-                userCurrency={Currency}
-                symbol={Symbol}
-              />
-            )}
-          </span>
-        </div>
+            <div className="flex justify-between items-center p-6 rounded-2xl bg-gradient-to-r from-n-primary/10 via-n-lumira_coral/5 to-n-lumira_salmon/10 border border-n-primary/20 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-n-primary/5 to-transparent animate-pulse"></div>
+              <div className="relative z-10">
+                <span className="text-n-foreground font-bold text-xl">
+                  Total
+                </span>
+                <p className="text-xs text-n-muted_foreground">
+                  including all taxes
+                </p>
+              </div>
+              <span className="text-n-foreground font-bold text-3xl relative z-10">
+                {Currency === "USD" ? (
+                  <>
+                    {total.toFixed(2)} {Symbol}
+                  </>
+                ) : (
+                  <PriceTag
+                    basePrice={total.toFixed(2)}
+                    userCurrency={Currency}
+                    symbol={Symbol}
+                  />
+                )}
+              </span>
+            </div>
 
-        {/* {subtotal < 200 && (
+            {/* {subtotal < 200 && (
           <div className="p-4 rounded-xl bg-gradient-to-r from-n-lumira_coral/10 to-n-lumira_salmon/10 border border-n-lumira_coral/30 relative overflow-hidden animate-pulse">
             <div className="absolute inset-0 bg-gradient-to-r from-n-lumira_coral/5 to-transparent"></div>
             <div className="relative z-10">
@@ -156,8 +166,9 @@ const OrderSummaryClassic = () => {
             </div>
           </div>
         )} */}
-      </CardContent>
-
+          </CardContent>
+        </>
+      )}
       <CardFooter className="flex flex-col gap-5 p-8 pt-0">
         <Link href="/my-checkout" className="w-full">
           <Button className="w-full bg-gradient-warm hover:shadow-glow transition-all duration-200 text-lg py-8 rounded-xl font-bold tracking-wide hover-lift relative overflow-hidden group">

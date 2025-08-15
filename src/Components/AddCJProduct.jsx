@@ -2,27 +2,24 @@
 
 import Button from "./Button";
 import { useAppContext } from "../Context/AppContext";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ButtonGradient from "@/assets/svg/ButtonGradient";
 import UploadProduct from "../../models/StockUpdater";
 import toast from "react-hot-toast";
 
-// Sanitize full Google Drive links
+// Convert Google Drive link or ID into direct view URL
 const sanitizeImageUrl = (url) => {
   const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)\/view/);
-  if (driveMatch && driveMatch[1]) {
+  if (driveMatch?.[1]) {
     return `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
   }
-
   const shareMatch = url.match(/drive\.google\.com\/open\?id=([^&]+)/);
-  if (shareMatch && shareMatch[1]) {
+  if (shareMatch?.[1]) {
     return `https://drive.google.com/uc?export=view&id=${shareMatch[1]}`;
   }
-
   return url;
 };
 
-// Format Drive ID or sanitize full link
 const formatMainImage = (url) => {
   const isDriveIdOnly = /^[a-zA-Z0-9_-]{25,}$/.test(url);
   if (isDriveIdOnly) {
@@ -47,40 +44,29 @@ const AddCJProduct = () => {
   const [currentFeature, setCurrentFeature] = useState("");
   const [originalPrice, setOriginalPrice] = useState("");
   const [category, setCategory] = useState("");
-  const { products } = useAppContext();
-
-  // New CJ fields
   const [cjProductId, setCjProductId] = useState("");
   const [cjPrice, setCjPrice] = useState("");
+  const [CJVariants, setCJVariants] = useState([]);
 
   const handleFetchCJProduct = async () => {
-    if (!cjProductId.trim()) {
-      toast.error("Please enter a CJ Product ID");
-      return;
-    }
     try {
-      const res = await fetch(
-        `https://developers.cjdropshipping.com/api2.0/v1/product/query?pid${cjProductId}`,
-        {
-          headers: {
-            "CJ-Access-Token": "1661b6cb5da24bf683defa7b54f30966",
-          },
-        }
-      );
+      const res = await fetch(`/api/cj-product?pid=${cjProductId}`);
       const data = await res.json();
+      console.log("CJ Product data", data);
       if (data.code !== 200) {
         toast.error("Failed to fetch CJ product");
         return;
       }
       const product = data.data;
-      setName(product.nameEn || "");
-      setOriginalPrice(product.originalPrice || "");
-      setMainImage(product.mainImage || "");
-      setImageUrl(product.imageList || []);
-      setAvailableStock(product.totalStock || 0);
-      setCategory(product.categoryName || "");
-      setDescription(product.description || "");
-      setCjPrice(product.sellPrice || "");
+      setName(product?.productNameEn || "");
+      setOriginalPrice(product?.originalPrice || "");
+      setMainImage(product?.productImageSet?.[0] || "");
+      setImageUrl(product?.productImageSet || []);
+      setAvailableStock(product?.totalStock || 0);
+      setCategory(product?.categoryName || "");
+      setDescription(product?.description || "");
+      setCjPrice(product?.sellPrice || "");
+      setCJVariants(product?.variants || []);
       toast.success("CJ product loaded!");
     } catch (err) {
       console.error(err);
@@ -88,8 +74,7 @@ const AddCJProduct = () => {
     }
   };
 
-  const handleAddImageUrl = (e) => {
-    e.preventDefault();
+  const handleAddImageUrl = () => {
     if (currentImageUrl.trim() !== "") {
       const sanitized = sanitizeImageUrl(currentImageUrl.trim());
       setImageUrl((prev) => [...prev, sanitized]);
@@ -101,8 +86,11 @@ const AddCJProduct = () => {
     setImageUrl((prev) => prev.filter((_, i) => i !== idx));
   };
 
-  const handleAddFeature = (e) => {
-    e.preventDefault();
+  const handleRemoveVariant = (vid) => {
+    setCJVariants((prev) => prev.filter((item) => item.vid !== vid));
+  };
+
+  const handleAddFeature = () => {
     if (currentFeature.trim() !== "") {
       setFeatures((prev) => [...prev, currentFeature.trim()]);
       setCurrentFeature("");
@@ -142,6 +130,7 @@ const AddCJProduct = () => {
       badges,
       features,
       category,
+      cjVariants: CJVariants, // ⬅️ added this
     });
 
     clearForm();
@@ -165,10 +154,11 @@ const AddCJProduct = () => {
     setCurrentFeature("");
     setCjProductId("");
     setCjPrice("");
+    setCJVariants([]);
   };
 
   return (
-    <div className="max-w-2xl lg:max-w-[45%] mt-12 sm:mx-auto md:mx-2 w-full px-4">
+    <div className="max-w-2xl lg:max-w-[60%] mt-12 sm:mx-auto md:mx-2 w-full px-4">
       <h2 className="text-3xl font-bold mb-6 text-orange-600">
         Upload New Product
       </h2>
@@ -203,35 +193,38 @@ const AddCJProduct = () => {
         onSubmit={handleSubmit}
         className="bg-[#111827] p-6 rounded-xl shadow-lg border border-gray-700 space-y-5"
       >
+        {/* Product Name */}
         <div>
-          <div className="w-full">
-            <label className="text-sm text-gray-400">Product Name</label>
-            <input
-              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter product name"
-              required
-            />
-          </div>
-          <div className="w-full">
-            <label className="text-sm text-gray-400">Product Category</label>
-            <input
-              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              type="text"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              placeholder="Enter category"
-              required
-            />
-          </div>
+          <label className="text-sm text-gray-400">Product Name</label>
+          <input
+            className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Enter product name"
+            required
+          />
         </div>
-        <div className="flex flex-row gap-4 w-full">
+
+        {/* Product Category */}
+        <div>
+          <label className="text-sm text-gray-400">Product Category</label>
+          <input
+            className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600"
+            type="text"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            placeholder="Enter category"
+            required
+          />
+        </div>
+
+        {/* Price Fields */}
+        <div className="flex gap-4">
           <div className="w-full">
             <label className="text-sm text-gray-400">Price</label>
             <input
-              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600"
               type="number"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
@@ -242,7 +235,7 @@ const AddCJProduct = () => {
           <div className="w-full">
             <label className="text-sm text-gray-400">Original Price</label>
             <input
-              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600"
               type="number"
               value={originalPrice}
               onChange={(e) => setOriginalPrice(e.target.value)}
@@ -251,12 +244,14 @@ const AddCJProduct = () => {
             />
           </div>
         </div>
+
+        {/* Images */}
         <div>
           <label className="text-sm text-gray-400">
             Main Image URL or Drive ID
           </label>
           <input
-            className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600"
             type="text"
             value={mainImage}
             onChange={(e) => setMainImage(e.target.value)}
@@ -265,11 +260,12 @@ const AddCJProduct = () => {
           />
         </div>
 
+        {/* Additional Images */}
         <div>
           <label className="text-sm text-gray-400">Sub Image URLs</label>
           <div className="flex gap-2 mt-1">
             <input
-              className="flex-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600"
               type="text"
               value={currentImageUrl}
               onChange={(e) => setCurrentImageUrl(e.target.value)}
@@ -280,152 +276,245 @@ const AddCJProduct = () => {
               onClick={handleAddImageUrl}
               className="px-4 py-2 bg-blue-600 text-white rounded-md"
             >
-              OK
+              Add
             </button>
           </div>
           <ul className="mt-2 space-y-1">
-            {imageUrl.map((url, idx) => (
-              <li
-                key={idx}
-                className="flex items-center gap-2 text-xs text-gray-300"
-              >
-                <span>{url}</span>
-                <button
-                  type="button"
-                  onClick={() => handleRemoveImageUrl(idx)}
-                  className="text-red-400 hover:underline"
+            <div className="mt-2 max-h-60 overflow-y-auto border border-gray-700 rounded-md p-2">
+              {imageUrl.map((url, idx) => (
+                <li
+                  key={idx}
+                  className="flex items-center text-sm justify-between bg-gray-800 p-2 rounded-md mb-1"
                 >
-                  Remove
-                </button>
-              </li>
-            ))}
+                  <div className="flex flex-row">
+                    <span className="text-gray-300 mr-4 text-sm">
+                      {idx + 1} {": "}
+                    </span>
+                    <img
+                      src={url}
+                      alt={url || "Variant"}
+                      className="w-12 h-12 object-cover rounded"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveImageUrl(idx)}
+                    className="text-red-400 hover:underline"
+                  >
+                    Remove
+                  </button>
+                </li>
+              ))}
+            </div>
           </ul>
         </div>
-        <div className="flex flex-row gap-4 w-full">
+
+        {/* Variants Display */}
+        {/* Variants Display with Lumira Price input */}
+        {CJVariants.length > 0 && (
+          <div>
+            <label className="text-sm text-gray-400">CJ Variants</label>
+            <div className="mt-2 max-h-60 overflow-y-auto border border-gray-700 rounded-md p-2 space-y-2">
+              {CJVariants.map((variant, idx) => (
+                <div
+                  key={variant.vid}
+                  className="flex items-center gap-3 bg-gray-800 p-2 rounded-md"
+                >
+                  {/* Variant Image */}
+                  {idx + 1} {": "}
+                  <img
+                    src={variant.variantImage}
+                    alt={variant.variantNameEn || "Variant"}
+                    className="w-12 h-12 object-cover rounded"
+                  />
+                  {/* Variant Info */}
+                  <div className="flex-1">
+                    <p className="text-gray-200 text-sm font-semibold">
+                      {/* {variant.variantNameEn || variant.vid} */}
+                      {variant.vid}
+                    </p>
+                    <p className="text-gray-400 text-xs">
+                      CJ Price: ${variant.variantSellPrice}
+                    </p>
+                  </div>
+                  {/* Lumira Price Input */}
+                  <input
+                    required
+                    type="number"
+                    value={variant.lumiraPrice || ""}
+                    onChange={(e) => {
+                      const updated = [...CJVariants];
+                      updated[idx].lumiraPrice = e.target.value;
+                      setCJVariants(updated);
+                    }}
+                    placeholder="Your Price"
+                    className="w-24 p-1 bg-gray-900 text-white border border-gray-600 rounded"
+                  />
+                  {/* Remove Button */}
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveVariant(variant.vid)}
+                    className="text-red-400 hover:underline text-xs"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* {CJVariants.length > 0 && (
+          <div>
+            <label className="text-sm text-gray-400">CJ Variants</label>
+            <div className="mt-2 max-h-40 overflow-y-auto border border-gray-700 rounded-md p-2">
+              {CJVariants.map((variant, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center justify-between bg-gray-800 p-2 rounded-md mb-1"
+                >
+                  <span className="text-gray-300 text-sm">
+                    {variant?.variantNameEn || "Unnamed Variant"} —{" "}
+                    {idx + 1} {": "}
+                    {variant?.vid || "Unnamed Variant"} — $
+                    {variant?.variantSellPrice || "N/A"}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveVariant(variant.vid)}
+                    className="text-red-400 hover:underline"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )} */}
+
+        {/* Stock / Rating / Reviews */}
+        <div className="flex gap-4">
           <div className="w-full">
             <label className="text-sm text-gray-400">Available Stock</label>
             <input
-              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600"
               type="number"
               value={availableStock}
               onChange={(e) => setAvailableStock(e.target.value)}
-              placeholder="Enter stock quantity"
               required
             />
           </div>
-
           <div className="w-full">
             <label className="text-sm text-gray-400">Ratings</label>
             <input
-              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600"
               type="number"
               value={rating}
               onChange={(e) => setRating(e.target.value)}
-              placeholder="Enter Product Rating"
               required
             />
           </div>
           <div className="w-full">
-            <label className="text-sm text-gray-400">Set Reviews</label>
+            <label className="text-sm text-gray-400">Reviews</label>
             <input
-              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600"
               type="number"
               value={reviews}
               onChange={(e) => setReviews(e.target.value)}
-              placeholder="Enter Number Of Reviews"
               required
             />
           </div>
         </div>
-        <div className="w-full flex flex-col gap-4">
-          {/* Special Badges Input */}
-          <div className="w-full">
-            <label className="text-sm text-gray-400">
-              Enter Special Badges
-            </label>
-            <div className="flex mt-1 gap-1">
-              <input
-                className="flex-1 p-2 bg-gray-800 text-white rounded-l-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                type="text"
-                value={currentBadge}
-                onChange={(e) => setCurrentBadge(e.target.value)}
-                placeholder="Enter A Special Badge"
-              />
-              <button
-                className="px-4 bg-blue-500 text-white rounded-r-md"
-                onClick={handleAddBadge}
-              >
-                OK
-              </button>
-            </div>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {badges.map((badge, index) => (
-                <div
-                  key={index}
-                  className="flex items-center bg-gray-700 text-white px-3 py-1 rounded-full"
-                >
-                  <span>{badge}</span>
-                  <button
-                    className="ml-2 text-red-400 hover:text-red-600"
-                    onClick={() => handleRemoveBadge(index)}
-                  >
-                    &times;
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Product Features Input */}
-          <div className="w-full">
-            <label className="text-sm text-gray-400">
-              Enter Product Features
-            </label>
-            <div className="flex mt-1 gap-1">
-              <input
-                className="flex-1 p-2 bg-gray-800 text-white rounded-l-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                type="text"
-                value={currentFeature}
-                onChange={(e) => setCurrentFeature(e.target.value)}
-                placeholder="Product Features"
-              />
-              <button
-                className="px-4 bg-blue-500 text-white rounded-r-md"
-                onClick={handleAddFeature}
+        {/* Badges */}
+        <div>
+          <label className="text-sm text-gray-400">Special Badges</label>
+          <div className="flex mt-1 gap-1">
+            <input
+              className="flex-1 p-2 bg-gray-800 text-white rounded-l-md border border-gray-600"
+              type="text"
+              value={currentBadge}
+              onChange={(e) => setCurrentBadge(e.target.value)}
+              placeholder="Enter a badge"
+            />
+            <button
+              type="button"
+              className="px-4 bg-blue-500 text-white rounded-r-md"
+              onClick={handleAddBadge}
+            >
+              Add
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {badges.map((badge, index) => (
+              <div
+                key={index}
+                className="flex items-center bg-gray-700 text-white px-3 py-1 rounded-full"
               >
-                OK
-              </button>
-            </div>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {features.map((feature, index) => (
-                <div
-                  key={index}
-                  className="flex items-center bg-gray-700 text-white px-3 py-1 rounded-full"
+                <span>{badge}</span>
+                <button
+                  type="button"
+                  className="ml-2 text-red-400 hover:text-red-600"
+                  onClick={() => handleRemoveBadge(index)}
                 >
-                  <span>{feature}</span>
-                  <button
-                    className="ml-2 text-red-400 hover:text-red-600"
-                    onClick={() => handleRemoveFeature(index)}
-                  >
-                    &times;
-                  </button>
-                </div>
-              ))}
-            </div>
+                  ×
+                </button>
+              </div>
+            ))}
           </div>
         </div>
 
+        {/* Features */}
+        <div>
+          <label className="text-sm text-gray-400">Product Features</label>
+          <div className="flex mt-1 gap-1">
+            <input
+              className="flex-1 p-2 bg-gray-800 text-white rounded-l-md border border-gray-600"
+              type="text"
+              value={currentFeature}
+              onChange={(e) => setCurrentFeature(e.target.value)}
+              placeholder="Enter a feature"
+            />
+            <button
+              type="button"
+              className="px-4 bg-blue-500 text-white rounded-r-md"
+              onClick={handleAddFeature}
+            >
+              Add
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {features.map((feature, index) => (
+              <div
+                key={index}
+                className="flex items-center bg-gray-700 text-white px-3 py-1 rounded-full"
+              >
+                <span>{feature}</span>
+                <button
+                  type="button"
+                  className="ml-2 text-red-400 hover:text-red-600"
+                  onClick={() => handleRemoveFeature(index)}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Description */}
         <div>
           <label className="text-sm text-gray-400">Description</label>
           <textarea
-            className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Enter product description"
             rows={3}
             required
-          ></textarea>
+          />
         </div>
+
         <Button className="mt-5 xl:mt-0" type="submit">
           Upload Product
         </Button>

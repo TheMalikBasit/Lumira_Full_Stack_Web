@@ -249,7 +249,7 @@ const SelectCurrency = ({ toggleCurrency }) => {
         )}
         <div
           className={`
-                relative mb-3 p-4 rounded-xl border-2 transition-all duration-300 hover:scale-105
+                relative mb-3 p-4 rounded-xl border-2 transition-all duration-300 hover:overflow-y-auto scrollbar-thin scrollbar-thumb-n-muted_foreground scrollbar-track-transparent
                 ${
                   selectedCurrency != "USD"
                     ? "max-h-40 opacity-100 py-2"
@@ -260,9 +260,9 @@ const SelectCurrency = ({ toggleCurrency }) => {
           <p className="font-semibold text-n-foreground text-sm">Note: </p>
           <p className="text-sm text-n-muted_foreground">
             Exchanged values from USD to {selectedCurrency} may not be accurate.
-            All prices are shown in your local currency for convenience. Final
-            payment will be processed in USD at the latest exchange rate. Your
-            bank may apply a conversion fee.
+            All prices are shown in your local currency for convenience. Based
+            on your location you may be able to pay in your local currency IF
+            NOT THEN! Your bank may apply a conversion fee.
           </p>
         </div>
 

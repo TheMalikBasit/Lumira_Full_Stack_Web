@@ -63,7 +63,7 @@ const FeaturedProducts = ({ id }) => {
             className="card-lumira hover-lift group cursor-pointer"
             onClick={() => router.push(`/product/${product.id}`)}
           >
-            <CardContent className="p-0">
+            <CardContent className="p-0 overflow-hidden">
               <div className="relative overflow-hidden rounded-t-lg">
                 <Image
                   src={product.mainImage}
@@ -209,7 +209,7 @@ const FeaturedProducts = ({ id }) => {
                       </Button>
                     ) : (
                       <>
-                        <div className="flex items-center border rounded min-w-[120px] py-2 px-2 justify-between">
+                        <div className="flex items-center border rounded min-w-[70px] max-w-[120px] py-2 px-2 justify-between">
                           <button
                             onClick={() =>
                               updateCartQuantity(

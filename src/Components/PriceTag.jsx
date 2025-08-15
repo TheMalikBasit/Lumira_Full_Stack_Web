@@ -1,36 +1,7 @@
-// "use client";
-// import { useEffect, useState } from "react";
-// import { currencyConverter } from "../../models/currencyConverter";
-
-// export default function PriceTag({ priceUSD, userCurrency, symbol }) {
-//   const [convertedPrice, setConvertedPrice] = useState(null);
-
-//   useEffect(() => {
-//     const fetchConversion = async () => {
-//       const result = await currencyConverter(priceUSD, "USD", userCurrency);
-//       setConvertedPrice(result);
-//     };
-//     fetchConversion();
-//   }, [priceUSD, userCurrency]);
-
-//   return (
-//     <div>
-//       <h1>
-//         {convertedPrice ? (
-//           <>
-//             {convertedPrice} {symbol}
-//           </>
-//         ) : (
-//           <p className="text-sm">Converting price...</p>
-//         )}
-//       </h1>
-//     </div>
-//   );
-// }
-
 "use client";
 import { useEffect, useState } from "react";
 import { useAppContext } from "@/Context/AppContext";
+import { RefreshCw } from "lucide-react";
 import toast from "react-hot-toast";
 export default function PriceTag({ basePrice, userCurrency, symbol }) {
   const [convertedPrice, setConvertedPrice] = useState(null);
@@ -67,7 +38,11 @@ export default function PriceTag({ basePrice, userCurrency, symbol }) {
             {convertedPrice} {symbol}
           </>
         ) : (
-          `Converting price...`
+          <>
+            <div className=" bg-n-background flex items-center justify-center">
+              <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-4 text-n-foreground" />
+            </div>
+          </>
         )}
       </h1>
     </div>

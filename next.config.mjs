@@ -13,6 +13,21 @@ const nextConfig = {
         hostname: "raw.githubusercontent.com",
         pathname: "**",
       },
+      {
+        protocol: "https",
+        hostname: "cf.cjdropshipping.com",
+        pathname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "cf.cjdropshipping.com",
+        pathname: "/quick/product/**",
+      },
+      {
+        protocol: "https",
+        hostname: "oss-cf.cjdropshipping.com",
+        pathname: "/product/**",
+      },
     ],
   },
 };

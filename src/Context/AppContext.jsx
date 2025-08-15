@@ -34,8 +34,8 @@ export const AppContextProvider = (props) => {
   const [adminLoading, setAdminLoading] = useState(true);
   const [darkMode, setdarkMode] = useState(false);
   const [orderHistory, setorderHistory] = useState([]);
-  const [Currency, setCurrency] = useState("USD");
-  const [Symbol, setSymbol] = useState("$");
+  const [Currency, setCurrency] = useState("");
+  const [Symbol, setSymbol] = useState("");
   const [CurrencyRates, setCurrencyRates] = useState({});
 
   //console.log("Curency from App Context", Currency);
@@ -49,7 +49,8 @@ export const AppContextProvider = (props) => {
         setSymbol(symbol);
         //console.log("Currency from localStorage:", stored);
       } else {
-        //console.log("No currency found in localStorage");
+        setCurrency("USD");
+        setSymbol("$");
       }
     }
   }); // empty dependency array: runs ONCE on initial mount

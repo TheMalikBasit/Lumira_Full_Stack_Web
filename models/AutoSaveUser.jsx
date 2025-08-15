@@ -13,7 +13,6 @@ const AutoSaveUser = () => {
     setCartItems,
     setLoading,
     setdarkMode,
-    orderHistory,
     setorderHistory,
   } = useAppContext();
 

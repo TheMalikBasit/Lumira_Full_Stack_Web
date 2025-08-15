@@ -235,14 +235,14 @@ const RenderCart = () => {
           </>
         ) : (
           <>
-            <CardHeader>
+            {/* <CardHeader>
               <CardTitle className="text-n-foreground text-2xl font-bold flex items-center gap-3 justify-center">
                 <div className="p-2 rounded-lg bg-n-primary/20">
                   <BaggageClaim className="h-6 w-6 text-n-primary" />
                 </div>
                 Your cart items
               </CardTitle>
-            </CardHeader>
+            </CardHeader> */}
             {cartToRender.map((item) => {
               const product = products.find(
                 (p) => p.id === (isSignedIn ? item.id : item.id)

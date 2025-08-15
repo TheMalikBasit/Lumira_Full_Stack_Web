@@ -94,135 +94,148 @@ const Payment = ({ paymentSelection, CountryData, setTransactionId }) => {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6 p-8">
-        <div className="space-y-4">
+        <div className="space-y-4  overflow-hidden ">
           {/* Cash on Delivery Option */}
           <div className="relative">
             {CountryData != "Pakistan" ? (
               CountryData == null ? (
                 <>
-                  <div
-                    htmlFor="cod"
-                    //onClick={() => handleSelect("cod")}
-                    data-tooltip-id="payment-method-tooltip"
-                    data-tooltip-content="Select An Address First"
-                    className={`opacity-25 cursor-default flex items-start gap-4 p-6 rounded-xl border-2 border-n-border/50 bg-gradient-to-r from-n-muted/30 to-transparent transition-all duration-300 hover:border-n-primary/50 hover:bg-n-muted/50 group`}
-                  >
-                    {/* <div className="flex items-center justify-center w-5 h-5 mt-1">
+                  <div className="overflow-visible">
+                    <div
+                      htmlFor="cod"
+                      //onClick={() => handleSelect("cod")}
+                      data-tooltip-id="payment-method-tooltip"
+                      data-tooltip-content="Select An Address First"
+                      className={`opacity-25 cursor-default flex items-start gap-4 p-6 rounded-xl border-2 border-n-border/50 bg-gradient-to-r from-n-muted/30 to-transparent transition-all duration-300 hover:border-n-primary/50 hover:bg-n-muted/50 group`}
+                    >
+                      {/* <div className="flex items-center justify-center w-5 h-5 mt-1">
                 <div className="w-4 h-4 rounded-full border-2 border-n-muted_foreground group-hover:border-n-primary transition-colors duration-300 peer-checked:border-n-primary relative">
                   <div className="absolute inset-0.5 rounded-full bg-n-primary opacity-0 peer-checked:opacity-100 transition-opacity duration-300"></div>
                 </div>
               </div> */}
-                    <Checkbox
-                      //id="cod"
-                      //checked={CodChecked}
-                      //onCheckedChange={() => handleSelect("cod")}
-                      //name="savedAddress"
-                      className="mt-1 pointer-events-none"
-                    />
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="p-2 rounded-lg bg-emerald-100 group-hover:bg-emerald-200 transition-colors duration-300">
-                          <svg
-                            className="w-5 h-5 text-emerald-600"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
-                            />
-                          </svg>
+                      <Checkbox
+                        //id="cod"
+                        //checked={CodChecked}
+                        //onCheckedChange={() => handleSelect("cod")}
+                        //name="savedAddress"
+                        className="mt-2 pointer-events-none"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="p-2 rounded-lg bg-emerald-100 group-hover:bg-emerald-200 transition-colors duration-300">
+                            <svg
+                              className="w-5 h-5 text-emerald-600"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                              />
+                            </svg>
+                          </div>
+                          <h3 className="text-lg font-bold text-n-foreground">
+                            Cash on Delivery
+                          </h3>
+                          <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full font-semibold">
+                            Popular
+                          </span>
                         </div>
-                        <h3 className="text-lg font-bold text-n-foreground">
-                          Cash on Delivery
-                        </h3>
-                        <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full font-semibold">
-                          Popular
-                        </span>
-                      </div>
-                      <p className="text-sm text-n-muted_foreground mb-2">
-                        Pay in cash when your order arrives at your doorstep
-                      </p>
-                      <div className="flex flex-wrap gap-2 text-xs">
-                        <span className="bg-n-primary/10 text-n-primary px-2 py-1 rounded-full">
-                          No processing fees
-                        </span>
-                        <span className="bg-n-primary/10 text-n-primary px-2 py-1 rounded-full">
-                          Available 24/7
-                        </span>
-                        <span className="bg-n-primary/10 text-n-primary px-2 py-1 rounded-full">
-                          Secure delivery
-                        </span>
+                        <p className="text-sm text-n-muted_foreground mb-2">
+                          Pay in cash when your order arrives at your doorstep
+                        </p>
+                        <div className="flex flex-wrap gap-2 text-xs">
+                          <span className="bg-n-primary/10 text-n-primary px-2 py-1 rounded-full">
+                            No processing fees
+                          </span>
+                          <span className="bg-n-primary/10 text-n-primary px-2 py-1 rounded-full">
+                            Available 24/7
+                          </span>
+                          <span className="bg-n-primary/10 text-n-primary px-2 py-1 rounded-full">
+                            Secure delivery
+                          </span>
+                        </div>
                       </div>
                     </div>
+                    <Tooltip
+                      id="payment-method-tooltip"
+                      place="top"
+                      className="z-50 bg-n-lumira_coral text-n-foreground px-4 py-2 rounded max-w-xs whitespace-normal shadow-lg"
+                    />
                   </div>
-                  <Tooltip id="payment-method-tooltip" />
                 </>
               ) : (
                 <>
-                  <div
-                    htmlFor="cod"
-                    data-tooltip-id="payment-method-tooltip"
-                    data-tooltip-content="Cash On Delivery is not available in your country"
-                    //onClick={() => handleSelect("cod")}
-                    className={`opacity-25 cursor-default flex items-start gap-4 p-6 rounded-xl border-2 border-n-border/50 bg-gradient-to-r from-n-muted/30 to-transparent transition-all duration-300 hover:border-n-primary/50 hover:bg-n-muted/50 group`}
-                  >
-                    {/* <div className="flex items-center justify-center w-5 h-5 mt-1">
-                <div className="w-4 h-4 rounded-full border-2 border-n-muted_foreground group-hover:border-n-primary transition-colors duration-300 peer-checked:border-n-primary relative">
-                  <div className="absolute inset-0.5 rounded-full bg-n-primary opacity-0 peer-checked:opacity-100 transition-opacity duration-300"></div>
-                </div>
-              </div> */}
-                    <Checkbox
-                      //id="cod"
-                      //checked={CodChecked}
-                      //onCheckedChange={() => handleSelect("cod")}
-                      //name="savedAddress"
-                      className="mt-1 pointer-events-none"
+                  <div className="overflow-visible">
+                    <Tooltip
+                      id="payment-method-tooltip"
+                      place="top"
+                      className="z-50 bg-n-lumira_coral text-n-foreground px-4 py-2 rounded max-w-xs whitespace-normal shadow-lg"
                     />
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="p-2 rounded-lg bg-emerald-100 group-hover:bg-emerald-200 transition-colors duration-300">
-                          <svg
-                            className="w-5 h-5 text-emerald-600"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
-                            />
-                          </svg>
+
+                    <div
+                      htmlFor="cod"
+                      //onClick={() => handleSelect("cod")}
+                      data-tooltip-id="payment-method-tooltip"
+                      data-tooltip-content="Cash On Delivery is not available in your country"
+                      className={`opacity-25 cursor-default flex items-start gap-4 p-6 rounded-xl border-2 border-n-border/50 bg-gradient-to-r from-n-muted/30 to-transparent transition-all duration-300 hover:border-n-primary/50 hover:bg-n-muted/50 group`}
+                    >
+                      {/* <div className="flex items-center justify-center w-5 h-5 mt-1">
+                <div className="w-4 h-4 rounded-full border-2 border-n-muted_foreground group-hover:border-n-primary transition-colors duration-300 peer-checked:border-n-primary relative">
+                <div className="absolute inset-0.5 rounded-full bg-n-primary opacity-0 peer-checked:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                </div> */}
+                      <Checkbox
+                        //id="cod"
+                        //checked={CodChecked}
+                        //onCheckedChange={() => handleSelect("cod")}
+                        //name="savedAddress"
+                        className="mt-2 pointer-events-none"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="p-2 rounded-lg bg-emerald-100 group-hover:bg-emerald-200 transition-colors duration-300">
+                            <svg
+                              className="w-5 h-5 text-emerald-600"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                              />
+                            </svg>
+                          </div>
+                          <h3 className="text-lg font-bold text-n-foreground">
+                            Cash on Delivery
+                          </h3>
+                          <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full font-semibold">
+                            Popular
+                          </span>
                         </div>
-                        <h3 className="text-lg font-bold text-n-foreground">
-                          Cash on Delivery
-                        </h3>
-                        <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full font-semibold">
-                          Popular
-                        </span>
-                      </div>
-                      <p className="text-sm text-n-muted_foreground mb-2">
-                        Pay in cash when your order arrives at your doorstep
-                      </p>
-                      <div className="flex flex-wrap gap-2 text-xs">
-                        <span className="bg-n-primary/10 text-n-primary px-2 py-1 rounded-full">
-                          No processing fees
-                        </span>
-                        <span className="bg-n-primary/10 text-n-primary px-2 py-1 rounded-full">
-                          Available 24/7
-                        </span>
-                        <span className="bg-n-primary/10 text-n-primary px-2 py-1 rounded-full">
-                          Secure delivery
-                        </span>
+                        <p className="text-sm text-n-muted_foreground mb-2">
+                          Pay in cash when your order arrives at your doorstep
+                        </p>
+                        <div className="flex flex-wrap gap-2 text-xs">
+                          <span className="bg-n-primary/10 text-n-primary px-2 py-1 rounded-full">
+                            No processing fees
+                          </span>
+                          <span className="bg-n-primary/10 text-n-primary px-2 py-1 rounded-full">
+                            Available 24/7
+                          </span>
+                          <span className="bg-n-primary/10 text-n-primary px-2 py-1 rounded-full">
+                            Secure delivery
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                  <Tooltip id="payment-method-tooltip" />
                 </>
               )
             ) : (
@@ -230,7 +243,7 @@ const Payment = ({ paymentSelection, CountryData, setTransactionId }) => {
                 <div
                   htmlFor="cod"
                   onClick={() => handleSelect("cod")}
-                  className={`flex items-start gap-4 p-6 rounded-xl border-2 border-n-border/50 bg-gradient-to-r from-n-muted/30 to-transparent cursor-pointer transition-all duration-300 hover:border-n-primary/50 hover:bg-n-muted/50 ${
+                  className={`flex items-start gap-4 p-6 rounded-xl border-2 border-n-border/50 bg-gradient-to-r from-n-muted/30 to-transparent cursor-pointer hover:border-n-primary/50 hover:bg-n-muted/50 ${
                     CodChecked
                       ? "border-n-primary bg-n-primary/5 shadow-elegant"
                       : ""
@@ -246,7 +259,7 @@ const Payment = ({ paymentSelection, CountryData, setTransactionId }) => {
                     checked={CodChecked}
                     onCheckedChange={() => handleSelect("cod")}
                     name="savedAddress"
-                    className="mt-1 data-[state=checked]:bg-n-primary data-[state=checked]:border-n-primary"
+                    className="mt-2 data-[state=checked]:bg-n-primary data-[state=checked]:border-n-primary"
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-3">
@@ -280,7 +293,7 @@ const Payment = ({ paymentSelection, CountryData, setTransactionId }) => {
                         No processing fees
                       </span>
                       <span className="bg-n-primary/10 text-n-primary px-2 py-1 rounded-full">
-                        Available 24/7
+                        Easy Return
                       </span>
                       <span className="bg-n-primary/10 text-n-primary px-2 py-1 rounded-full">
                         Secure delivery
@@ -295,8 +308,7 @@ const Payment = ({ paymentSelection, CountryData, setTransactionId }) => {
                       }`}
                     >
                       <p className="text-sm text-n-muted_foreground">
-                        It takes from 2-12 days to deliver orders. Keep checking
-                        your order status after placing order.
+                        Keep checking your order status after placing order.
                       </p>
                     </div>
                   </div>
@@ -327,10 +339,10 @@ const Payment = ({ paymentSelection, CountryData, setTransactionId }) => {
                 checked={stripeCheck}
                 onCheckedChange={() => handleSelect("stripe")}
                 name="savedAddress"
-                className="mt-1 data-[state=checked]:bg-n-primary data-[state=checked]:border-n-primary"
+                className="mt-2 data-[state=checked]:bg-n-primary data-[state=checked]:border-n-primary"
               />
-              <div className="flex-1 justify-center md:justify-start">
-                <div className="flex items-center gap-3 mb-3">
+              <div className="flex-1 justify-center md:justify-start overflow-hidden">
+                <div className="flex items-start sm:items-center gap-3 mb-3">
                   <div className="p-2 rounded-lg bg-blue-100 group-hover:bg-blue-200 transition-colors duration-300">
                     <svg
                       className="w-5 h-5 text-blue-600"
@@ -346,12 +358,13 @@ const Payment = ({ paymentSelection, CountryData, setTransactionId }) => {
                       />
                     </svg>
                   </div>
+
                   <h3 className="text-lg font-bold text-n-foreground">
                     Credit/Debit Card
+                    <span className="ml-2 text-xs bg-n-lumira_coral/20 text-n-lumira_coral px-2 py-1 rounded-full font-semibold">
+                      Instant
+                    </span>
                   </h3>
-                  <span className="text-xs bg-n-lumira_coral/20 text-n-lumira_coral px-2 py-1 rounded-full font-semibold">
-                    Instant
-                  </span>
                 </div>
                 <p className="text-sm text-n-muted_foreground mb-3">
                   Pay securely with your credit or debit card via Stripe
@@ -359,11 +372,11 @@ const Payment = ({ paymentSelection, CountryData, setTransactionId }) => {
                 <div
                   className={`transition-all duration-500 ease-smooth overflow-hidden ${
                     stripeCheck
-                      ? "opacity-100 py-2 max-h-[150px]"
+                      ? "opacity-100 py-2 max-h-[210px] sm:max-h-[150px]"
                       : "opacity-0 py-0 max-h-0"
                   }`}
                 >
-                  <div className="bg-gradient-to-r from-n-primary/5 to-n-lumira_coral/5 rounded-lg p-4 mb-3 border border-n-primary/10">
+                  <div className="bg-gradient-to-r from-n-primary/5 to-n-lumira_coral/5 rounded-lg p-4 mb-3 border border-n-primary/10 ">
                     <div className="flex items-center gap-2 mb-2">
                       <Lock className="h-4 w-4 text-n-primary" />
                       <span className="text-sm font-semibold text-n-foreground">
@@ -392,12 +405,12 @@ const Payment = ({ paymentSelection, CountryData, setTransactionId }) => {
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-2 text-xs">
+                <div className="flex flex-wrap gap-2 text-xs mt-2 sm:mt-0">
                   <span className="bg-n-primary/10 text-n-primary px-2 py-1 rounded-full">
                     Exchange fees
                   </span>
                   <span className="bg-n-primary/10 text-n-primary px-2 py-1 rounded-full">
-                    2-3 business days
+                    Secrue
                   </span>
                   <span className="bg-n-primary/10 text-n-primary px-2 py-1 rounded-full">
                     Bank-level security
