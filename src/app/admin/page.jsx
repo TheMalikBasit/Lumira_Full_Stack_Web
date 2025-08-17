@@ -17,10 +17,9 @@ const page = () => {
   const [status, setStatus] = useState(null);
   const { products } = useAppContext();
   const [id, setId] = useState("");
-
+  const [accessTokenData, setAccessTokenData] = useState([]);
   const handleUpdateForm = (id) => {
     setId(id);
-    //console.log("Selected product ID:", id);
   };
 
   const handleUpdate = async () => {
@@ -38,13 +37,9 @@ const page = () => {
   const getAccessToken = async () => {
     const res = await fetch("/api/get-cj-token", { method: "POST" });
     const data = await res.json();
-    console.log(data);
-  };
-
-  const fetchProductDetails = async () => {
-    const res = await fetch(`/api/cj-product?pid=1727138943994441728`);
-    const data = await res.json();
-    console.log(data);
+    if (res) {
+      setAccessTokenData(data);
+    }
   };
 
   if (adminLoading) return <LottieLoading />;
@@ -80,22 +75,7 @@ const page = () => {
           </button>
           {status && <p className="mt-4 text-gray-800">{status}</p>}
         </div>
-        <div className="flex flex-col my-5">
-          <button
-            onClick={fetchProductDetails}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-          >
-            Get Product By Id
-          </button>
-        </div>
-        <div className="flex flex-col my-5">
-          <button
-            onClick={getAccessToken}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-          >
-            Get Access Token
-          </button>
-        </div>
+
         <div>
           <AddCJProduct />
         </div>
@@ -155,6 +135,15 @@ const page = () => {
                 ))}
             </div>
           </div>
+        </div>
+        <div className="flex flex-col my-5">
+          <button
+            onClick={getAccessToken}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+          >
+            Get Access Token
+          </button>
+          <div>{accessTokenData}</div>
         </div>
         <div className="container w-full border-t border-gray-700 mt-8 mb-8" />
       </div>

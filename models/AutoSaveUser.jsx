@@ -73,13 +73,10 @@ const AutoSaveUser = () => {
           setdarkMode(mode);
           setCartItems(cartData);
           setorderHistory(orderHistoryData);
-          console.log("Order history ", orderHistoryData);
-          //console.log("Updated cart data: ", cartData);
-          //console.log("User userShippingInfo: ", userShippingInfo);
           setLoading(false);
         }
       } catch (error) {
-        console.error("Error saving user to Firestore:", error);
+        toast.error("Unexpected User Error");
       }
     };
 

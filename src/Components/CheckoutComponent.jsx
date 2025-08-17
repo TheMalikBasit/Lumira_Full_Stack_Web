@@ -64,7 +64,6 @@ const Checkout = () => {
     } else {
       setSelectedShippingData(selectedAddress);
     }
-    //console.log("Handle Address Selection is called");
   };
 
   const handlePaymentSelection = (Method) => {
@@ -122,8 +121,6 @@ const Checkout = () => {
       toast.error("Login to complete your order");
     }
   }, [user]);
-
-  console.log("payment method", paymentOption);
 
   if (loading) return <LottieLoading />;
   return (

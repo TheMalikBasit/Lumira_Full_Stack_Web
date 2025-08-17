@@ -257,7 +257,9 @@ const ProductHighlights = () => {
                           <Button
                             className="w-full"
                             variant="coral"
-                            onClick={() => addToCart(product.id)}
+                            onClick={() =>
+                              addToCart(productData.id, selectedVariant.id)
+                            }
                           >
                             <ShoppingCart className="mr-2 h-4 w-4" /> Add to
                             Cart

@@ -25,7 +25,7 @@ export default function CurrencyFetcher() {
 
         setCurrencyRates(currencyData);
         setLoading(false);
-        console.log("Fetched Currency Rates ✅", currencyData);
+        // console.log("Fetched Currency Rates ✅", currencyData);
       } catch (error) {
         console.error("Currency Fetch Error:", error);
         toast.error("We are facing issues 🤦‍♀️");

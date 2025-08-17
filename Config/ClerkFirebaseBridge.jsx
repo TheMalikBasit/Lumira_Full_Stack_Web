@@ -32,7 +32,7 @@ export default function ClerkFirebaseBridge() {
         toast.success("Sign in success");
       } catch (err) {
         console.error("❌ Error signing in Firebase Auth:", err);
-        toast.error("Firebase authentication failed. Check console.");
+        toast.error("Authentication failed (Reload).");
       }
     };
 

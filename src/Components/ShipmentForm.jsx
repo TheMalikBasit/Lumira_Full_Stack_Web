@@ -196,10 +196,8 @@ const ShipmentForm = ({ onReload, handleToggle }) => {
     ZipCode: "",
   });
 
-  //console.log("User Info from checkout component:", getUserInfo);
   const handleSubmit = async (e) => {
     e.preventDefault();
-    //console.log("Called from handle submit", getUserInfo);
 
     await AddShippingInfo(user, isSignedIn, getUserInfo, setUserData)();
 

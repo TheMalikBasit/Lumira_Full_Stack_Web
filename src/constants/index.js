@@ -74,12 +74,12 @@ export const navigation = [
     clerk: true,
     onlyMobile: true,
   },
-  {
-    id: "6",
-    title: "Seller dashboard",
-    url: "/admin",
-    admin: true,
-  },
+  // {
+  //   id: "6",
+  //   title: "Seller dashboard",
+  //   url: "/admin",
+  //   admin: true,
+  // },
 ];
 
 export const heroIcons = [homeSmile, file02, searchMd, plusSquare];

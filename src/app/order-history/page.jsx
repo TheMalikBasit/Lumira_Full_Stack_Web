@@ -50,7 +50,6 @@ const OrderHistory = () => {
   const orderIds = Array.isArray(orderHistory)
     ? orderHistory.map((order) => order.id)
     : [];
-  console.log("OrderIds", orderIds);
 
   useEffect(() => {
     if (user) {
@@ -72,9 +71,7 @@ const OrderHistory = () => {
           const results = await Promise.all(orderPromises);
           const validOrders = results.filter((order) => order !== null);
           setUnsorted(validOrders);
-        } catch (error) {
-          console.error("Error fetching orders:", error);
-        }
+        } catch (error) {}
       };
 
       if (orderIds.length > 0) {
@@ -94,8 +91,6 @@ const OrderHistory = () => {
     setOrders(sortedOrders);
     setToPay(totalUnpaid);
   }, [unsorted]);
-
-  console.log("Orders Data from db", orders);
 
   const getStatusIcon = (status) => {
     switch (status.toLowerCase()) {
@@ -158,7 +153,7 @@ const OrderHistory = () => {
                     You haven't placed any orders yet. Start shopping to see
                     your orders here.
                   </p>
-                  <Button onClick={() => navigate("/products")}>
+                  <Button onClick={() => router.push("/all-products")}>
                     Browse Products
                   </Button>
                 </CardContent>
@@ -272,16 +267,29 @@ const OrderHistory = () => {
                       </TableHeader>
                       <TableBody>
                         {orders.map((order, index) => {
-                          const dateObj = new Date(order.orderDate);
-                          const date = dateObj.toLocaleDateString();
-                          const time = dateObj.toLocaleTimeString();
+                          const dateObj = order.orderDate?.toDate
+                            ? order.orderDate.toDate()
+                            : new Date(order.orderDate);
 
+                          const datePart = dateObj.toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          });
+
+                          const timePart = dateObj.toLocaleTimeString("en-US", {
+                            hour: "numeric",
+                            minute: "2-digit",
+                            second: "2-digit",
+                            hour12: true,
+                          });
+
+                          const formattedDate = `${datePart} at ${timePart}`;
                           const cartItemsData = order.cartItems
                             .map((item) =>
                               products.find((product) => product.id === item.id)
                             )
                             .filter(Boolean);
-                          console.log("Cart Items Filtered", cartItemsData);
                           return (
                             <TableRow
                               key={index}
@@ -305,14 +313,14 @@ const OrderHistory = () => {
                               <TableCell>
                                 <div className="space-y-1">
                                   <div className="flex items-center gap-2">
-                                    <Package className="h-4 w-4 text-n-primary" />
+                                    <Package className="min-h-4 min-w-4 max-h-4 max-w-4 text-n-primary" />
                                     <span className="font-medium text-n-foreground">
                                       #{order.orderId}
                                     </span>
                                   </div>
-                                  <div className="flex items-center gap-1 text-sm text-n-muted_foreground">
-                                    <Calendar className="h-3 w-3" />
-                                    {date} at {time}
+                                  <div className="flex flex-wrap items-center gap-1 text-sm text-n-muted_foreground">
+                                    <Calendar className="min-h-4 min-w-4 max-h-4 max-w-4" />
+                                    {formattedDate}
                                   </div>
                                 </div>
                               </TableCell>
@@ -352,12 +360,12 @@ const OrderHistory = () => {
                               <TableCell>
                                 <div className="flex items-center gap-2">
                                   <div className="flex -space-x-2">
-                                    {cartItemsData
+                                    {order.cartItems
                                       .slice(0, 3)
                                       .map((product, index) => (
                                         <Image
-                                          key={product.id}
-                                          src={product.mainImage}
+                                          key={product.vid}
+                                          src={product.image}
                                           alt={product.name}
                                           width={800}
                                           height={800}

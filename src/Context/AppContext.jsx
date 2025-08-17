@@ -58,14 +58,14 @@ export const AppContextProvider = (props) => {
   // console.log("CurrencyRates from app context", CurrencyRates);
   // const ratesData = CurrencyRates.rates;
   // console.log("rates : ", ratesData);
-  const addToCart = async (id) => {
+  const addToCart = async (id, variantId) => {
     let cartData = structuredClone(cartItems);
 
-    let itemIndex = cartData.findIndex((item) => item.id === id);
+    let itemIndex = cartData.findIndex((item) => item.variantId === variantId);
     if (itemIndex !== -1) {
       cartData[itemIndex].quantity += 1;
     } else {
-      cartData.push({ id, quantity: 1, checked: true });
+      cartData.push({ id: id, vid: variantId, quantity: 1, checked: true });
     }
 
     setCartItems(cartData);
@@ -80,14 +80,14 @@ export const AppContextProvider = (props) => {
     }
   };
 
-  const updateCartQuantity = async (id, quantity) => {
+  const updateCartQuantity = async (variantId, quantity) => {
     let cartData = structuredClone(cartItems);
 
     if (quantity === 0) {
-      cartData = cartData.filter((item) => item.id !== id);
+      cartData = cartData.filter((item) => item.vid !== variantId);
     } else {
       cartData = cartData.map((item) =>
-        item.id === id ? { ...item, quantity } : item
+        item.vid === variantId ? { ...item, quantity } : item
       );
     }
 
@@ -103,11 +103,11 @@ export const AppContextProvider = (props) => {
     }
   };
 
-  const toggleItemChecked = async (id) => {
+  const toggleItemChecked = async (variantId, id) => {
     let cartData = structuredClone(cartItems);
 
     cartData = cartData.map((item) =>
-      item.id === id
+      item.vid === variantId
         ? {
             ...item,
             checked:
@@ -132,8 +132,8 @@ export const AppContextProvider = (props) => {
     }
   };
 
-  const removeItemFromCart = async (id) => {
-    let cartData = cartItems.filter((item) => item.id !== id);
+  const removeItemFromCart = async (variantId) => {
+    let cartData = cartItems.filter((item) => item.vid !== variantId);
 
     setCartItems(cartData);
 
@@ -168,18 +168,18 @@ export const AppContextProvider = (props) => {
     return () => window.removeEventListener("storage", syncCart);
   }, [products, user]);
 
-  const addToLocalCart = (id) => {
-    addLocalProducts({ ID: id });
+  const addToLocalCart = (id, variantId) => {
+    addLocalProducts({ ID: id, variantId: variantId });
     setLocalCart(fetchLocalCart());
   };
 
-  const removeFromLocalCart = (id) => {
-    removeLocalProducts({ ID: id });
+  const removeFromLocalCart = (variantId) => {
+    removeLocalProducts({ variantId: variantId });
     setLocalCart(fetchLocalCart());
   };
 
-  const deleteFromLocalCart = (id) => {
-    deleteLocalProducts({ ID: id });
+  const deleteFromLocalCart = (variantId) => {
+    deleteLocalProducts({ variantId: variantId });
     setLocalCart(fetchLocalCart());
   };
 
@@ -188,9 +188,9 @@ export const AppContextProvider = (props) => {
     setLocalCart([]);
   };
 
-  const toggleLocalItemCheck = (id) => {
+  const toggleLocalItemCheck = (variantId) => {
     const updatedCart = localCart.map((item) =>
-      item.id === id
+      item.vid === variantId
         ? {
             ...item,
             checked:

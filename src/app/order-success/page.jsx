@@ -1,54 +1,102 @@
 "use client";
-import { CheckCircle, Package, CreditCard, Truck, Clock } from "lucide-react";
+import {
+  CheckCircle,
+  Package,
+  CreditCard,
+  Truck,
+  Clock,
+  Loader2,
+} from "lucide-react";
 import { Button } from "@/Components/UI/lumiraButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/UI/card";
 import { Badge } from "@/Components/UI/badge";
 import { Separator } from "@/Components/UI/separator";
 import Navbar from "@/Components/Navbar";
-// import { useState as useModalState } from "react";
-import SupportModal, { SupportSection } from "@/Components/SupportModal";
+import SupportModal from "@/Components/SupportModal";
 import { useEffect, useState } from "react";
 import { db } from "../../../Config/firebase";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  updateDoc,
-} from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { Loader2 } from "lucide-react";
-import { useAppContext } from "@/Context/AppContext";
 import BackLights from "@/Components/BackLights";
 import { useUser } from "@clerk/nextjs";
 import toast from "react-hot-toast";
 import Footer from "@/Components/LumiraFooter";
+
+// ✅ helper to resolve variants from Firestore
+async function resolveOrderItems(order) {
+  const resolved = [];
+
+  for (const item of order.cartItems || []) {
+    try {
+      // fetch main product
+      const productRef = doc(db, "products", item.pid);
+      const productSnap = await getDoc(productRef);
+      if (!productSnap.exists()) continue;
+      const productData = productSnap.data();
+
+      // if variant exists → fetch from subcollection
+      if (item.vid) {
+        const variantRef = doc(db, `products/${item.pid}/variants/${item.vid}`);
+        const variantSnap = await getDoc(variantRef);
+        if (variantSnap.exists()) {
+          const variantData = variantSnap.data();
+          resolved.push({
+            ...item,
+            name: variantData.cjKey || variantData.cjName || "Variant",
+            image: variantData.cjImage || productData.mainImage,
+            price: item.price, // already stored at checkout
+            sku: item.sku || variantData.cjSku || null,
+          });
+          continue;
+        }
+      }
+
+      // fallback if no variant
+      resolved.push({
+        ...item,
+        name: productData.name,
+        image: productData.mainImage,
+        price: item.price,
+        sku: item.sku || null,
+      });
+    } catch (err) {
+      console.error("❌ Error resolving product:", err);
+    }
+  }
+
+  return resolved;
+}
+
 export default function PaymentSuccess() {
   const [order, setOrder] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const { products, router } = useAppContext();
   const [orderedProducts, setOrderedProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
   const method = searchParams.get("method");
-  const { isSignedIn, user } = useUser();
-  const [newDateVar, setNewDateVar] = useState(null);
+  const { user } = useUser();
   const [supportModal, setSupportModal] = useState({
     isOpen: false,
     section: "",
   });
+
+  // ✅ Fetch the order from Firestore
   useEffect(() => {
     if (!orderId) return;
 
     const fetchOrder = async () => {
       try {
-        // Client-side fetch (respects Firestore rules)
         const docRef = doc(db, "placedOrders", orderId);
-        const docSnap = await getDoc(docRef, { source: "server" }); // avoid cache
+        const docSnap = await getDoc(docRef, { source: "server" });
 
         if (docSnap.exists()) {
-          setOrder({ id: docSnap.id, ...docSnap.data() });
+          const orderData = { id: docSnap.id, ...docSnap.data() };
+          setOrder(orderData);
+
+          // resolve product + variant images/names
+          const items = await resolveOrderItems(orderData);
+          setOrderedProducts(items);
         }
       } catch (err) {
         console.error("Error fetching order:", err);
@@ -60,59 +108,57 @@ export default function PaymentSuccess() {
     fetchOrder();
   }, [orderId]);
 
-  const dateObj = new Date(newDateVar);
-  const date = dateObj.toLocaleDateString();
-  const time = dateObj.toLocaleTimeString();
-
+  // ✅ Attach order to user document (avoid duplicate entry)
   useEffect(() => {
-    if (order) {
-      const filteredProducts = products
-        .map((prod) => {
-          const cartItem = order?.cartItems?.find(
-            (item) => item.id === prod.id
-          );
-          return cartItem ? { ...prod, ...cartItem } : null;
-        })
-        .filter(Boolean);
-      const timeStamp = order.orderDate;
-
-      setNewDateVar(timeStamp);
-      setOrderedProducts(filteredProducts);
-    }
-  }, [order]);
-
-  useEffect(() => {
-    if (user) {
+    if (user && orderId && order) {
       const handleOrder = async () => {
-        const userRef = doc(db, "users", user.id);
-        const userSnapshot = await getDoc(userRef);
-        const userData = userSnapshot.data();
-        const ordersData = userData.orders ?? [];
+        try {
+          const userRef = doc(db, "users", user.id);
+          const userSnapshot = await getDoc(userRef);
+          if (!userSnapshot.exists()) return;
 
-        // Check if the order ID already exists
-        const orderExists = ordersData.some((item) => item.id === orderId);
+          const userData = userSnapshot.data();
+          const ordersData = userData.orders ?? [];
 
-        if (!orderExists) {
-          const newOrder = {
-            id: orderId,
-            status: "Pending Verification",
-            orderedAt: new Date(),
-          };
+          const orderExists = ordersData.some((item) => item.id === orderId);
 
-          const updatedOrders = [...ordersData, newOrder];
+          if (!orderExists) {
+            const newOrder = {
+              id: orderId,
+              status: order.orderStatus || "Pending Verification",
+              orderedAt: new Date(),
+            };
 
-          await updateDoc(userRef, {
-            orders: updatedOrders,
-          });
-          toast.success("Order Placed");
-        } else {
-          console.log(`Order ID ${orderId} already exists. Skipping update.`);
-          toast.error("Order Already Exists");
+            await updateDoc(userRef, { orders: [...ordersData, newOrder] });
+            toast.success("Order Placed");
+          }
+        } catch (err) {
+          console.error("Error updating user orders:", err);
         }
       };
       handleOrder();
     }
-  }, [order]);
+  }, [order, user, orderId]);
+
+  // ✅ Date handling
+  const dateObj = order?.orderDate?.toDate
+    ? order?.orderDate?.toDate()
+    : new Date(order?.orderDate);
+
+  const datePart = dateObj.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  const timePart = dateObj.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  });
+
+  const formattedDate = `${datePart} at ${timePart}`;
 
   if (loading) {
     return (
@@ -125,13 +171,14 @@ export default function PaymentSuccess() {
     );
   }
 
-  if (!order || method === null || method !== order.paymentType) {
+  if (!order || !method || method !== order.paymentType) {
     return (
       <div className="p-8 text-center text-red-500">
         Order not found. Please contact support if you believe this is an error.
       </div>
     );
   }
+
   return (
     <>
       <Navbar bgBlur />
@@ -139,10 +186,10 @@ export default function PaymentSuccess() {
         <BackLights L2 L3 />
         <div className="container mx-auto px-4 py-12">
           <div className="max-w-4xl mx-auto">
-            {/* Success Header */}
+            {/* ✅ Success Header */}
             <div className="text-center mb-8">
               <CheckCircle className="h-20 w-20 text-n-foreground mx-auto mb-4" />
-              {method == "Card/Stripe" && order.paymentType == "Card/Stripe" ? (
+              {order.paymentType === "Card/Stripe" ? (
                 <>
                   <h1 className="text-4xl font-bold text-n-foreground mb-2">
                     Payment Successful!
@@ -154,7 +201,6 @@ export default function PaymentSuccess() {
                 </>
               ) : (
                 <>
-                  {" "}
                   <h1 className="text-4xl font-bold text-n-foreground mb-2">
                     Order Placed
                   </h1>
@@ -167,18 +213,17 @@ export default function PaymentSuccess() {
             </div>
 
             <div className="grid lg:grid-cols-3 gap-8">
-              {/* Order Details */}
+              {/* ✅ Order Details */}
               <div className="lg:col-span-2 space-y-6">
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-n-foreground">
-                      <Package className="h-5 w-5" />
-                      Order Details
+                      <Package className="h-5 w-5" /> Order Details
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      <div className="flex justify-between items-center">
+                      <div className="flex justify-between">
                         <span className="font-medium text-n-foreground">
                           Order ID:
                         </span>
@@ -186,13 +231,15 @@ export default function PaymentSuccess() {
                           {orderId}
                         </span>
                       </div>
-                      <div className="flex justify-between items-center">
+                      <div className="flex justify-between">
                         <span className="font-medium text-n-foreground">
                           Order Date:
                         </span>
-                        <span className="text-n-foreground">{date}</span>
+                        <span className="text-n-foreground">
+                          {formattedDate}
+                        </span>
                       </div>
-                      <div className="flex justify-between items-center">
+                      <div className="flex justify-between">
                         <span className="font-medium text-n-foreground">
                           Estimated Delivery:
                         </span>
@@ -204,7 +251,7 @@ export default function PaymentSuccess() {
                   </CardContent>
                 </Card>
 
-                {/* Products Ordered */}
+                {/* ✅ Products Ordered */}
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-n-foreground">
@@ -213,29 +260,34 @@ export default function PaymentSuccess() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {orderedProducts.map((product) => (
+                      {orderedProducts.map((item, idx) => (
                         <div
-                          key={product.id}
+                          key={item.vid || item.pid || idx}
                           className="flex items-center gap-4 p-4 border rounded-lg"
                         >
                           <Image
-                            src={product.mainImage}
-                            alt={product.name}
+                            src={item.image || "/placeholder.png"}
+                            alt={item.name || "Product"}
                             height={200}
                             width={200}
                             className="h-16 w-16 object-cover rounded-md"
                           />
                           <div className="flex-1">
                             <h3 className="font-medium text-n-foreground">
-                              {product.name}
+                              {item.name}
                             </h3>
                             <p className="text-sm text-n-muted_foreground">
-                              Qty: {product.quantity}
+                              Qty: {item.quantity}
                             </p>
+                            {item.sku && (
+                              <p className="text-xs text-n-muted_foreground">
+                                SKU: {item.sku}
+                              </p>
+                            )}
                           </div>
                           <div className="text-right">
                             <p className="font-medium text-n-foreground">
-                              ${product.price * product.quantity}
+                              ${(item.price * item.quantity).toFixed(2)}
                             </p>
                           </div>
                         </div>
@@ -245,28 +297,24 @@ export default function PaymentSuccess() {
                 </Card>
               </div>
 
-              {/* Status & Summary */}
+              {/* ✅ Status & Summary */}
               <div className="space-y-6">
-                {/* Status Cards */}
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <CreditCard className="h-5 w-5 text-n-foreground" />
+                      <CreditCard className="h-5 w-5 text-n-foreground" />{" "}
                       Payment Status
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
-                      <div className="flex justify-between items-center">
+                      <div className="flex justify-between">
                         <span className="text-n-foreground">Payment:</span>
-                        <Badge
-                          variant="default"
-                          className="bg-n-foreground text-n-primary_foreground"
-                        >
+                        <Badge className="bg-n-foreground text-n-primary_foreground">
                           {order.paymentStatus}
                         </Badge>
                       </div>
-                      <div className="flex justify-between items-center">
+                      <div className="flex justify-between">
                         <span className="text-n-foreground">Method:</span>
                         <span className="text-n-foreground">
                           {order.paymentType}
@@ -279,36 +327,31 @@ export default function PaymentSuccess() {
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <Truck className="h-5 w-5 text-n-foreground" />
-                      Order Status
+                      <Truck className="h-5 w-5 text-n-foreground" /> Order
+                      Status
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
-                      <div className="flex justify-between items-center">
+                      <div className="flex justify-between">
                         <span className="text-n-foreground">Order:</span>
-                        <Badge
-                          variant="default"
-                          className="bg-n-foreground text-n-primary_foreground"
-                        >
+                        <Badge className="bg-n-foreground text-n-primary_foreground">
                           {order.orderStatus}
                         </Badge>
                       </div>
-                      <div className="flex justify-between items-center">
+                      <div className="flex justify-between">
                         <span className="text-n-foreground">Delivery:</span>
                         <Badge
                           variant="secondary"
                           className="flex items-center gap-1"
                         >
-                          <Clock className="h-3 w-3" />
-                          {order.deliveryStatus}
+                          <Clock className="h-3 w-3" /> {order.deliveryStatus}
                         </Badge>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
 
-                {/* Order Summary */}
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-n-foreground">
@@ -320,7 +363,10 @@ export default function PaymentSuccess() {
                       <div className="flex justify-between">
                         <span className="text-n-foreground">Subtotal:</span>
                         <span className="text-n-foreground">
-                          {order.total - order.shippingCost} $
+                          {orderedProducts
+                            .reduce((sum, i) => sum + i.price * i.quantity, 0)
+                            .toFixed(2)}{" "}
+                          $
                         </span>
                       </div>
                       <div className="flex justify-between">
@@ -340,16 +386,19 @@ export default function PaymentSuccess() {
                   </CardContent>
                 </Card>
 
-                {/* Action Buttons */}
+                {/* ✅ Action Buttons */}
                 <div className="space-y-3">
                   <Button
-                    onClick={() => router.push("/order-history")}
+                    onClick={() => (window.location.href = "/order-history")}
                     className="w-full"
                     variant="outline"
                   >
                     View Order History
                   </Button>
-                  <Button onClick={() => router.push("/")} className="w-full">
+                  <Button
+                    onClick={() => (window.location.href = "/")}
+                    className="w-full"
+                  >
                     Continue Shopping
                   </Button>
                 </div>
@@ -358,10 +407,10 @@ export default function PaymentSuccess() {
           </div>
         </div>
       </div>
+
       <Footer
         onSupportClick={(section) => setSupportModal({ isOpen: true, section })}
       />
-
       <SupportModal
         isOpen={supportModal.isOpen}
         onClose={() => setSupportModal({ isOpen: false, section: "" })}

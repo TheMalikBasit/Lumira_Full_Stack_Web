@@ -21,7 +21,6 @@ export async function GET(req) {
     );
 
     const data = await res.json();
-    console.log("Data of product");
     return new Response(JSON.stringify(data), {
       status: 200,
       headers: { "Content-Type": "application/json" },

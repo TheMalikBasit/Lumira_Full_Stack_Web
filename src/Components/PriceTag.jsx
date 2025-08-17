@@ -6,26 +6,19 @@ import toast from "react-hot-toast";
 export default function PriceTag({ basePrice, userCurrency, symbol }) {
   const [convertedPrice, setConvertedPrice] = useState(null);
   const { CurrencyRates, loading } = useAppContext();
-  // console.log("Currency Data from Price tag: ", CurrencyRates);
 
   useEffect(() => {
     try {
-      if (CurrencyRates) {
-        const ratesData = CurrencyRates.rates;
-        const rate = ratesData[userCurrency];
-        console.log("rates : ", rate);
-        if (!rate) {
-          toast.error(`No rate found for currency: ${userCurrency}`);
-          return;
-        }
-        const converted = (basePrice * rate).toFixed(2);
-        setConvertedPrice(converted);
-      } else {
-        setConvertedPrice("6969");
-        toast.error("This MF");
+      const ratesData = CurrencyRates.rates;
+      const rate = ratesData[userCurrency];
+      if (!rate) {
+        return;
       }
+      const converted = (basePrice * rate).toFixed(2);
+      setConvertedPrice(converted);
+      // toast.error("This MF");
     } catch (err) {
-      setConvertedPrice("6969");
+      setConvertedPrice("Error");
     }
   });
 

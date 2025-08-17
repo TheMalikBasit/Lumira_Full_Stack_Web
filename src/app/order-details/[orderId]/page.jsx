@@ -138,10 +138,24 @@ const OrderConfirmation = () => {
   }, [orderDetails]);
 
   if (loading) return <LottieLoading />;
+  const dateObj = orderDetails?.orderDate.toDate
+    ? orderDetails?.orderDate.toDate()
+    : new Date(orderDetails?.orderDate);
 
-  const dateObj = new Date(newDateVar);
-  const date = dateObj.toLocaleDateString();
-  const time = dateObj.toLocaleTimeString();
+  const datePart = dateObj.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  const timePart = dateObj.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  });
+
+  const formattedDate = `${datePart} at ${timePart}`;
 
   if (!orderDetails) {
     return (
@@ -308,13 +322,13 @@ const OrderConfirmation = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {orderedProducts.map((product) => (
+                      {orderDetails?.cartItems?.map((product) => (
                         <div
-                          key={product.id}
+                          key={product.vid}
                           className="flex items-center gap-4 p-4 border rounded-lg"
                         >
                           <Image
-                            src={product.mainImage}
+                            src={product.image}
                             alt={product.name}
                             width={800}
                             height={800}
@@ -466,7 +480,7 @@ const OrderConfirmation = () => {
                           Payment Method: {orderDetails.paymentType}
                         </p>
                         <p className=" text-n-muted_foreground">
-                          Order Date: {date}
+                          Order Date: {formattedDate}
                         </p>
                       </div>
                     </div>

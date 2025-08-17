@@ -14,7 +14,25 @@ import { SignInButton, SignOutButton, UserButton } from "@clerk/nextjs";
 import { useAppContext } from "@/Context/AppContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SelectCurrency from "./SelectCurrency";
-import { X, Globe, Check } from "lucide-react";
+import { useUser } from "@clerk/nextjs";
+import {
+  X,
+  Globe,
+  Check,
+  LogInIcon,
+  User,
+  User2,
+  UserCircle,
+  UserCircle2,
+  UserCheck,
+  UserCheck2,
+  Globe2,
+  GlobeLock,
+  LucideGlobe,
+  LucideGlobe2,
+  Languages,
+  Hamburger,
+} from "lucide-react";
 import {
   Package,
   Eye,
@@ -52,6 +70,7 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
     useAppContext();
   const [openNavigation, setopenNavigation] = useState(false);
   const [showCurrency, setshowCurrency] = useState(false);
+  const { isSignedIn } = useUser();
   const toggleNavigation = () => {
     if (openNavigation) {
       setopenNavigation(false);
@@ -136,26 +155,45 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
           >
             <div className="relative z-2 flex flex-col items-center justify-center lg:flex-row m-auto">
               <button className="lg:hidden relative inline-flex justify-center border-2 border-orange-500 rounded-full p-[2px]">
-                <UserButton
-                  appearance={{
-                    elements: {
-                      userButtonAvatarBox: "w-9 h-9", // Adjust width & height
-                    },
-                  }}
-                >
-                  <UserButton.MenuItems>
-                    <UserButton.Action
-                      label="Cart"
-                      labelIcon={<CartIcon />}
-                      onClick={() => router.push("/cart")}
-                    />
-                    <UserButton.Action
-                      label="My Orders"
-                      labelIcon={<BagIcon />}
-                      onClick={() => router.push("/order-history")}
-                    />
-                  </UserButton.MenuItems>
-                </UserButton>
+                {isSignedIn ? (
+                  <>
+                    <UserButton
+                      appearance={{
+                        elements: {
+                          userButtonAvatarBox: "w-9 h-9", // Adjust width & height
+                        },
+                      }}
+                    >
+                      <UserButton.MenuItems>
+                        <UserButton.Action
+                          label="Cart"
+                          labelIcon={<CartIcon />}
+                          onClick={() => router.push("/cart")}
+                        />
+                        <UserButton.Action
+                          label="My Orders"
+                          labelIcon={<BagIcon />}
+                          onClick={() => router.push("/order-history")}
+                        />
+                        {isAdmin && (
+                          <UserButton.Action
+                            label="My Orders"
+                            labelIcon={<BagIcon />}
+                            onClick={() => router.push("/admin")}
+                          />
+                        )}
+                      </UserButton.MenuItems>
+                    </UserButton>
+                  </>
+                ) : (
+                  <>
+                    <SignInButton mode="modal">
+                      <span className={` hover:text-orange-800`}>
+                        <User />
+                      </span>
+                    </SignInButton>
+                  </>
+                )}
               </button>
               {navigation.map((item) => (
                 <a
@@ -181,12 +219,6 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
                     ) : (
                       <SignInButton mode="modal">{item.title}</SignInButton>
                     )
-                  ) : item.admin ? (
-                    isAdmin ? (
-                      <p className="border border-orange-500 rounded-[1rem] p-2">
-                        {item.title}
-                      </p>
-                    ) : null
                   ) : (
                     item.title
                   )}
@@ -235,15 +267,16 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
               onClick={toggleCurrency}
               className="max-w-2xl cursor-pointer Z-10 mr-5"
             >
-              <Globe />
+              <Languages />
             </button>
             <Button
               clerk
               user={user}
               router={router}
+              isAdmin={isAdmin}
               className="hidden lg:flex"
             >
-              Sign IN
+              <User />
             </Button>
             <Button
               onclick={toggleNavigation}

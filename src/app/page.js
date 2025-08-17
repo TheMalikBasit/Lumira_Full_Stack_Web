@@ -22,28 +22,28 @@ export default function Home() {
     isOpen: false,
     section: "",
   });
-  useEffect(() => {
-    const hasPlayed = sessionStorage.getItem("introPlayed");
+  // useEffect(() => {
+  //   const hasPlayed = sessionStorage.getItem("introPlayed");
 
-    if (!hasPlayed) {
-      setShowVideo(true);
+  //   if (!hasPlayed) {
+  //     setShowVideo(true);
 
-      const fadeTimer = setTimeout(() => setFade(true), 4000);
-      const removeTimer = setTimeout(() => {
-        setShowVideo(false);
-        sessionStorage.setItem("introPlayed", "true");
-      }, 6000);
+  //     const fadeTimer = setTimeout(() => setFade(true), 4000);
+  //     const removeTimer = setTimeout(() => {
+  //       setShowVideo(false);
+  //       sessionStorage.setItem("introPlayed", "true");
+  //     }, 6000);
 
-      return () => {
-        clearTimeout(fadeTimer);
-        clearTimeout(removeTimer);
-      };
-    }
-  }, []);
+  //     return () => {
+  //       clearTimeout(fadeTimer);
+  //       clearTimeout(removeTimer);
+  //     };
+  //   }
+  // }, []);
   if (loading) <LottieLoading />;
   return (
     <>
-      {showVideo && (
+      {/* {showVideo && (
         <div
           className={`pointer-events-none fixed inset-0 flex items-center justify-center bg-black transition-opacity duration-1000 z-30 ${
             fade ? "opacity-0" : "opacity-100"
@@ -59,7 +59,7 @@ export default function Home() {
             onEnded={() => setFade(true)} // fallback in case fadeTimer fails
           />
         </div>
-      )}
+      )} */}
       <div className="pt-[4.75rem] lg:pt-[5.25rem] overflow-hidden">
         <Navbar bgBlur />
         <Hero />

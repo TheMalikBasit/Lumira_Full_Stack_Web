@@ -1,14 +1,6 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { db } from "../../../../Config/firebase";
-import {
-  collection,
-  addDoc,
-  serverTimestamp,
-  updateDoc,
-  getDoc,
-  doc,
-} from "firebase/firestore";
+import { adminDB } from "../../../../Config/firebaseAdmin";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -17,71 +9,54 @@ export async function GET(req) {
     const { searchParams } = new URL(req.url);
     const session_id = searchParams.get("session_id");
 
-    // ❌ If session ID is missing — treat as failed
-    if (!session_id) {
-      const failedOrder = {
-        reason: "Missing session_id",
-        userId: session.metadata?.userId || null,
-        shippingInfo: session.metadata?.shippingInfo || null,
-        cartItems: session.metadata?.cartItems || null,
-        total: total ? total : null,
-        paymentStatus: "Failed",
-        orderStatus: "Cancelled ",
-        deliveryStatus: "Nil",
-        paymentType: "Card/Stripe",
-        estimatedDelivery: "Nil",
-        shippingCost: shippingCost ? shippingCost : null,
-        orderDate: serverTimestamp(),
-      };
+    if (!session_id) throw new Error("Missing session_id");
 
-      const ref = await addDoc(collection(db, "failedOrders"), failedOrder);
-      return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/payment-failed?failId=${ref.id}&method=Card/Stripe`
-      );
-    }
-
-    // ✅ Retrieve session from Stripe
+    // ✅ Fetch session from Stripe
     const session = await stripe.checkout.sessions.retrieve(session_id);
+    const { userId, cartRefId } = session.metadata || {};
 
-    // ❌ If not paid — store as failed
+    if (!userId || !cartRefId) throw new Error("Missing metadata");
+
+    const cartRef = adminDB.collection("tempCarts").doc(cartRefId);
+    const cartSnap = await cartRef.get();
+
+    if (!cartSnap.exists) throw new Error("Temp cart not found");
+
+    const { shippingInfo, items: cartItems, shippingCost } = cartSnap.data();
+
+    // ❌ If not paid → fail order (cleanup temp cart too!)
     if (session.payment_status !== "paid") {
-      const failedOrder = {
+      await adminDB.collection("failedOrders").doc(`fail_${Date.now()}`).set({
         reason: "Payment not completed",
         session_id,
-        userId: session.metadata?.userId || null,
-        shippingInfo: session.metadata?.shippingInfo || null,
-        cartItems: session.metadata?.cartItems || null,
-        total,
+        userId,
         paymentStatus: "Failed",
-        orderStatus: "Cancelled ",
+        orderStatus: "Cancelled",
         deliveryStatus: "Nil",
         paymentType: "Card/Stripe",
         estimatedDelivery: "Nil",
-        shippingCost: shippingCost,
-        orderDate: new Date().toISOString(),
-      };
+        orderDate: new Date(),
+      });
 
-      const ref = await addDoc(collection(db, "failedOrders"), failedOrder);
+      // 🧹 cleanup temp cart anyway
+      await cartRef.delete();
 
       return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/payment-failed?failId=${ref.id}&method=Card/Stripe`
+        `${process.env.NEXT_PUBLIC_BASE_URL}/payment-failed`
       );
     }
 
-    // ✅ If paid — create order in Firestore
-    const userId = session.metadata?.userId;
-    const shippingInfo = JSON.parse(session.metadata?.shippingInfo || "{}");
-    const cartItems = JSON.parse(session.metadata?.cartItems || "[]");
-    const shippingCost = JSON.parse(session.metadata?.shippingCost || "");
-    console.log("Session metadata:", session.metadata);
-    console.log("Shipping Info Parsed:", shippingInfo);
+    // ✅ Calculate totals
+    const subtotal = cartItems.reduce((s, i) => s + i.price * i.quantity, 0);
+    const total = subtotal + (shippingCost || 0);
 
-    const total = cartItems.reduce(
-      (sum, item) => sum + item.price * item.quantity + shippingCost,
-      0
-    );
+    // ✅ Generate custom LUM ID
+    const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const timePart = Date.now().toString().slice(-6);
+    const orderId = `LUM-${randomPart}${timePart}`;
 
-    const orderData = {
+    // ✅ Save order
+    await adminDB.collection("placedOrders").doc(orderId).set({
       userId,
       shippingInfo,
       cartItems,
@@ -90,31 +65,28 @@ export async function GET(req) {
       orderStatus: "Pending Verification",
       deliveryStatus: "Processing",
       paymentType: "Card/Stripe",
-      estimatedDelivery: "International Shipping 12-28 Days",
-      shippingCost: shippingCost,
-      orderDate: new Date().toISOString(),
-    };
+      estimatedDelivery: "International Shipping 12–28 Days",
+      shippingCost,
+      orderDate: new Date(),
+    });
 
-    const docRef = await addDoc(collection(db, "placedOrders"), orderData);
+    // 🧹 Cleanup temp cart
+    await cartRef.delete();
 
     return NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/order-success?orderId=${docRef.id}&method=Card/Stripe`,
-      302
+      `${process.env.NEXT_PUBLIC_BASE_URL}/order-success?orderId=${orderId}&method=Card/Stripe`
     );
   } catch (err) {
-    console.error("❌ Payment Verification Error:", err);
+    console.error("❌ verify-payment error:", err);
 
-    // In case of unexpected failure
-    const fallback = {
-      reason: "Unexpected server error",
+    await adminDB.collection("failedOrders").doc(`fail_${Date.now()}`).set({
+      reason: "Unexpected error",
       error: err.message,
-      attemptedAt: serverTimestamp(),
-    };
-
-    const ref = await addDoc(collection(db, "failedOrders"), fallback);
+      attemptedAt: new Date(),
+    });
 
     return NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/payment-failed?failId=${ref.id}&method=Card/Stripe`
+      `${process.env.NEXT_PUBLIC_BASE_URL}/payment-failed`
     );
   }
 }

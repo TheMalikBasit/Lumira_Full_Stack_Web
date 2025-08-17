@@ -2,7 +2,7 @@ import { SignInButton, UserButton } from "@clerk/nextjs";
 import ButtonSvg from "../assets/svg/ButtonSvg";
 import { BagIcon, CartIcon } from "@/assets/assets";
 import { useUser } from "@clerk/nextjs";
-
+import { Languages, User, UserCheck, UserCheck2 } from "lucide-react";
 const Button = ({
   className,
   href,
@@ -12,6 +12,7 @@ const Button = ({
   white,
   clerk,
   user,
+  isAdmin,
   router,
 }) => {
   const classes = `button h-11 relative inline-flex items-center justify-center transition-colors text-neutral-950 hover:text-color-1 
@@ -34,11 +35,11 @@ const Button = ({
 
   const renderClerkButton = () =>
     isSignedIn ? (
-      <button className="hidden relative ml-5 lg:inline-flex justify-center border-2 border-orange-500 rounded-full p-[2px]">
+      <button className="hidden relative lg:inline-flex justify-center border-2 border-orange-500 rounded-full p-[2px]">
         <UserButton
           appearance={{
             elements: {
-              userButtonAvatarBox: "w-9 h-9", // Adjust width & height
+              userButtonAvatarBox: "w-6 h-6", // Adjust width & height
             },
           }}
         >
@@ -53,49 +54,27 @@ const Button = ({
               labelIcon={<BagIcon />}
               onClick={() => router.push("/order-history")}
             />
+            {isAdmin && (
+              <UserButton.Action
+                label="Admin Dashboard"
+                labelIcon={<User className="text-n-foreground w-5 h-5" />}
+                onClick={() => router.push("/admin")}
+              />
+            )}
           </UserButton.MenuItems>
         </UserButton>
       </button>
     ) : (
       <SignInButton mode="modal">
-        <button className={classes}>
-          <span className={spanClasses}>{children}</span>
-          {ButtonSvg(white)}
+        <button>
+          <span
+            className={`${spanClasses} hover:text-orange-800 hidden relative lg:inline-flex `}
+          >
+            {children}
+          </span>
         </button>
       </SignInButton>
     );
-
-  // <SignInButton mode="modal">
-  //   {user ? (
-  //     <button className="relative ml-5 inline-flex justify-center">
-  //       <UserButton
-  //         appearance={{
-  //           elements: {
-  //             userButtonAvatarBox: "w-9 h-9", // Adjust width & height
-  //           },
-  //         }}
-  //       >
-  //         <UserButton.MenuItems>
-  //           <UserButton.Action
-  //             label="Cart"
-  //             labelIcon={<CartIcon />}
-  //             onClick={() => router.push("/cart")}
-  //           />
-  //           <UserButton.Action
-  //             label="My Orders"
-  //             labelIcon={<BagIcon />}
-  //             onClick={() => router.push("/my-orders")}
-  //           />
-  //         </UserButton.MenuItems>
-  //       </UserButton>
-  //     </button>
-  //   ) : (
-  //     <button className={classes}>
-  //       <span className={spanClasses}>{children}</span>
-  //       {ButtonSvg(white)}
-  //     </button>
-  //   )}
-  // </SignInButton>
   const renderLink = () => (
     <a href={href} className={classes}>
       <span className={spanClasses}>{children}</span>

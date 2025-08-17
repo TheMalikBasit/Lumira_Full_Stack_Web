@@ -111,7 +111,8 @@ const UploadProduct = async ({
           cjHeight: variant.variantHeight || null,
           cjVolume: variant.variantVolume || null,
           cjSugSellPrice: variant.variantSugSellPrice || null,
-          createdAt: serverTimestamp(),
+          originalPrice: Number(variant.originalPrice) || 0,
+          createdAt: new Date(),
         });
       }
     }

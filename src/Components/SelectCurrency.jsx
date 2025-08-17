@@ -17,11 +17,8 @@ const SelectCurrency = ({ toggleCurrency }) => {
   const countryRef = useRef(null);
   const [dropdownCountry, setDropdownCountry] = useState(false);
   const [tempCurrency, setTempCurrency] = useState("");
-  //console.log("Country Data: ", selectedCountry);
-  //console.log("Country Currency Data: ", tempCurrency);
 
   const handleCurrency = CurrencyList.get(tempCurrency);
-  //console.log("Currency List Data: ", handleCurrency);
   const handleCountryInput = (e) => {
     const input = e.target.value;
     setQueryCountry(input);

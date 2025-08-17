@@ -52,12 +52,15 @@ const AddCJProduct = () => {
     try {
       const res = await fetch(`/api/cj-product?pid=${cjProductId}`);
       const data = await res.json();
-      console.log("CJ Product data", data);
+
       if (data.code !== 200) {
         toast.error("Failed to fetch CJ product");
         return;
       }
+
       const product = data.data;
+
+      // ✅ Set general product info
       setName(product?.productNameEn || "");
       setOriginalPrice(product?.originalPrice || "");
       setMainImage(product?.productImageSet?.[0] || "");
@@ -66,7 +69,35 @@ const AddCJProduct = () => {
       setCategory(product?.categoryName || "");
       setDescription(product?.description || "");
       setCjPrice(product?.sellPrice || "");
-      setCJVariants(product?.variants || []);
+
+      // ✅ Variants Handling
+      if (product?.variants && product.variants.length > 0) {
+        // If variants exist, use them directly
+        setCJVariants(product?.variants);
+      } else {
+        // If no variants → create default variant object
+        setCJVariants([
+          {
+            vid: product.pid, // use product pid as vid fallback
+            pid: product.pid,
+            variantNameEn: product.productNameEn || "",
+            variantImage: product?.productImageSet?.[0] || "",
+            variantSku: product.sku || product.pid, // fallback if sku missing
+            variantSellPrice: product.sellPrice,
+            variantSugSellPrice: product.sugSellPrice || null,
+            variantKey: product.productNameEn || "Default",
+            variantLength: product.length || null,
+            variantWidth: product.width || null,
+            variantHeight: product.height || null,
+            variantVolume: product.volume || null,
+            variantWeight: product.weight || null,
+            createdAt: new Date(),
+            lumiraPrice: "", // left empty for user input
+            originalPrice: "", // left empty for user input
+          },
+        ]);
+      }
+
       toast.success("CJ product loaded!");
     } catch (err) {
       console.error(err);
@@ -309,7 +340,6 @@ const AddCJProduct = () => {
           </ul>
         </div>
 
-        {/* Variants Display */}
         {/* Variants Display with Lumira Price input */}
         {CJVariants.length > 0 && (
           <div>
@@ -350,6 +380,19 @@ const AddCJProduct = () => {
                     placeholder="Your Price"
                     className="w-24 p-1 bg-gray-900 text-white border border-gray-600 rounded"
                   />
+                  {/* Lumira Price Input */}
+                  <input
+                    required
+                    type="number"
+                    value={variant.originalPrice || ""}
+                    onChange={(e) => {
+                      const updated = [...CJVariants];
+                      updated[idx].originalPrice = e.target.value;
+                      setCJVariants(updated);
+                    }}
+                    placeholder="Original Price"
+                    className="w-24 p-1 bg-gray-900 text-white border border-gray-600 rounded"
+                  />
                   {/* Remove Button */}
                   <button
                     type="button"
@@ -363,34 +406,6 @@ const AddCJProduct = () => {
             </div>
           </div>
         )}
-
-        {/* {CJVariants.length > 0 && (
-          <div>
-            <label className="text-sm text-gray-400">CJ Variants</label>
-            <div className="mt-2 max-h-40 overflow-y-auto border border-gray-700 rounded-md p-2">
-              {CJVariants.map((variant, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center justify-between bg-gray-800 p-2 rounded-md mb-1"
-                >
-                  <span className="text-gray-300 text-sm">
-                    {variant?.variantNameEn || "Unnamed Variant"} —{" "}
-                    {idx + 1} {": "}
-                    {variant?.vid || "Unnamed Variant"} — $
-                    {variant?.variantSellPrice || "N/A"}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveVariant(variant.vid)}
-                    className="text-red-400 hover:underline"
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )} */}
 
         {/* Stock / Rating / Reviews */}
         <div className="flex gap-4">
