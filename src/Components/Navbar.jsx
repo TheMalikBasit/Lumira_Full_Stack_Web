@@ -135,7 +135,7 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
               <FontAwesomeIcon
                 className="mr-3 text-orange-400"
                 icon={faFireFlameCurved}
-                size="2xl"
+                size="xl"
               />
             </div>
             <h1
@@ -151,7 +151,7 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
             ref={navRef}
             className={`${
               openNavigation ? "flex" : "hidden"
-            } fixed left-0 right-0 bottom-0 top-[4.75rem] lg:static lg:flex lg:mx-auto`}
+            } fixed left-0 right-0 bottom-0 top-[4.1rem] lg:static lg:flex lg:mx-auto`}
           >
             <div className="relative z-2 flex flex-col items-center justify-center lg:flex-row m-auto">
               <button className="lg:hidden relative inline-flex justify-center border-2 border-orange-500 rounded-full p-[2px]">
@@ -177,8 +177,8 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
                         />
                         {isAdmin && (
                           <UserButton.Action
-                            label="My Orders"
-                            labelIcon={<BagIcon />}
+                            label="Admin Dashboard"
+                            labelIcon={<User />}
                             onClick={() => router.push("/admin")}
                           />
                         )}
@@ -261,13 +261,13 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
               onClick={() => router.push("/order-history")}
               className="max-w-2xl cursor-pointer Z-10 mr-5"
             >
-              <ShoppingBag />
+              <ShoppingBag className="w-5 h-5 md:w-auto md:h-auto" />
             </button>
             <button
               onClick={toggleCurrency}
               className="max-w-2xl cursor-pointer Z-10 mr-5"
             >
-              <Languages />
+              <Languages className="w-5 h-5 md:w-auto md:h-auto" />
             </button>
             <Button
               clerk
@@ -282,6 +282,7 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
               onclick={toggleNavigation}
               className="ml-auto lg:hidden"
               px="px-3"
+              none
             >
               <MenuSvg openNavigation={openNavigation} />
             </Button>

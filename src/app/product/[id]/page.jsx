@@ -61,6 +61,7 @@ const Product = () => {
     Currency,
     router,
     loading,
+    setLoading,
     localCart,
     addToLocalCart,
     removeFromLocalCart,
@@ -170,7 +171,7 @@ const Product = () => {
 
   useEffect(() => {
     if (!productData) return; // prevent running if no ID
-
+    setLoading(true);
     const fetchVariants = async () => {
       try {
         const variantsRef = collection(db, "products", id, "variants");
@@ -182,6 +183,8 @@ const Product = () => {
         }));
 
         setAllVariants(variantsData);
+        window.scrollTo(0, 0);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching variants:", error);
       }
@@ -189,6 +192,8 @@ const Product = () => {
 
     fetchVariants();
   }, [productData]); // re-run when productId changes
+
+  if (loading) return <LottieLoading />;
 
   if (!productData || !allVariants) return <LottieLoading />;
 
@@ -227,7 +232,6 @@ const Product = () => {
       setSelectedVariant(variant);
     }
   };
-
   return (
     <>
       <Navbar bgBlur />

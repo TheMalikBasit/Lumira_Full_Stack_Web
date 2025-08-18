@@ -27,7 +27,7 @@ const Hero = () => {
 
   return (
     <div className="w-full overflow-hidden">
-      <div className="container mt-[100px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mt-[30px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Content */}
           <div className="space-y-8">
@@ -86,7 +86,7 @@ const Hero = () => {
 
           {/* Hero Image */}
           <div className="relative">
-            <div className="relative z-10 animate-float">
+            <div className="relative z-10">
               {/* <Image
                 src={assets.studyLamp}
                 alt="Premium LUMIRA desk lamp with warm lighting"

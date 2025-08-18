@@ -13,6 +13,7 @@ const Button = ({
   clerk,
   user,
   isAdmin,
+  none,
   router,
 }) => {
   const classes = `button h-11 relative inline-flex items-center justify-center transition-colors text-neutral-950 hover:text-color-1 
@@ -29,7 +30,7 @@ const Button = ({
       <span className="flex flex-row items-center gap-2 relative z-10">
         {children}
       </span>
-      {ButtonSvg(white)}
+      {!none && <>{ButtonSvg(white)}</>}
     </button>
   );
 
