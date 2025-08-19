@@ -82,7 +82,7 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
         setshowCurrency(true);
       }
     }
-  });
+  }, []);
 
   const toggleNavigation = () => {
     if (openNavigation) {
