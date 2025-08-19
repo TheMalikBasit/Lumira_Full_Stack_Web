@@ -1,13 +1,21 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "next/navigation";
-import { useAppContext } from "@/Context/AppContext";
+import dynamic from "next/dynamic";
+import Image from "next/image";
+import { useUser } from "@clerk/nextjs";
+import { collection, getDocs } from "firebase/firestore";
+import SupportModal from "@/Components/SupportModal";
 import Navbar from "@/Components/Navbar";
 import Footer from "@/Components/LumiraFooter";
-import { Loading, LottieLoading } from "@/Components/Loading";
+import { LottieLoading } from "@/Components/Loading";
 import PriceTag from "@/Components/PriceTag";
 import { Input } from "@/Components/UI/input";
-import Image from "next/image";
+import { Badge } from "@/Components/UI/badge";
+import { Button } from "@/Components/UI/lumiraButton";
+import { Card, CardContent, CardHeader, CardTitle } from "@/Components/UI/card";
+import ProductCard from "@/Components/ProductCard"; // (kept import unused by your original file)
 import {
   ArrowLeft,
   Star,
@@ -20,16 +28,40 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { Badge } from "@/Components/UI/badge";
-import { Button } from "@/Components/UI/lumiraButton";
-import { Card, CardContent, CardHeader, CardTitle } from "@/Components/UI/card";
-import ProductCard from "../../../Components/ProductCard";
-import { useUser } from "@clerk/nextjs";
-import ProductHighlights from "@/Components/ProductsHighlights";
-import FeaturedProducts from "@/Components/FeaturedProducts";
+import { useAppContext } from "@/Context/AppContext";
 import { db } from "../../../../Config/firebase";
-import { collection, getDocs, doc } from "firebase/firestore";
-import { Country, State, City } from "country-state-city";
+
+// ✅ Lazy-load heavy sections to improve FCP/LCP
+const FeaturedProducts = dynamic(
+  () => import("@/Components/FeaturedProducts"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="p-6 text-sm text-n-muted_foreground">
+        Loading featured products…
+      </div>
+    ),
+  }
+);
+const ProductHighlights = dynamic(
+  () => import("@/Components/ProductsHighlights"),
+  { ssr: false, loading: () => null }
+);
+
+// Small, local skeleton for the variants block
+function VariantsSkeleton() {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div
+          key={i}
+          className="w-16 h-16 sm:w-20 sm:h-20 rounded bg-gray-200 animate-pulse"
+        />
+      ))}
+    </div>
+  );
+}
+
 const sampleReviews = [
   {
     id: 1,
@@ -51,7 +83,7 @@ const sampleReviews = [
   },
 ];
 
-const Product = () => {
+export default function Product() {
   const { id } = useParams();
   const {
     products,
@@ -60,49 +92,54 @@ const Product = () => {
     updateCartQuantity,
     Currency,
     router,
-    loading,
-    setLoading,
     localCart,
     addToLocalCart,
     removeFromLocalCart,
-    deleteFromLocalCart,
     Symbol,
   } = useAppContext();
 
-  const [productData, setProductData] = useState(null);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { isSignedIn } = useUser();
+
+  // --- local state
+  const [productData, setProductData] = useState(null);
   const [allVariants, setAllVariants] = useState([]);
-  const [selectedVariant, setSelectedVariant] = useState({});
+  const [variantsLoading, setVariantsLoading] = useState(true);
+  const [selectedVariant, setSelectedVariant] = useState(null);
+
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // shipping calc (deferred)
   const [shippingOptions, setShippingOptions] = useState([]);
   const [loadingShipping, setLoadingShipping] = useState(false);
 
-  const allCountries = Country.getAllCountries();
+  // Countries (lazy load on focus to avoid heavy first paint)
+  const [allCountries, setAllCountries] = useState([]);
   const [queryCountry, setQueryCountry] = useState("");
   const [queryCode, setQueryCode] = useState("");
-
-  const [filteredCountries, setFilteredCountries] = useState(allCountries);
+  const [filteredCountries, setFilteredCountries] = useState([]);
   const [dropdownCountry, setDropdownCountry] = useState(false);
-
   const [countryName, setCountryName] = useState("");
-  const [stateName, setStateName] = useState("");
-  const [cityName, setCityName] = useState("");
 
   const countryRef = useRef(null);
-  const stateRef = useRef(null);
-  const cityRef = useRef(null);
 
+  const [supportModal, setSupportModal] = useState({
+    isOpen: false,
+    section: "",
+  });
+
+  // Always scroll to top when this page mounts
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, []);
+
+  // Close dropdown on outside click / ESC
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (!countryRef.current?.contains(e.target)) setDropdownCountry(false);
     };
-
     const handleEscape = (e) => {
-      if (e.key === "Escape") {
-        setDropdownCountry(false);
-      }
+      if (e.key === "Escape") setDropdownCountry(false);
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleEscape);
     return () => {
@@ -111,11 +148,105 @@ const Product = () => {
     };
   }, []);
 
+  // Load product by id from context (non-blocking)
+  useEffect(() => {
+    if (!id || !Array.isArray(products)) return;
+    const found = products.find((p) => p.id === id) || null;
+    setProductData(found);
+    // reset state on product change
+    setSelectedVariant(null);
+    setCurrentImageIndex(0);
+    setShippingOptions([]);
+  }, [id, products]);
+
+  // Fetch variants (non-blocking to page)
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchVariants() {
+      if (!id) return;
+      setVariantsLoading(true);
+      try {
+        const variantsRef = collection(db, "products", id, "variants");
+        const snapshot = await getDocs(variantsRef);
+        if (cancelled) return;
+        const variantsData = snapshot.docs.map((d) => ({
+          id: d.id,
+          ...d.data(),
+        }));
+        setAllVariants(variantsData || []);
+      } catch (e) {
+        console.error("Error fetching variants:", e);
+        setAllVariants([]);
+      } finally {
+        if (!cancelled) setVariantsLoading(false);
+      }
+    }
+    fetchVariants();
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  // Images memo (safe + stable)
+  const images = useMemo(() => {
+    const main = productData?.mainImage ? [productData.mainImage] : [];
+    const extras = Array.isArray(productData?.imageUrl)
+      ? productData.imageUrl
+      : [];
+    const arr = [...main, ...extras].filter(Boolean);
+    // Fallback to a tiny transparent pixel if missing
+    return arr.length > 0 ? arr : ["/placeholder.png"];
+  }, [productData]);
+
+  // Cart refs (avoid crashes)
+  const cartProduct = useMemo(() => {
+    if (!selectedVariant?.id || !Array.isArray(cartItems)) return null;
+    return cartItems.find((item) => item.vid === selectedVariant.id) || null;
+  }, [selectedVariant, cartItems]);
+  const cartQuantity = cartProduct?.quantity || 0;
+
+  const localCartProduct = useMemo(() => {
+    if (!Array.isArray(localCart)) return null;
+    return localCart.find((item) => item.id === id) || null;
+  }, [localCart, id]);
+  const localCartQuantity = localCartProduct?.quantity || 0;
+
+  const isInStock = (productData?.availableStock || 0) > 0;
+
+  const saveOffer = (price, originalPrice) =>
+    typeof price === "number" &&
+    typeof originalPrice === "number" &&
+    originalPrice - price > 0;
+
+  // Thumbnail/nav
+  const nextImage = () =>
+    setCurrentImageIndex((prev) => (prev + 1) % images.length);
+  const prevImage = () =>
+    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+  const goToImage = (i) => setCurrentImageIndex(i);
+
+  const variantImageSelection = (url, vId) => {
+    const idx = images.findIndex((img) => img === url);
+    const v = allVariants.find((x) => x.id === vId) || null;
+    if (idx >= 0) setCurrentImageIndex(idx);
+    setSelectedVariant(v);
+  };
+
+  // Countries: lazy load on first focus to avoid initial weight
+  const ensureCountriesLoaded = async () => {
+    if (allCountries.length > 0) return;
+    const mod = await import("country-state-city"); // lazy import
+    const list = mod.Country.getAllCountries() || [];
+    setAllCountries(list);
+    setFilteredCountries(list);
+  };
+
   const handleCountryInput = (e) => {
     const input = e.target.value;
     setQueryCountry(input);
-    const filtered = allCountries.filter((country) =>
-      country.name.toLowerCase().startsWith(input.toLowerCase())
+    if (!allCountries.length) return;
+    const filtered = allCountries.filter((c) =>
+      c.name.toLowerCase().startsWith(input.toLowerCase())
     );
     setFilteredCountries(filtered);
     setDropdownCountry(true);
@@ -123,16 +254,16 @@ const Product = () => {
 
   const handleSelectCountry = (country) => {
     setQueryCountry(country.name);
+    setCountryName(country.name);
     setQueryCode(country.isoCode);
     setDropdownCountry(false);
   };
 
   const calculateShipping = async () => {
-    if (!selectedVariant?.vid) {
+    if (!selectedVariant?.vid && !selectedVariant?.id) {
       alert("Please select a variant first");
       return;
     }
-
     if (!queryCode) {
       alert("Please select a Country first");
       return;
@@ -144,94 +275,27 @@ const Product = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           queryCode,
-          variantId: selectedVariant.vid, // ✅ CJ variant ID
+          variantId: selectedVariant.vid || selectedVariant.id, // prefer CJ variant id if present
           quantity: 1,
         }),
       });
-
       const data = await res.json();
-      if (data.result) {
+      if (data?.result && Array.isArray(data.data)) {
         setShippingOptions(data.data);
       } else {
         setShippingOptions([]);
       }
     } catch (err) {
       console.error("Error fetching shipping:", err);
+      setShippingOptions([]);
     } finally {
       setLoadingShipping(false);
     }
   };
 
-  useEffect(() => {
-    if (Array.isArray(products)) {
-      const found = products.find((p) => p.id === id);
-      setProductData(found || null);
-    }
-  }, [id, products]);
+  // Early load guard
+  if (!productData) return <LottieLoading />;
 
-  useEffect(() => {
-    if (!productData) return; // prevent running if no ID
-    setLoading(true);
-    const fetchVariants = async () => {
-      try {
-        const variantsRef = collection(db, "products", id, "variants");
-        const snapshot = await getDocs(variantsRef);
-
-        const variantsData = snapshot.docs.map((doc) => ({
-          id: doc.id, // variant doc id
-          ...doc.data(),
-        }));
-
-        setAllVariants(variantsData);
-        window.scrollTo(0, 0);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching variants:", error);
-      }
-    };
-
-    fetchVariants();
-  }, [productData]); // re-run when productId changes
-
-  if (loading) return <LottieLoading />;
-
-  if (!productData || !allVariants) return <LottieLoading />;
-
-  const cartProduct = cartItems.find((item) => item.vid === selectedVariant.id);
-  const cartQuantity = cartProduct?.quantity || 0;
-
-  const localCartProduct = localCart.find((item) => item.id === id);
-  const localCartQuantity = localCartProduct?.quantity || 0;
-  const isInStock = productData.availableStock > 0;
-
-  const saveOffer = (price, originalPrice) => {
-    if (originalPrice - price > 0) {
-      return true;
-    }
-  };
-
-  const images = [productData.mainImage, ...(productData.imageUrl || [])];
-
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % images.length);
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
-
-  const goToImage = (index) => {
-    setCurrentImageIndex(index);
-  };
-  const variantImageSelection = (url, id) => {
-    const imageIndex = images.findIndex((img) => img === url);
-    const variant = allVariants.find((v) => v.id === id);
-
-    if (imageIndex !== -1 && variant) {
-      setCurrentImageIndex(imageIndex);
-      setSelectedVariant(variant);
-    }
-  };
   return (
     <>
       <Navbar bgBlur />
@@ -251,9 +315,13 @@ const Product = () => {
               <div className="flex items-center justify-center">
                 <Image
                   src={images[currentImageIndex]}
-                  alt={`${productData.name} image ${currentImageIndex + 1}`}
+                  alt={`${productData.name || "Product"} image ${
+                    currentImageIndex + 1
+                  }`}
                   width={800}
                   height={800}
+                  priority // ✅ critical image for better LCP
+                  quality={75}
                   className="w-full h-auto max-h-[500px] object-contain transition-all duration-300"
                 />
               </div>
@@ -265,6 +333,7 @@ const Product = () => {
                     size="icon"
                     className="absolute left-2 top-1/2 -translate-y-1/2 bg-n-background/80 hover:bg-n-background opacity-100"
                     onClick={prevImage}
+                    aria-label="Previous image"
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </Button>
@@ -273,6 +342,7 @@ const Product = () => {
                     size="icon"
                     className="absolute right-2 top-1/2 -translate-y-1/2 bg-n-background/80 hover:bg-n-background opacity-100"
                     onClick={nextImage}
+                    aria-label="Next image"
                   >
                     <ChevronRight className="w-5 h-5" />
                   </Button>
@@ -295,30 +365,32 @@ const Product = () => {
                         ? "border-n-primary ring-2 ring-n-primary/20"
                         : "border-n-border hover:border-n-primary/50"
                     }`}
+                    aria-label={`Go to image ${idx + 1}`}
                   >
                     <Image
                       src={img}
                       alt={`thumb-${idx}`}
                       width={100}
                       height={100}
+                      quality={50}
+                      loading="lazy"
                       className="w-full h-full object-cover"
                     />
                   </button>
                 ))}
               </div>
             )}
-            {/* Product Detailed Description */}
           </div>
 
           {/* Product Info */}
           <div className="space-y-6">
-            {productData.badge && (
+            {productData?.badge && (
               <Badge className="mb-2" variant="secondary">
                 {productData.badge}
               </Badge>
             )}
             <h1 className="text-2xl font-bold text-n-foreground">
-              {productData.name}
+              {productData?.name || "Product"}
             </h1>
 
             {/* Rating */}
@@ -327,99 +399,94 @@ const Product = () => {
                 <Star
                   key={i}
                   className={`w-4 h-4 ${
-                    i < Math.floor(productData.rating || 0)
+                    i < Math.floor(productData?.rating || 0)
                       ? "fill-n-primary text-n-primary"
                       : "text-n-muted_foreground"
                   }`}
                 />
               ))}
               <span className="text-sm text-n-muted_foreground">
-                {productData.rating} ({productData.reviews} reviews)
+                {productData?.rating || 0} ({productData?.reviews || 0} reviews)
               </span>
             </div>
 
             {/* Pricing */}
             <div className="flex items-baseline gap-3">
               <span className="text-3xl font-bold text-n-foreground">
-                {/* {currency} */}
-
                 {Currency === "USD" ? (
-                  selectedVariant.id === undefined ? (
+                  !selectedVariant ? (
                     <>
-                      {productData.price}
+                      {productData?.price ?? 0}
                       {Symbol}
                     </>
                   ) : (
                     <>
-                      {selectedVariant.lumiraPrice}
+                      {selectedVariant?.lumiraPrice ?? productData?.price ?? 0}
                       {Symbol}
                     </>
                   )
                 ) : !selectedVariant ? (
-                  <>
-                    <PriceTag
-                      basePrice={productData.price}
-                      userCurrency={Currency}
-                      symbol={Symbol}
-                    />
-                  </>
+                  <PriceTag
+                    basePrice={productData?.price ?? 0}
+                    userCurrency={Currency}
+                    symbol={Symbol}
+                  />
                 ) : (
-                  <>
-                    <PriceTag
-                      basePrice={selectedVariant.lumiraPrice}
-                      userCurrency={Currency}
-                      symbol={Symbol}
-                    />
-                  </>
+                  <PriceTag
+                    basePrice={selectedVariant?.lumiraPrice ?? 0}
+                    userCurrency={Currency}
+                    symbol={Symbol}
+                  />
                 )}
               </span>
-              {saveOffer(productData.price, productData.originalPrice) && (
+
+              {saveOffer(
+                selectedVariant?.lumiraPrice ?? productData?.price,
+                selectedVariant?.originalPrice ?? productData?.originalPrice
+              ) && (
                 <>
                   <span className="text-xl text-n-muted_foreground line-through">
                     {Currency === "USD" ? (
-                      selectedVariant.id === undefined ? (
-                        <>
-                          {productData.originalPrice}
-                          {Symbol}
-                        </>
-                      ) : (
-                        <>
-                          {selectedVariant.originalPrice}
-                          {Symbol}
-                        </>
-                      )
-                    ) : !selectedVariant ? (
                       <>
-                        <PriceTag
-                          basePrice={selectedVariant.originalPrice}
-                          userCurrency={Currency}
-                          symbol={Symbol}
-                        />
+                        {selectedVariant?.originalPrice ??
+                          productData?.originalPrice ??
+                          0}
+                        {Symbol}
                       </>
                     ) : (
-                      <>
-                        <PriceTag
-                          basePrice={selectedVariant.originalPrice}
-                          userCurrency={Currency}
-                          symbol={Symbol}
-                        />
-                      </>
+                      <PriceTag
+                        basePrice={
+                          selectedVariant?.originalPrice ??
+                          productData?.originalPrice ??
+                          0
+                        }
+                        userCurrency={Currency}
+                        symbol={Symbol}
+                      />
                     )}
                   </span>
                   <Badge variant="destructive">
                     {Currency === "USD" ? (
                       <>
                         Save {Symbol}
-                        {selectedVariant.originalPrice -
-                          selectedVariant.lumiraPrice}
+                        {(selectedVariant?.originalPrice ??
+                          productData?.originalPrice ??
+                          0) -
+                          (selectedVariant?.lumiraPrice ??
+                            productData?.price ??
+                            0)}
                       </>
                     ) : (
                       <>
                         Save {Symbol}
                         <PriceTag
                           basePrice={
-                            selectedVariant.originalPrice -
-                            selectedVariant.lumiraPrice
+                            (selectedVariant?.originalPrice ??
+                              productData?.originalPrice ??
+                              0) -
+                            (selectedVariant?.lumiraPrice ??
+                              productData?.price ??
+                              0)
                           }
                           userCurrency={Currency}
                         />
@@ -429,39 +496,44 @@ const Product = () => {
                 </>
               )}
             </div>
-            <p className="text-xl text-n-muted_foreground font-bold">
-              Select Available Varient
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {allVariants.map((v, idx) => (
-                <div
-                  onClick={() => variantImageSelection(v.cjImage, v.id)}
-                  key={idx}
-                  className={`cursor-pointer w-16 h-16 sm:w-20 sm:h-20 border border-n-border rounded overflow-hidden flex items-center justify-center bg-white ${
-                    v.id === selectedVariant.id
-                      ? "border-n-primary ring-2 ring-n-primary/20"
-                      : "border-n-border hover:border-n-primary/50"
-                  }`}
-                >
-                  <Image
-                    src={v.cjImage}
-                    alt={v.cjKey || `variant-${idx}`}
-                    width={90}
-                    height={90}
-                    className="w-full h-full object-contain"
-                    loading="lazy" // ✅ don't block first render
-                    quality={70} // ✅ optimized quality
-                  />
-                </div>
-              ))}
-            </div>
 
-            {/* Features */}
+            <p className="text-xl text-n-muted_foreground font-bold">
+              Select Available Variant
+            </p>
+
+            {/* Variants */}
+            {variantsLoading ? (
+              <VariantsSkeleton />
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {allVariants.map((v) => (
+                  <div
+                    key={v.id}
+                    onClick={() => variantImageSelection(v.cjImage, v.id)}
+                    className={`cursor-pointer w-16 h-16 sm:w-20 sm:h-20 border rounded overflow-hidden flex items-center justify-center bg-white ${
+                      v.id === selectedVariant?.id
+                        ? "border-n-primary ring-2 ring-n-primary/20"
+                        : "border-n-border hover:border-n-primary/50"
+                    }`}
+                  >
+                    <Image
+                      src={v.cjImage}
+                      alt={v.cjKey || "variant"}
+                      width={90}
+                      height={90}
+                      className="w-full h-full object-contain"
+                      loading="lazy"
+                      quality={70}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
 
             <div className="space-y-4 mb-8">
               <h3 className="font-semibold text-foreground">Key Features:</h3>
               <div className="grid grid-cols-1 gap-2">
-                {productData.features.map((feature, index) => (
+                {(productData?.features || []).map((feature, index) => (
                   <div key={index} className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-n-primary" />
                     <span className="text-n-muted_foreground">{feature}</span>
@@ -469,32 +541,36 @@ const Product = () => {
                 ))}
               </div>
             </div>
+
             <p className="text-md font-bold text-n-foreground">
-              Selected Variant: {selectedVariant.cjKey}
+              Selected Variant: {selectedVariant?.cjKey || "—"}
             </p>
-            {/* ✅ Shipping Cost Calculator UI */}
+
+            {/* Shipping Cost Calculator */}
             <div className="mt-6 p-4 border border-n-border rounded-xl bg-n-secondary/20 space-y-3">
               <h3 className="font-semibold text-n-foreground flex items-center gap-2">
                 <Truck className="w-5 h-5 text-n-primary" /> Calculate Shipping
                 Cost
               </h3>
 
-              {/* Country Input */}
               <div className="grid grid-cols-1 space-y-2 md:grid-cols-2 md:space-x-3 md:space-y-0">
                 <div className="flex flex-col gap-2">
                   <div ref={countryRef} className="relative space-y-2">
                     <Input
                       required
                       type="text"
-                      placeholder={countryName ? countryName : "Select country"}
+                      placeholder={countryName || "Select country"}
                       value={queryCountry}
                       onChange={handleCountryInput}
-                      onFocus={() => setDropdownCountry(true)}
+                      onFocus={async () => {
+                        setDropdownCountry(true);
+                        await ensureCountriesLoaded();
+                      }}
                       className="focus:ring-2 focus:ring-n-primary/20 focus:border-n-primary transition-all duration-300"
                     />
-                    {dropdownCountry && (
+                    {dropdownCountry && filteredCountries.length > 0 && (
                       <ul className="absolute bottom-full z-10 w-full max-h-60 overflow-auto ring-2 ring-n-primary/20 border-n-primary transition-all duration-300 bg-white border rounded shadow [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
-                        {filteredCountries.map((country) => (
+                        {filteredCountries.slice(0, 100).map((country) => (
                           <li
                             key={country.isoCode}
                             onClick={() => handleSelectCountry(country)}
@@ -507,22 +583,16 @@ const Product = () => {
                     )}
                   </div>
                 </div>
-                <Button
-                  onClick={calculateShipping}
-                  className="w-full overflow-hidden text-start"
-                >
+                <Button onClick={calculateShipping} className="w-full">
                   Check Shipping Options
                 </Button>
               </div>
-              {/* Placeholder for Result */}
+
               <div className="text-sm text-n-muted_foreground italic font-bold">
                 {shippingOptions.length > 0 ? (
-                  <>Detailed Shipping Info Will Be Provided At Checkout Page.</>
+                  <>Detailed shipping info will be provided at checkout.</>
                 ) : (
-                  <>
-                    Select destination country to check available shipping
-                    methods/Info.
-                  </>
+                  <>Select destination country to check available methods.</>
                 )}
               </div>
 
@@ -537,11 +607,9 @@ const Product = () => {
                   {shippingOptions.map((opt, idx) => (
                     <div key={idx} className="p-2 border rounded-lg bg-white">
                       <p className="font-medium text-n-foreground">
-                        {opt.logisticName === "CJPacket Asia Liquid Line" ? (
-                          <>Standard Shipping</>
-                        ) : (
-                          <>{opt.logisticName}</>
-                        )}
+                        {opt.logisticName === "CJPacket Asia Liquid Line"
+                          ? "Standard Shipping"
+                          : opt.logisticName}
                       </p>
                       <p className="text-sm text-n-muted_foreground">
                         ${opt.logisticPrice} · {opt.logisticAging} days
@@ -557,9 +625,10 @@ const Product = () => {
                 )
               )}
             </div>
+
             {/* Cart Actions */}
             <div className="flex items-center gap-3">
-              {selectedVariant.id != undefined ? (
+              {selectedVariant?.id ? (
                 isSignedIn ? (
                   !cartProduct ? (
                     <Button
@@ -577,9 +646,10 @@ const Product = () => {
                           onClick={() =>
                             updateCartQuantity(
                               selectedVariant.id,
-                              cartQuantity - 1
+                              Math.max(0, cartQuantity - 1)
                             )
                           }
+                          aria-label="Decrease quantity"
                         >
                           -
                         </button>
@@ -591,6 +661,7 @@ const Product = () => {
                               cartQuantity + 1
                             )
                           }
+                          aria-label="Increase quantity"
                         >
                           +
                         </button>
@@ -617,6 +688,7 @@ const Product = () => {
                     <div className="flex items-center border rounded min-w-[120px] py-2 px-2 justify-between">
                       <button
                         onClick={() => removeFromLocalCart(selectedVariant.id)}
+                        aria-label="Decrease local quantity"
                       >
                         -
                       </button>
@@ -625,6 +697,7 @@ const Product = () => {
                         onClick={() =>
                           addToLocalCart(productData.id, selectedVariant.id)
                         }
+                        aria-label="Increase local quantity"
                       >
                         +
                       </button>
@@ -638,17 +711,16 @@ const Product = () => {
                   </>
                 )
               ) : (
-                <>
-                  <Button className="flex-1 opacity-50">
-                    <ShoppingCart className="mr-2 h-5 w-5" /> First Select A
-                    Variant
-                  </Button>
-                </>
+                <Button className="flex-1 opacity-50" disabled>
+                  <ShoppingCart className="mr-2 h-5 w-5" /> First Select A
+                  Variant
+                </Button>
               )}
-              <Button variant="outline">
+              <Button variant="outline" aria-label="Add to wishlist">
                 <Heart className="w-5 h-5" />
               </Button>
             </div>
+
             <div className="text-sm text-n-muted_foreground">
               <div className="flex items-center gap-2 mb-1">
                 <span
@@ -659,32 +731,40 @@ const Product = () => {
                 {isInStock ? "In Stock" : "Out of Stock"}
                 <span
                   className={`${
-                    productData.availableStock > 20
+                    (productData?.availableStock || 0) > 20
                       ? "text-emerald-700"
                       : "text-cyan-900"
                   }`}
                 >
-                  {"("}
-                  {productData.availableStock}
-                  {")"}
-                  {productData.availableStock > 20 ? "" : " Almost Out 🔥🔥"}
+                  {" ("}
+                  {productData?.availableStock ?? 0}
+                  {") "}
+                  {(productData?.availableStock || 0) > 20
+                    ? ""
+                    : "Almost Out 🔥🔥"}
                 </span>
               </div>
             </div>
           </div>
+
+          {/* Description */}
           <div>
             <p className="text-xl text-n-muted_foreground font-bold mb-3">
               Product Description
             </p>
-            {productData.description && (
+            {productData?.description && (
               <div
-                className="bg-n-background border border-n-foreground rounded-xl p-4 space-y-2 max-h-[800px] overflow-y-auto scrollbar-thin scrollbar-thumb-n-muted_foreground scrollbar-track-transparent"
-                dangerouslySetInnerHTML={{ __html: productData.description }}
+                className="bg-n-background border border-n-foreground/20 rounded-xl p-4 space-y-2 max-h-[800px] overflow-y-auto scrollbar-thin scrollbar-thumb-n-muted_foreground scrollbar-track-transparent"
+                // ✅ ensure string only
+                dangerouslySetInnerHTML={{
+                  __html: String(productData.description),
+                }}
               />
             )}
           </div>
         </div>
-        {/* Tabs / Sections */}
+
+        {/* Other Sections (lazy) */}
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Specifications */}
           <Card>
@@ -694,45 +774,30 @@ const Product = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {/* {Object.entries(productData.specifications || {}).map(
-                ([key, value]) => (
-                  <div
-                    key={key}
-                    className="flex justify-between py-2 border-b last:border-none"
-                  >
-                    <span className="text-n-muted_foreground">{key}</span>
-                    <span className="text-n-foreground font-medium">
-                      {value}
-                    </span>
-                  </div>
-                )
-              )} */}
-              {selectedVariant.id === undefined ? (
-                <>
-                  <div className="py-2 border-b last:border-none">
-                    <span className="text-n-muted_foreground">
-                      Select A Variant First
-                    </span>
-                  </div>
-                </>
+              {!selectedVariant ? (
+                <div className="py-2 border-b last:border-none">
+                  <span className="text-n-muted_foreground">
+                    Select a variant first
+                  </span>
+                </div>
               ) : (
                 <>
                   <div className="flex justify-between py-2 border-b last:border-none">
                     <span className="text-n-muted_foreground">Height</span>
                     <span className="text-n-foreground font-medium">
-                      {selectedVariant?.cjHeight} mm
+                      {selectedVariant?.cjHeight ?? "—"} mm
                     </span>
                   </div>
                   <div className="flex justify-between py-2 border-b last:border-none">
                     <span className="text-n-muted_foreground">Width</span>
                     <span className="text-n-foreground font-medium">
-                      {selectedVariant?.cjWidth} mm
+                      {selectedVariant?.cjWidth ?? "—"} mm
                     </span>
                   </div>
                   <div className="flex justify-between py-2 border-b last:border-none">
                     <span className="text-n-muted_foreground">Length</span>
                     <span className="text-n-foreground font-medium">
-                      {selectedVariant?.cjLength} mm
+                      {selectedVariant?.cjLength ?? "—"} mm
                     </span>
                   </div>
                   <div className="flex justify-between py-2 border-b last:border-none">
@@ -740,15 +805,15 @@ const Product = () => {
                       Package Size
                     </span>
                     <span className="text-n-foreground font-medium">
-                      {selectedVariant?.cjHeight} {"*"}{" "}
-                      {selectedVariant?.cjWidth} {"*"}{" "}
-                      {selectedVariant?.cjLength}
+                      {selectedVariant?.cjHeight ?? "—"} {"× "}
+                      {selectedVariant?.cjWidth ?? "—"} {"× "}
+                      {selectedVariant?.cjLength ?? "—"}
                     </span>
                   </div>
                   <div className="flex justify-between py-2 border-b last:border-none">
                     <span className="text-n-muted_foreground">Weight</span>
                     <span className="text-n-foreground font-medium">
-                      {selectedVariant?.cjWeight} g
+                      {selectedVariant?.cjWeight ?? "—"} g
                     </span>
                   </div>
                 </>
@@ -789,7 +854,8 @@ const Product = () => {
                 <div>
                   <p className="font-medium text-n-foreground">Warranty</p>
                   <p className="text-sm text-n-muted_foreground">
-                    {productData.specifications?.Warranty} manufacturer warranty
+                    {productData?.specifications?.Warranty ||
+                      "Manufacturer warranty"}
                   </p>
                 </div>
               </div>
@@ -848,13 +914,13 @@ const Product = () => {
           </Card>
         </div>
 
-        {/* Featured Products */}
+        {/* Featured Products (lazy) */}
         <div className="pt-24">
           <div className="flex flex-col items-center mb-6">
             <h2 className="text-3xl font-semibold text-n-foreground">
               Featured <span className="text-orange-600">Products</span>
             </h2>
-            <div className="w-28 h-0.5 bg-orange-600 mt-2"></div>
+            <div className="w-28 h-0.5 bg-orange-600 mt-2" />
           </div>
           <FeaturedProducts id={id} />
           <div className="text-center my-12">
@@ -868,9 +934,15 @@ const Product = () => {
           </div>
         </div>
       </div>
-      <Footer />
+      <Footer
+        onSupportClick={(section) => setSupportModal({ isOpen: true, section })}
+      />
+
+      <SupportModal
+        isOpen={supportModal.isOpen}
+        onClose={() => setSupportModal({ isOpen: false, section: "" })}
+        initialSection={supportModal.section}
+      />
     </>
   );
-};
-
-export default Product;
+}

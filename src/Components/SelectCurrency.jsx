@@ -125,6 +125,7 @@ const SelectCurrency = ({ toggleCurrency }) => {
   const handleConfirm = () => {
     localStorage.setItem("selectedCurrency", selectedCurrency);
     localStorage.setItem("selectedSymbol", selectedSymbol);
+    localStorage.setItem("isToggled", false);
     toast.success("Currency Updated");
     setIsOpen(false);
     window.location.reload();

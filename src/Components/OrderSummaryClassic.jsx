@@ -115,12 +115,9 @@ const OrderSummaryClassic = () => {
               </div>
 
               {/* Shipping Placeholder */}
-              <div className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent">
+              <div className="items-center text-center p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent">
                 <span className="text-n-muted_foreground font-medium">
-                  Shipping
-                </span>
-                <span className="text-xs text-emerald-700 py-1 text-end">
-                  Depends on Shipment Location
+                  View shipping options at checkout
                 </span>
               </div>
             </div>
@@ -134,11 +131,8 @@ const OrderSummaryClassic = () => {
                 <span className="text-n-foreground font-bold text-xl">
                   Total
                 </span>
-                <p className="text-xs text-n-muted_foreground">
-                  including all taxes
-                </p>
               </div>
-              <span className="text-n-foreground font-bold text-3xl relative z-10">
+              <span className="text-n-foreground font-bold text-xl md:text-3xl relative z-10">
                 {Currency === "USD" ? (
                   <>
                     {total.toFixed(2)} {Symbol}

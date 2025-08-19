@@ -69,8 +69,21 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
   const { isAdmin, router, user, darkMode, loading, setLoading } =
     useAppContext();
   const [openNavigation, setopenNavigation] = useState(false);
+
   const [showCurrency, setshowCurrency] = useState(false);
   const { isSignedIn } = useUser();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("isToggled");
+      if (stored) {
+        setshowCurrency(false);
+      } else {
+        setshowCurrency(true);
+      }
+    }
+  });
+
   const toggleNavigation = () => {
     if (openNavigation) {
       setopenNavigation(false);

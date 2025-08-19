@@ -2,38 +2,67 @@
 import React, { useState, useEffect } from "react";
 import Spline from "@splinetool/react-spline";
 
+// Utility: Check WebGL support
+function isWebGLAvailable() {
+  try {
+    const canvas = document.createElement("canvas");
+    return (
+      !!window.WebGLRenderingContext &&
+      (canvas.getContext("webgl") || canvas.getContext("experimental-webgl"))
+    );
+  } catch (e) {
+    return false;
+  }
+}
+
 const SplineFile = () => {
   const [isLargeScreen, setIsLargeScreen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [webglSupported, setWebglSupported] = useState(true);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window === "undefined") return;
+
+    const checkScreen = () => {
       setIsLargeScreen(window.innerWidth >= 1024);
-    }
+    };
+
+    checkScreen(); // initial check
+    setWebglSupported(isWebGLAvailable());
+
+    window.addEventListener("resize", checkScreen);
+    return () => window.removeEventListener("resize", checkScreen);
   }, []);
 
+  // If not large screen, don’t render anything
+  if (!isLargeScreen) return null;
+
   return (
-    <>
-      {isLargeScreen && (
-        <div
-          id="spline-container"
-          className={`transition-opacity duration-700 ease-in-out  ${
-            isLoaded
-              ? "opacity-100 invisible lg:visible lg:flex -mt-[200px] xl:-mt-[300px]"
-              : "opacity-0 invisible mt-0"
-          } pointer-events-none -z-20 lg:flex`}
-        >
-          <Spline
-            scene="https://draft.spline.design/tJ7jNGEoO5MyV8zW/scene.splinecode"
-            onLoad={() => setIsLoaded(true)}
-          />
-        </div>
+    <div
+      id="spline-container"
+      className={`transition-opacity duration-700 ease-in-out pointer-events-none -z-20
+        ${isLoaded ? "opacity-100 visible lg:flex" : "opacity-0 invisible"} 
+        -mt-[200px] xl:-mt-[300px]`}
+    >
+      {webglSupported ? (
+        <Spline
+          scene="https://draft.spline.design/tJ7jNGEoO5MyV8zW/scene.splinecode"
+          onLoad={() => setIsLoaded(true)}
+          onError={() => setWebglSupported(false)} // fallback if Spline fails
+        />
+      ) : (
+        <img
+          src="/fallback-scene.png"
+          alt="3D Preview"
+          className="mx-auto w-full max-w-[800px] opacity-90"
+        />
       )}
-    </>
+    </div>
   );
 };
 
 export default SplineFile;
+
 // Version 1 of spline optimization
 // import React from "react";
 // import Spline from "@splinetool/react-spline";

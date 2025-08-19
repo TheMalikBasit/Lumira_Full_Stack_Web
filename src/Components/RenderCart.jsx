@@ -92,7 +92,7 @@ const CartProductCard = ({ item, product, isLocal }) => {
           <div className="relative w-full sm:w-48 h-48 rounded-2xl overflow-hidden bg-gradient-to-br from-n-muted to-n-muted/50 shadow-warm">
             <img
               src={selectedVariant?.cjImage}
-              alt={product.name}
+              alt={"VariantImage"}
               className="object-cover h-full w-full"
             />
           </div>
@@ -105,10 +105,22 @@ const CartProductCard = ({ item, product, isLocal }) => {
             >
               {/* {product.name} */}
               {selectedVariant?.cjKey}
+              <span
+                className={`inline-flex items-center px-3 gap-2 py-1.5 rounded-full font-medium text-sm ${
+                  isInStock ? "text-emerald-600" : "text-red-800"
+                }`}
+              >
+                <div
+                  className={`w-2 h-2 ${
+                    isInStock ? "bg-emerald-500" : "bg-red-500"
+                  } rounded-full animate-pulse`}
+                ></div>
+                {isInStock ? "In Stock" : "Out of Stock"}
+              </span>
             </h3>
 
             {/* Features + Stock */}
-            <div className="flex items-center gap-4 flex-wrap">
+            <div className="hidden md:flex items-center gap-4 flex-wrap">
               {features.map((feature, idx) => (
                 <span
                   key={idx}
@@ -117,13 +129,6 @@ const CartProductCard = ({ item, product, isLocal }) => {
                   {feature}
                 </span>
               ))}
-              <span
-                className={`px-3 py-1.5 rounded-full text-sm ${
-                  isInStock ? "text-emerald-600" : "text-red-800"
-                }`}
-              >
-                {isInStock ? "In Stock" : "Out of Stock"}
-              </span>
             </div>
 
             {/* Price + Subtotal */}
@@ -149,7 +154,7 @@ const CartProductCard = ({ item, product, isLocal }) => {
               </div>
 
               <div className="flex flex-col md:flex-row gap-4">
-                <div className="w-full gap-4 p-4 flex items-center rounded-xl bg-gradient-to-r from-n-primary/5 to-n-lumira_coral/5 border border-n-primary/10">
+                <div className="gap-4 p-4 flex items-center rounded-xl bg-gradient-to-r from-n-primary/5 to-n-lumira_coral/5 border border-n-primary/10">
                   <p className="text-sm font-medium text-n-foreground">
                     Subtotal:{" "}
                   </p>
@@ -169,26 +174,28 @@ const CartProductCard = ({ item, product, isLocal }) => {
                     {/* {Currency} */}
                   </span>
                 </div>
-                <div className="flex items-center gap-4 p-4 rounded-xl bg-n-muted/30 border">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={handleDecrease}
-                  >
-                    <Minus className="h-5 w-5" />
-                  </Button>
-                  <span className="text-2xl font-bold">{quantity}</span>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={handleIncrease}
-                  >
-                    <Plus className="h-5 w-5" />
+                <div className="flex flex-row items-center space-x-3">
+                  <div className="flex items-center justify-center gap-4 p-4 rounded-xl bg-n-muted/30 border w-full">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={handleDecrease}
+                    >
+                      <Minus className="h-5 w-5" />
+                    </Button>
+                    <span className="text-2xl font-bold">{quantity}</span>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={handleIncrease}
+                    >
+                      <Plus className="h-5 w-5" />
+                    </Button>
+                  </div>
+                  <Button variant="ghost" size="icon" onClick={handleRemove}>
+                    <Trash2 className="h-10 w-10 text-n-destructive" />
                   </Button>
                 </div>
-                <Button variant="ghost" size="icon" onClick={handleRemove}>
-                  <Trash2 className="h-10 w-10 text-n-destructive" />
-                </Button>
               </div>
             </div>
           </div>

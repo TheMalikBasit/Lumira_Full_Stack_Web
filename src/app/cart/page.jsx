@@ -77,31 +77,33 @@ const cart = () => {
         <BackLights L2 />
         <div className="container mx-auto px-4 py-8 relative z-10">
           <div className="flex items-center gap-6 mb-16">
-            <div
-              onClick={() => {
-                router.push("/my-products");
-              }}
-            >
-              <Button
-                variant="ghost"
-                size="icon"
-                className="hover-scale shadow-warm hover:shadow-glow transition-all duration-300"
+            <div className="flex flex-col md:flex-row space-y-3 md:space-y-0">
+              <div
+                onClick={() => {
+                  router.push("/my-products");
+                }}
               >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-            </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="hover-scale shadow-warm hover:shadow-glow transition-all duration-300 border border-n-foreground"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
+              </div>
 
-            <div className="flex-1">
-              <h1 className="text-5xl font-bold text-n-foreground mb-3 animate-fade-in">
-                Shopping Cart
-              </h1>
-              <p
-                className="text-n-muted_foreground text-lg animate-fade-in"
-                style={{ animationDelay: "200ms" }}
-              >
-                {CART.length} {CART.length === 1 ? "item" : "items"} ready for
-                checkout
-              </p>
+              <div className="flex-1 text-center md:text-start">
+                <h1 className="text-5xl font-bold text-n-foreground mb-3 animate-fade-in">
+                  Shopping Cart
+                </h1>
+                <p
+                  className="text-n-muted_foreground text-lg animate-fade-in"
+                  style={{ animationDelay: "200ms" }}
+                >
+                  {CART.length} {CART.length === 1 ? "item" : "items"} ready for
+                  checkout
+                </p>
+              </div>
             </div>
             <div
               className="hidden md:flex items-center gap-4 animate-fade-in"

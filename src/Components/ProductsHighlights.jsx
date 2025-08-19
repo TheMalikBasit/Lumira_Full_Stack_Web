@@ -9,48 +9,6 @@ import { useEffect, useState } from "react";
 import { Loading, LottieLoading } from "./Loading";
 import { useUser } from "@clerk/nextjs";
 import PriceTag from "./PriceTag";
-// const products = [
-//   {
-//     id: 1,
-//     name: "Aurora Desk Lamp",
-//     price: 149,
-//     originalPrice: 199,
-//     rating: 4.8,
-//     reviews: 124,
-//     image: assets.studyLamp,
-//     badge: "Best Seller",
-//     features: ["LED", "Adjustable", "USB Charging"],
-//   },
-//   {
-//     id: 2,
-//     name: "Zen Floor Lamp",
-//     price: 299,
-//     rating: 4.9,
-//     reviews: 89,
-//     image: assets.floorLamp,
-//     badge: "New",
-//     features: ["Warm Light", "Dimmable", "Remote Control"],
-//   },
-//   {
-//     id: 3,
-//     name: "Cosmos Pendant Light",
-//     price: 249,
-//     rating: 4.7,
-//     reviews: 156,
-//     image: assets.pendantLamp,
-//     features: ["Modern Design", "Easy Install", "Energy Efficient"],
-//   },
-//   {
-//     id: 4,
-//     name: "Lumina Pro Desk Lamp",
-//     price: 199,
-//     rating: 4.9,
-//     reviews: 203,
-//     image: assets.heroLamp,
-//     badge: "Editor's Choice",
-//     features: ["Premium Build", "Touch Control", "Multiple Modes"],
-//   },
-// ];
 
 const ProductHighlights = () => {
   const {
@@ -115,7 +73,9 @@ const ProductHighlights = () => {
               <Card
                 key={index}
                 className="card-lumira hover-lift group cursor-pointer"
-                onClick={() => router.push(`/product/${product.id}`)}
+                onClick={() => {
+                  router.push(`/product/${product.id}`), setloading(true);
+                }}
               >
                 <CardContent className="p-0">
                   <div className="relative overflow-hidden rounded-t-lg">
