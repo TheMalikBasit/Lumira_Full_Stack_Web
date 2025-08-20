@@ -44,10 +44,14 @@ export const LottieLoading1 = () => {
   );
 };
 
-export const LottieLoading = () => {
+export const LottieLoading = ({ className, className2 }) => {
   return (
-    <div className="h-full w-full flex items-center justify-center">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+    <div
+      className={`h-full w-full flex items-center justify-center ${className}`}
+    >
+      <div
+        className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${className2}`}
+      >
         <Lottie
           animationData={ComponentLoadingAnimation}
           loop

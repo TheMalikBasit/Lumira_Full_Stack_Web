@@ -13,6 +13,7 @@ import { useAppContext } from "@/Context/AppContext";
 import { LottieLoading } from "@/Components/Loading";
 import SupportModal from "@/Components/SupportModal";
 import SelectCurrency from "@/Components/SelectCurrency";
+import { Suspense } from "react";
 export default function Home() {
   const [showVideo, setShowVideo] = useState(false);
   const [fade, setFade] = useState(false);
@@ -63,8 +64,15 @@ export default function Home() {
       <div className="pt-[4.75rem] lg:pt-[5.25rem] overflow-hidden">
         <Navbar bgBlur />
         <Hero />
-        <Collections />
+        {/* <Suspense
+          fallback={
+            <div className="flex min-h-screen justify-center py-8">
+              <LottieLoading />
+            </div>
+          }
+        > */}
         <ProductHighlights />
+        {/* </Suspense> */}
         {/* <FooterOne crosses />
         <FooterTwo crosses /> */}
         <Footer

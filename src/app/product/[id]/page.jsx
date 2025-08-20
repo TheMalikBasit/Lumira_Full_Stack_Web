@@ -15,7 +15,6 @@ import { Input } from "@/Components/UI/input";
 import { Badge } from "@/Components/UI/badge";
 import { Button } from "@/Components/UI/lumiraButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/UI/card";
-import ProductCard from "@/Components/ProductCard"; // (kept import unused by your original file)
 import {
   ArrowLeft,
   Star,
@@ -27,6 +26,7 @@ import {
   MessageCircle,
   ChevronLeft,
   ChevronRight,
+  RefreshCw,
 } from "lucide-react";
 import { useAppContext } from "@/Context/AppContext";
 import { db } from "../../../../Config/firebase";
@@ -48,7 +48,7 @@ const ProductHighlights = dynamic(
   { ssr: false, loading: () => null }
 );
 
-// Small, local skeleton for the variants block
+// Skeleton for variants
 function VariantsSkeleton() {
   return (
     <div className="flex flex-wrap gap-2">
@@ -61,27 +61,6 @@ function VariantsSkeleton() {
     </div>
   );
 }
-
-const sampleReviews = [
-  {
-    id: 1,
-    user: "Sarah M.",
-    rating: 5,
-    date: "2 weeks ago",
-    comment:
-      "Absolutely love this lamp! The quality is excellent and it looks great in my home office.",
-    verified: true,
-  },
-  {
-    id: 2,
-    user: "John D.",
-    rating: 4,
-    date: "1 month ago",
-    comment:
-      "Great product, very satisfied with the purchase. The adjustable features work perfectly.",
-    verified: true,
-  },
-];
 
 export default function Product() {
   const { id } = useParams();
@@ -108,17 +87,18 @@ export default function Product() {
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // shipping calc (deferred)
+  // shipping calc
   const [shippingOptions, setShippingOptions] = useState([]);
   const [loadingShipping, setLoadingShipping] = useState(false);
 
-  // Countries (lazy load on focus to avoid heavy first paint)
+  // Countries
   const [allCountries, setAllCountries] = useState([]);
   const [queryCountry, setQueryCountry] = useState("");
   const [queryCode, setQueryCode] = useState("");
   const [filteredCountries, setFilteredCountries] = useState([]);
   const [dropdownCountry, setDropdownCountry] = useState(false);
   const [countryName, setCountryName] = useState("");
+  const [currentStock, setCurrentStock] = useState(null);
 
   const countryRef = useRef(null);
 
@@ -127,10 +107,47 @@ export default function Product() {
     section: "",
   });
 
+  const sampleReviews = [
+    {
+      id: 1,
+      user: "Sarah M.",
+      rating: 5,
+      date: "2 weeks ago",
+      comment:
+        "Absolutely love this lamp! The quality is excellent and it looks great in my home office.",
+      verified: true,
+    },
+    {
+      id: 2,
+      user: "John D.",
+      rating: 4,
+      date: "1 month ago",
+      comment:
+        "Great product, very satisfied with the purchase. The adjustable features work perfectly.",
+      verified: true,
+    },
+  ];
+
   // Always scroll to top when this page mounts
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
+
+  const getInventory = async (vid) => {
+    if (!vid) return;
+
+    try {
+      setCurrentStock(-1);
+      const res = await fetch(`/api/get-inventory?vid=${vid}`);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      const inventory = data.data[0] || {};
+      console.log("Inventory data:", inventory?.totalInventoryNum);
+      setCurrentStock(inventory?.totalInventoryNum);
+    } catch (error) {
+      console.error("Error fetching inventory:", error);
+    }
+  };
 
   // Close dropdown on outside click / ESC
   useEffect(() => {
@@ -159,20 +176,37 @@ export default function Product() {
     setShippingOptions([]);
   }, [id, products]);
 
-  // Fetch variants (non-blocking to page)
+  // ✅ Optimized fetch: First check localStorage, else fetch from Firestore
   useEffect(() => {
     let cancelled = false;
     async function fetchVariants() {
       if (!id) return;
       setVariantsLoading(true);
+
       try {
+        // 1. Check localStorage
+        const cached = localStorage.getItem("variantsCache");
+        let cacheObj = cached ? JSON.parse(cached) : {};
+
+        if (cacheObj[id]) {
+          if (!cancelled) setAllVariants(cacheObj[id]);
+          return;
+        }
+
+        // 2. If not in cache → fetch from Firestore
         const variantsRef = collection(db, "products", id, "variants");
         const snapshot = await getDocs(variantsRef);
         if (cancelled) return;
+
         const variantsData = snapshot.docs.map((d) => ({
           id: d.id,
           ...d.data(),
         }));
+
+        // 3. Save to localStorage
+        cacheObj[id] = variantsData;
+        localStorage.setItem("variantsCache", JSON.stringify(cacheObj));
+
         setAllVariants(variantsData || []);
       } catch (e) {
         console.error("Error fetching variants:", e);
@@ -187,18 +221,17 @@ export default function Product() {
     };
   }, [id]);
 
-  // Images memo (safe + stable)
+  // Images memo
   const images = useMemo(() => {
     const main = productData?.mainImage ? [productData.mainImage] : [];
     const extras = Array.isArray(productData?.imageUrl)
       ? productData.imageUrl
       : [];
     const arr = [...main, ...extras].filter(Boolean);
-    // Fallback to a tiny transparent pixel if missing
     return arr.length > 0 ? arr : ["/placeholder.png"];
   }, [productData]);
 
-  // Cart refs (avoid crashes)
+  // Cart refs
   const cartProduct = useMemo(() => {
     if (!selectedVariant?.id || !Array.isArray(cartItems)) return null;
     return cartItems.find((item) => item.vid === selectedVariant.id) || null;
@@ -232,10 +265,10 @@ export default function Product() {
     setSelectedVariant(v);
   };
 
-  // Countries: lazy load on first focus to avoid initial weight
+  // Countries: lazy load
   const ensureCountriesLoaded = async () => {
     if (allCountries.length > 0) return;
-    const mod = await import("country-state-city"); // lazy import
+    const mod = await import("country-state-city");
     const list = mod.Country.getAllCountries() || [];
     setAllCountries(list);
     setFilteredCountries(list);
@@ -275,7 +308,7 @@ export default function Product() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           queryCode,
-          variantId: selectedVariant.vid || selectedVariant.id, // prefer CJ variant id if present
+          variantId: selectedVariant.vid || selectedVariant.id,
           quantity: 1,
         }),
       });
@@ -292,7 +325,7 @@ export default function Product() {
       setLoadingShipping(false);
     }
   };
-
+  console.log("Variants Data:", allVariants);
   // Early load guard
   if (!productData) return <LottieLoading />;
 
@@ -497,6 +530,51 @@ export default function Product() {
               )}
             </div>
 
+            <div className="text-sm text-n-muted_foreground">
+              <div className="flex items-center gap-2 mb-1">
+                {currentStock != null ? (
+                  currentStock != -1 ? (
+                    <>
+                      <span
+                        className={`w-2 h-2 rounded-full ${
+                          currentStock > 0 ? "bg-green-500" : "bg-red-500"
+                        }`}
+                      />
+                      {currentStock > 0 ? "In Stock" : "Out of Stock"}
+                      <span
+                        className={`${
+                          currentStock > 20
+                            ? "text-emerald-700"
+                            : "text-cyan-900"
+                        }`}
+                      >
+                        {" ("}
+                        {currentStock ?? 0}
+                        {") "}
+                        {currentStock < 20 && currentStock > 0
+                          ? "Almost Out 🔥🔥"
+                          : ""}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <div className=" bg-n-background flex items-center justify-center">
+                        <RefreshCw className="h-4 w-4 animate-spin mx-auto mb-4 text-n-foreground" />
+                      </div>
+                    </>
+                  )
+                ) : (
+                  <>
+                    <p className="text-n-foreground text-sm">
+                      <span className="text-n-muted_foreground font-bold">
+                        CURRENT STOCK:
+                      </span>{" "}
+                      Select A Variant
+                    </p>
+                  </>
+                )}
+              </div>
+            </div>
             <p className="text-xl text-n-muted_foreground font-bold">
               Select Available Variant
             </p>
@@ -509,7 +587,10 @@ export default function Product() {
                 {allVariants.map((v) => (
                   <div
                     key={v.id}
-                    onClick={() => variantImageSelection(v.cjImage, v.id)}
+                    onClick={() => {
+                      variantImageSelection(v.cjImage, v.id);
+                      getInventory(v.vid);
+                    }}
                     className={`cursor-pointer w-16 h-16 sm:w-20 sm:h-20 border rounded overflow-hidden flex items-center justify-center bg-white ${
                       v.id === selectedVariant?.id
                         ? "border-n-primary ring-2 ring-n-primary/20"
@@ -521,7 +602,7 @@ export default function Product() {
                       alt={v.cjKey || "variant"}
                       width={90}
                       height={90}
-                      className="w-full h-full object-contain"
+                      className="w-full object-contain"
                       loading="lazy"
                       quality={70}
                     />
@@ -629,7 +710,17 @@ export default function Product() {
             {/* Cart Actions */}
             <div className="flex items-center gap-3">
               {selectedVariant?.id ? (
-                isSignedIn ? (
+                currentStock < 1 ? (
+                  <Button
+                    className="flex-1"
+                    onClick={() =>
+                      addToCart(productData.id, selectedVariant.id)
+                    }
+                    disabled
+                  >
+                    Out of Stock
+                  </Button>
+                ) : isSignedIn ? (
                   !cartProduct ? (
                     <Button
                       className="flex-1"
@@ -720,7 +811,7 @@ export default function Product() {
                 <Heart className="w-5 h-5" />
               </Button>
             </div>
-
+            {/* 
             <div className="text-sm text-n-muted_foreground">
               <div className="flex items-center gap-2 mb-1">
                 <span
@@ -744,7 +835,7 @@ export default function Product() {
                     : "Almost Out 🔥🔥"}
                 </span>
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Description */}

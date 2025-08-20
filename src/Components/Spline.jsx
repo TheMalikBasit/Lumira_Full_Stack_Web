@@ -40,9 +40,9 @@ const SplineFile = () => {
   return (
     <div
       id="spline-container"
-      className={`transition-opacity duration-700 ease-in-out pointer-events-none -z-20
-        ${isLoaded ? "opacity-100 visible lg:flex" : "opacity-0 invisible"} 
-        -mt-[200px] xl:-mt-[300px]`}
+      className={`absolute w-full -mt-20 transition-opacity duration-700 ease-in-out pointer-events-none -z-[100]
+        ${isLoaded ? "opacity-100 visible" : "opacity-0 invisible"} 
+        `}
     >
       {webglSupported ? (
         <Spline

@@ -148,10 +148,10 @@ const AddCJProduct = () => {
 
     await UploadProduct({
       name,
-      price: Number(price),
-      originalPrice: originalPrice ? Number(originalPrice) : null,
+      price: price,
+      originalPrice: originalPrice ? originalPrice : null,
       cjProductId: cjProductId || null,
-      cjPrice: cjPrice ? Number(cjPrice) : null,
+      cjPrice: cjPrice ? cjPrice : null,
       mainImage: formatMainImage(mainImage),
       imageUrl: imageUrl.map(sanitizeImageUrl),
       availableStock: Number(availableStock),
@@ -271,6 +271,16 @@ const AddCJProduct = () => {
               value={originalPrice}
               onChange={(e) => setOriginalPrice(e.target.value)}
               placeholder="Enter original price"
+              required
+            />
+          </div>
+          <div className="w-full">
+            <label className="text-sm text-gray-400">CJ Price</label>
+            <input
+              className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600"
+              type="number"
+              value={cjPrice}
+              placeholder={cjPrice}
               required
             />
           </div>
