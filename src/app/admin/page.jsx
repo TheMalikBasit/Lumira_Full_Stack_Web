@@ -76,11 +76,9 @@ const page = () => {
           {status && <p className="mt-4 text-gray-800">{status}</p>}
         </div>
 
-        <div>
-          <AddCJProduct />
-        </div>
         <div className="flex flex-col lg:justify-around lg:flex-row justify-start">
-          <StockAddForm />
+          <AddCJProduct />
+          {/* <StockAddForm /> */}
           <StockUpdateForm id={id} />
         </div>
         <div className="max-w-2xl xl:max-w-[45%] mx-auto xl:mx-0 xl:ml-11 mt-12 lg:max-w-full px-4">

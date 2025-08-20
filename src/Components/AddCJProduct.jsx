@@ -104,7 +104,7 @@ const AddCJProduct = () => {
       toast.error("Error fetching CJ product");
     }
   };
-
+  console.log("CJVariants:", CJVariants);
   const handleAddImageUrl = () => {
     if (currentImageUrl.trim() !== "") {
       const sanitized = sanitizeImageUrl(currentImageUrl.trim());
@@ -189,7 +189,7 @@ const AddCJProduct = () => {
   };
 
   return (
-    <div className="max-w-2xl lg:max-w-[60%] mt-12 sm:mx-auto md:mx-2 w-full px-4">
+    <div className="max-w-2xl lg:max-w-[50%] mt-12 sm:mx-auto md:mx-2 w-full px-4">
       <h2 className="text-3xl font-bold mb-6 text-orange-600">
         Upload New Product
       </h2>
@@ -256,7 +256,7 @@ const AddCJProduct = () => {
             <label className="text-sm text-gray-400">Price</label>
             <input
               className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600"
-              type="number"
+              type="text"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               placeholder="Enter price"
@@ -267,7 +267,7 @@ const AddCJProduct = () => {
             <label className="text-sm text-gray-400">Original Price</label>
             <input
               className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600"
-              type="number"
+              type="text"
               value={originalPrice}
               onChange={(e) => setOriginalPrice(e.target.value)}
               placeholder="Enter original price"
@@ -278,9 +278,10 @@ const AddCJProduct = () => {
             <label className="text-sm text-gray-400">CJ Price</label>
             <input
               className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600"
-              type="number"
+              type="text"
               value={cjPrice}
-              placeholder={cjPrice}
+              onChange={(e) => setCjPrice(e.target.value)}
+              placeholder="Enter CJ Price"
               required
             />
           </div>
@@ -321,7 +322,7 @@ const AddCJProduct = () => {
             </button>
           </div>
           <ul className="mt-2 space-y-1">
-            <div className="mt-2 max-h-60 overflow-y-auto border border-gray-700 rounded-md p-2">
+            <div className="mt-2 min-h-60 max-h-60 overflow-y-auto border border-gray-700 rounded-md p-2">
               {imageUrl.map((url, idx) => (
                 <li
                   key={idx}
@@ -351,71 +352,73 @@ const AddCJProduct = () => {
         </div>
 
         {/* Variants Display with Lumira Price input */}
-        {CJVariants.length > 0 && (
-          <div>
-            <label className="text-sm text-gray-400">CJ Variants</label>
-            <div className="mt-2 max-h-60 overflow-y-auto border border-gray-700 rounded-md p-2 space-y-2">
-              {CJVariants.map((variant, idx) => (
-                <div
-                  key={variant.vid}
-                  className="flex items-center gap-3 bg-gray-800 p-2 rounded-md"
-                >
-                  {/* Variant Image */}
-                  {idx + 1} {": "}
-                  <img
-                    src={variant.variantImage}
-                    alt={variant.variantNameEn || "Variant"}
-                    className="w-12 h-12 object-cover rounded"
-                  />
-                  {/* Variant Info */}
-                  <div className="flex-1">
-                    <p className="text-gray-200 text-sm font-semibold">
-                      {/* {variant.variantNameEn || variant.vid} */}
-                      {variant.vid}
-                    </p>
-                    <p className="text-gray-400 text-xs">
-                      CJ Price: ${variant.variantSellPrice}
-                    </p>
-                  </div>
-                  {/* Lumira Price Input */}
-                  <input
-                    required
-                    type="number"
-                    value={variant.lumiraPrice || ""}
-                    onChange={(e) => {
-                      const updated = [...CJVariants];
-                      updated[idx].lumiraPrice = e.target.value;
-                      setCJVariants(updated);
-                    }}
-                    placeholder="Your Price"
-                    className="w-24 p-1 bg-gray-900 text-white border border-gray-600 rounded"
-                  />
-                  {/* Lumira Price Input */}
-                  <input
-                    required
-                    type="number"
-                    value={variant.originalPrice || ""}
-                    onChange={(e) => {
-                      const updated = [...CJVariants];
-                      updated[idx].originalPrice = e.target.value;
-                      setCJVariants(updated);
-                    }}
-                    placeholder="Original Price"
-                    className="w-24 p-1 bg-gray-900 text-white border border-gray-600 rounded"
-                  />
-                  {/* Remove Button */}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveVariant(variant.vid)}
-                    className="text-red-400 hover:underline text-xs"
+        <div>
+          <label className="text-sm text-gray-400">CJ Variants</label>
+          <div className="mt-2 min-h-60 max-h-60 overflow-y-auto border border-gray-700 rounded-md p-2 space-y-2">
+            {CJVariants.length > 0 && (
+              <>
+                {CJVariants.map((variant, idx) => (
+                  <div
+                    key={variant.vid}
+                    className="flex items-center gap-3 bg-gray-800 p-2 rounded-md"
                   >
-                    Remove
-                  </button>
-                </div>
-              ))}
-            </div>
+                    {/* Variant Image */}
+                    {idx + 1} {": "}
+                    <img
+                      src={variant.variantImage}
+                      alt={variant.variantNameEn || "Variant"}
+                      className="w-12 h-12 object-cover rounded"
+                    />
+                    {/* Variant Info */}
+                    <div className="flex-1">
+                      <p className="text-gray-200 text-sm font-semibold">
+                        {/* {variant.variantNameEn || variant.vid} */}
+                        {variant.vid}
+                      </p>
+                      <p className="text-gray-400 text-xs">
+                        CJ Price: ${variant.variantSellPrice}
+                      </p>
+                    </div>
+                    {/* Lumira Price Input */}
+                    <input
+                      required
+                      type="number"
+                      value={variant.lumiraPrice || ""}
+                      onChange={(e) => {
+                        const updated = [...CJVariants];
+                        updated[idx].lumiraPrice = e.target.value;
+                        setCJVariants(updated);
+                      }}
+                      placeholder="Your Price"
+                      className="w-24 p-1 bg-gray-900 text-white border border-gray-600 rounded"
+                    />
+                    {/* Lumira Price Input */}
+                    <input
+                      required
+                      type="number"
+                      value={variant.originalPrice || ""}
+                      onChange={(e) => {
+                        const updated = [...CJVariants];
+                        updated[idx].originalPrice = e.target.value;
+                        setCJVariants(updated);
+                      }}
+                      placeholder="Original Price"
+                      className="w-24 p-1 bg-gray-900 text-white border border-gray-600 rounded"
+                    />
+                    {/* Remove Button */}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveVariant(variant.vid)}
+                      className="text-red-400 hover:underline text-xs"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </>
+            )}
           </div>
-        )}
+        </div>
 
         {/* Stock / Rating / Reviews */}
         <div className="flex gap-4">
@@ -531,7 +534,7 @@ const AddCJProduct = () => {
         <div>
           <label className="text-sm text-gray-400">Description</label>
           <textarea
-            className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600"
+            className="w-full mt-1 p-2 bg-gray-800 text-white rounded-md border border-gray-600 min-h-[200px]"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Enter product description"

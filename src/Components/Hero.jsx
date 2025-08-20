@@ -103,6 +103,7 @@ const Hero = () => {
                   ref={videoRef}
                   src="/LumiraLandingVideo.mp4"
                   controls
+                  poster="/Thumbnail.jpg"
                   className="w-full h-full object-cover rounded-2xl"
                   style={{ pointerEvents: "auto" }}
                   controlsList="nodownload noremoteplayback"

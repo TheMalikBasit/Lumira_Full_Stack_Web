@@ -9,6 +9,7 @@ import FetchProducts from "../../models/ProductsFetcher";
 import { Toaster } from "react-hot-toast";
 import CurrencyFetcher from "../../models/CurrencyFetcher";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -33,6 +34,7 @@ export default function RootLayout({ children }) {
             <CurrencyFetcher />
             {children}
             <SpeedInsights />
+            <Analytics />
             <Toaster position="top-center" />
           </AppContextProvider>
         </body>

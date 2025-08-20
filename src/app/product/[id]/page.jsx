@@ -327,7 +327,7 @@ export default function Product() {
   };
   console.log("Variants Data:", allVariants);
   // Early load guard
-  if (!productData) return <LottieLoading />;
+  // if (!productData) return <LottieLoading />;
 
   return (
     <>
@@ -339,479 +339,498 @@ export default function Product() {
         >
           <ArrowLeft className="w-4 h-4" /> Back to Products
         </div>
-
-        {/* Product Section */}
-        <div className="grid lg:grid-cols-2 gap-12">
-          {/* Image Carousel */}
-          <div className="space-y-4">
-            <div className="relative rounded-3xl overflow-hidden bg-n-secondary/20 group">
-              <div className="flex items-center justify-center">
-                <Image
-                  src={images[currentImageIndex]}
-                  alt={`${productData.name || "Product"} image ${
-                    currentImageIndex + 1
-                  }`}
-                  width={800}
-                  height={800}
-                  priority // ✅ critical image for better LCP
-                  quality={75}
-                  className="w-full h-auto max-h-[500px] object-contain transition-all duration-300"
-                />
-              </div>
-
-              {images.length > 1 && (
-                <>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-n-background/80 hover:bg-n-background opacity-100"
-                    onClick={prevImage}
-                    aria-label="Previous image"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-n-background/80 hover:bg-n-background opacity-100"
-                    onClick={nextImage}
-                    aria-label="Next image"
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </Button>
-                  <div className="absolute bottom-4 right-4 bg-n-background/80 px-3 py-1 rounded-full text-sm text-n-foreground">
-                    {currentImageIndex + 1} / {images.length}
-                  </div>
-                </>
-              )}
-            </div>
-
-            {/* Thumbnails */}
-            {images.length > 1 && (
-              <div className="flex flex-wrap gap-2">
-                {images.map((img, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => goToImage(idx)}
-                    className={`w-16 h-16 sm:w-20 sm:h-20 border-n-border aspect-square rounded-lg overflow-hidden border-2 transition-all ${
-                      currentImageIndex === idx
-                        ? "border-n-primary ring-2 ring-n-primary/20"
-                        : "border-n-border hover:border-n-primary/50"
-                    }`}
-                    aria-label={`Go to image ${idx + 1}`}
-                  >
+        {!productData ? (
+          <>
+            <LottieLoading className={"min-h-screen relative"} />
+          </>
+        ) : (
+          <>
+            {/* Product Section */}
+            <div className="grid lg:grid-cols-2 gap-12">
+              {/* Image Carousel */}
+              <div className="space-y-4">
+                <div className="relative rounded-3xl overflow-hidden bg-n-secondary/20 group">
+                  <div className="flex items-center justify-center">
                     <Image
-                      src={img}
-                      alt={`thumb-${idx}`}
-                      width={100}
-                      height={100}
-                      quality={50}
-                      loading="lazy"
-                      className="w-full h-full object-cover"
+                      src={images[currentImageIndex]}
+                      alt={`${productData.name || "Product"} image ${
+                        currentImageIndex + 1
+                      }`}
+                      width={800}
+                      height={800}
+                      priority // ✅ critical image for better LCP
+                      quality={75}
+                      className="w-full h-auto max-h-[500px] object-contain transition-all duration-300"
                     />
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+                  </div>
 
-          {/* Product Info */}
-          <div className="space-y-6">
-            {productData?.badge && (
-              <Badge className="mb-2" variant="secondary">
-                {productData.badge}
-              </Badge>
-            )}
-            <h1 className="text-2xl font-bold text-n-foreground">
-              {productData?.name || "Product"}
-            </h1>
-
-            {/* Rating */}
-            <div className="flex gap-2 items-center">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className={`w-4 h-4 ${
-                    i < Math.floor(productData?.rating || 0)
-                      ? "fill-n-primary text-n-primary"
-                      : "text-n-muted_foreground"
-                  }`}
-                />
-              ))}
-              <span className="text-sm text-n-muted_foreground">
-                {productData?.rating || 0} ({productData?.reviews || 0} reviews)
-              </span>
-            </div>
-
-            {/* Pricing */}
-            <div className="flex items-baseline gap-3">
-              <span className="text-3xl font-bold text-n-foreground">
-                {Currency === "USD" ? (
-                  !selectedVariant ? (
+                  {images.length > 1 && (
                     <>
-                      {productData?.price ?? 0}
-                      {Symbol}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute left-2 top-1/2 -translate-y-1/2 bg-n-background/80 hover:bg-n-background opacity-100"
+                        onClick={prevImage}
+                        aria-label="Previous image"
+                      >
+                        <ChevronLeft className="w-5 h-5" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-n-background/80 hover:bg-n-background opacity-100"
+                        onClick={nextImage}
+                        aria-label="Next image"
+                      >
+                        <ChevronRight className="w-5 h-5" />
+                      </Button>
+                      <div className="absolute bottom-4 right-4 bg-n-background/80 px-3 py-1 rounded-full text-sm text-n-foreground">
+                        {currentImageIndex + 1} / {images.length}
+                      </div>
                     </>
-                  ) : (
-                    <>
-                      {selectedVariant?.lumiraPrice ?? productData?.price ?? 0}
-                      {Symbol}
-                    </>
-                  )
-                ) : !selectedVariant ? (
-                  <PriceTag
-                    basePrice={productData?.price ?? 0}
-                    userCurrency={Currency}
-                    symbol={Symbol}
-                  />
-                ) : (
-                  <PriceTag
-                    basePrice={selectedVariant?.lumiraPrice ?? 0}
-                    userCurrency={Currency}
-                    symbol={Symbol}
-                  />
+                  )}
+                </div>
+
+                {/* Thumbnails */}
+                {images.length > 1 && (
+                  <div className="flex flex-wrap gap-2">
+                    {images.map((img, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => goToImage(idx)}
+                        className={`w-16 h-16 sm:w-20 sm:h-20 border-n-border aspect-square rounded-lg overflow-hidden border-2 transition-all ${
+                          currentImageIndex === idx
+                            ? "border-n-primary ring-2 ring-n-primary/20"
+                            : "border-n-border hover:border-n-primary/50"
+                        }`}
+                        aria-label={`Go to image ${idx + 1}`}
+                      >
+                        <Image
+                          src={img}
+                          alt={`thumb-${idx}`}
+                          width={100}
+                          height={100}
+                          quality={50}
+                          loading="lazy"
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    ))}
+                  </div>
                 )}
-              </span>
+              </div>
 
-              {saveOffer(
-                selectedVariant?.lumiraPrice ?? productData?.price,
-                selectedVariant?.originalPrice ?? productData?.originalPrice
-              ) && (
-                <>
-                  <span className="text-xl text-n-muted_foreground line-through">
+              {/* Product Info */}
+              <div className="space-y-6">
+                {productData?.badge && (
+                  <Badge className="mb-2" variant="secondary">
+                    {productData.badge}
+                  </Badge>
+                )}
+                <h1 className="text-2xl font-bold text-n-foreground">
+                  {productData?.name || "Product"}
+                </h1>
+
+                {/* Rating */}
+                <div className="flex gap-2 items-center">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-4 h-4 ${
+                        i < Math.floor(productData?.rating || 0)
+                          ? "fill-n-primary text-n-primary"
+                          : "text-n-muted_foreground"
+                      }`}
+                    />
+                  ))}
+                  <span className="text-sm text-n-muted_foreground">
+                    {productData?.rating || 0} ({productData?.reviews || 0}{" "}
+                    reviews)
+                  </span>
+                </div>
+
+                {/* Pricing */}
+                <div className="flex items-baseline gap-3">
+                  <span className="text-3xl font-bold text-n-foreground">
                     {Currency === "USD" ? (
-                      <>
-                        {selectedVariant?.originalPrice ??
-                          productData?.originalPrice ??
-                          0}
-                        {Symbol}
-                      </>
+                      !selectedVariant ? (
+                        <>
+                          {productData?.price ?? 0}
+                          {Symbol}
+                        </>
+                      ) : (
+                        <>
+                          {selectedVariant?.lumiraPrice ??
+                            productData?.price ??
+                            0}
+                          {Symbol}
+                        </>
+                      )
+                    ) : !selectedVariant ? (
+                      <PriceTag
+                        basePrice={productData?.price ?? 0}
+                        userCurrency={Currency}
+                        symbol={Symbol}
+                      />
                     ) : (
                       <PriceTag
-                        basePrice={
-                          selectedVariant?.originalPrice ??
-                          productData?.originalPrice ??
-                          0
-                        }
+                        basePrice={selectedVariant?.lumiraPrice ?? 0}
                         userCurrency={Currency}
                         symbol={Symbol}
                       />
                     )}
                   </span>
-                  <Badge variant="destructive">
-                    {Currency === "USD" ? (
-                      <>
-                        Save {Symbol}
-                        {(selectedVariant?.originalPrice ??
-                          productData?.originalPrice ??
-                          0) -
-                          (selectedVariant?.lumiraPrice ??
-                            productData?.price ??
-                            0)}
-                      </>
-                    ) : (
-                      <>
-                        Save {Symbol}
-                        <PriceTag
-                          basePrice={
-                            (selectedVariant?.originalPrice ??
+
+                  {saveOffer(
+                    selectedVariant?.lumiraPrice ?? productData?.price,
+                    selectedVariant?.originalPrice ?? productData?.originalPrice
+                  ) && (
+                    <>
+                      <span className="text-xl text-n-muted_foreground line-through">
+                        {Currency === "USD" ? (
+                          <>
+                            {selectedVariant?.originalPrice ??
+                              productData?.originalPrice ??
+                              0}
+                            {Symbol}
+                          </>
+                        ) : (
+                          <PriceTag
+                            basePrice={
+                              selectedVariant?.originalPrice ??
+                              productData?.originalPrice ??
+                              0
+                            }
+                            userCurrency={Currency}
+                            symbol={Symbol}
+                          />
+                        )}
+                      </span>
+                      <Badge variant="destructive">
+                        {Currency === "USD" ? (
+                          <>
+                            Save {Symbol}
+                            {(selectedVariant?.originalPrice ??
                               productData?.originalPrice ??
                               0) -
-                            (selectedVariant?.lumiraPrice ??
-                              productData?.price ??
-                              0)
-                          }
-                          userCurrency={Currency}
-                        />
+                              (selectedVariant?.lumiraPrice ??
+                                productData?.price ??
+                                0)}
+                          </>
+                        ) : (
+                          <>
+                            Save {Symbol}
+                            <PriceTag
+                              basePrice={
+                                (selectedVariant?.originalPrice ??
+                                  productData?.originalPrice ??
+                                  0) -
+                                (selectedVariant?.lumiraPrice ??
+                                  productData?.price ??
+                                  0)
+                              }
+                              userCurrency={Currency}
+                            />
+                          </>
+                        )}
+                      </Badge>
+                    </>
+                  )}
+                </div>
+
+                <div className="text-sm text-n-muted_foreground">
+                  <div className="flex items-center gap-2 mb-1">
+                    {currentStock != null ? (
+                      currentStock != -1 ? (
+                        <>
+                          <span
+                            className={`w-2 h-2 rounded-full ${
+                              currentStock > 0 ? "bg-green-500" : "bg-red-500"
+                            }`}
+                          />
+                          {currentStock > 0 ? "In Stock" : "Out of Stock"}
+                          <span
+                            className={`${
+                              currentStock > 20
+                                ? "text-emerald-700"
+                                : "text-cyan-900"
+                            }`}
+                          >
+                            {" ("}
+                            {currentStock ?? 0}
+                            {") "}
+                            {currentStock < 20 && currentStock > 0
+                              ? "Almost Out 🔥🔥"
+                              : ""}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <div className=" bg-n-background flex items-center justify-center">
+                            <RefreshCw className="h-4 w-4 animate-spin mx-auto mb-4 text-n-foreground" />
+                          </div>
+                        </>
+                      )
+                    ) : (
+                      <>
+                        <p className="text-emerald-700 text-sm">
+                          <span className="text-n-muted_foreground font-bold">
+                            CURRENT STOCK:
+                          </span>{" "}
+                          Select A Variant
+                        </p>
                       </>
                     )}
-                  </Badge>
-                </>
-              )}
-            </div>
+                  </div>
+                </div>
+                <p className="text-xl text-n-muted_foreground font-bold">
+                  Select Available Variant
+                </p>
 
-            <div className="text-sm text-n-muted_foreground">
-              <div className="flex items-center gap-2 mb-1">
-                {currentStock != null ? (
-                  currentStock != -1 ? (
-                    <>
-                      <span
-                        className={`w-2 h-2 rounded-full ${
-                          currentStock > 0 ? "bg-green-500" : "bg-red-500"
-                        }`}
-                      />
-                      {currentStock > 0 ? "In Stock" : "Out of Stock"}
-                      <span
-                        className={`${
-                          currentStock > 20
-                            ? "text-emerald-700"
-                            : "text-cyan-900"
+                {/* Variants */}
+                {variantsLoading ? (
+                  <VariantsSkeleton />
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {allVariants.map((v) => (
+                      <div
+                        key={v.id}
+                        onClick={() => {
+                          variantImageSelection(v.cjImage, v.id);
+                          getInventory(v.vid);
+                        }}
+                        className={`cursor-pointer w-16 h-16 sm:w-20 sm:h-20 border rounded overflow-hidden flex items-center justify-center bg-white ${
+                          v.id === selectedVariant?.id
+                            ? "border-n-primary ring-2 ring-n-primary/20"
+                            : "border-n-border hover:border-n-primary/50"
                         }`}
                       >
-                        {" ("}
-                        {currentStock ?? 0}
-                        {") "}
-                        {currentStock < 20 && currentStock > 0
-                          ? "Almost Out 🔥🔥"
-                          : ""}
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <div className=" bg-n-background flex items-center justify-center">
-                        <RefreshCw className="h-4 w-4 animate-spin mx-auto mb-4 text-n-foreground" />
+                        <Image
+                          src={v.cjImage}
+                          alt={v.cjKey || "variant"}
+                          width={90}
+                          height={90}
+                          className="w-full object-contain"
+                          loading="lazy"
+                          quality={70}
+                        />
                       </div>
-                    </>
-                  )
-                ) : (
-                  <>
-                    <p className="text-n-foreground text-sm">
-                      <span className="text-n-muted_foreground font-bold">
-                        CURRENT STOCK:
-                      </span>{" "}
-                      Select A Variant
-                    </p>
-                  </>
+                    ))}
+                  </div>
                 )}
-              </div>
-            </div>
-            <p className="text-xl text-n-muted_foreground font-bold">
-              Select Available Variant
-            </p>
 
-            {/* Variants */}
-            {variantsLoading ? (
-              <VariantsSkeleton />
-            ) : (
-              <div className="flex flex-wrap gap-2">
-                {allVariants.map((v) => (
-                  <div
-                    key={v.id}
-                    onClick={() => {
-                      variantImageSelection(v.cjImage, v.id);
-                      getInventory(v.vid);
-                    }}
-                    className={`cursor-pointer w-16 h-16 sm:w-20 sm:h-20 border rounded overflow-hidden flex items-center justify-center bg-white ${
-                      v.id === selectedVariant?.id
-                        ? "border-n-primary ring-2 ring-n-primary/20"
-                        : "border-n-border hover:border-n-primary/50"
-                    }`}
-                  >
-                    <Image
-                      src={v.cjImage}
-                      alt={v.cjKey || "variant"}
-                      width={90}
-                      height={90}
-                      className="w-full object-contain"
-                      loading="lazy"
-                      quality={70}
-                    />
+                <div className="space-y-4 mb-8">
+                  <h3 className="font-semibold text-foreground">
+                    Key Features:
+                  </h3>
+                  <div className="flex flex-wrap gap-4">
+                    {(productData?.features || []).map((feature, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-n-primary" />
+                        <span className="text-n-muted_foreground">
+                          {feature}
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            )}
+                </div>
 
-            <div className="space-y-4 mb-8">
-              <h3 className="font-semibold text-foreground">Key Features:</h3>
-              <div className="grid grid-cols-1 gap-2">
-                {(productData?.features || []).map((feature, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-n-primary" />
-                    <span className="text-n-muted_foreground">{feature}</span>
+                <p className="text-md font-bold text-n-foreground">
+                  Selected Variant: {selectedVariant?.cjKey || "—"}
+                </p>
+
+                {/* Shipping Cost Calculator */}
+                <div className="mt-6 p-4 border border-n-border rounded-xl bg-n-secondary/20 space-y-3">
+                  <h3 className="font-semibold text-n-foreground flex items-center gap-2">
+                    <Truck className="w-5 h-5 text-n-primary" /> Calculate
+                    Shipping Cost
+                  </h3>
+
+                  <div className="grid grid-cols-1 space-y-2 md:grid-cols-2 md:space-x-3 md:space-y-0">
+                    <div className="flex flex-col gap-2">
+                      <div ref={countryRef} className="relative space-y-2">
+                        <Input
+                          required
+                          type="text"
+                          placeholder={countryName || "Select country"}
+                          value={queryCountry}
+                          onChange={handleCountryInput}
+                          onFocus={async () => {
+                            setDropdownCountry(true);
+                            await ensureCountriesLoaded();
+                          }}
+                          className="focus:ring-2 focus:ring-n-primary/20 focus:border-n-primary transition-all duration-300"
+                        />
+                        {dropdownCountry && filteredCountries.length > 0 && (
+                          <ul className="absolute bottom-full z-10 w-full max-h-60 overflow-auto ring-2 ring-n-primary/20 border-n-primary transition-all duration-300 bg-white border rounded shadow [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+                            {filteredCountries.slice(0, 100).map((country) => (
+                              <li
+                                key={country.isoCode}
+                                onClick={() => handleSelectCountry(country)}
+                                className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                              >
+                                {country.name}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    </div>
+                    <Button onClick={calculateShipping} className="w-full">
+                      Check Shipping Options
+                    </Button>
                   </div>
-                ))}
-              </div>
-            </div>
 
-            <p className="text-md font-bold text-n-foreground">
-              Selected Variant: {selectedVariant?.cjKey || "—"}
-            </p>
-
-            {/* Shipping Cost Calculator */}
-            <div className="mt-6 p-4 border border-n-border rounded-xl bg-n-secondary/20 space-y-3">
-              <h3 className="font-semibold text-n-foreground flex items-center gap-2">
-                <Truck className="w-5 h-5 text-n-primary" /> Calculate Shipping
-                Cost
-              </h3>
-
-              <div className="grid grid-cols-1 space-y-2 md:grid-cols-2 md:space-x-3 md:space-y-0">
-                <div className="flex flex-col gap-2">
-                  <div ref={countryRef} className="relative space-y-2">
-                    <Input
-                      required
-                      type="text"
-                      placeholder={countryName || "Select country"}
-                      value={queryCountry}
-                      onChange={handleCountryInput}
-                      onFocus={async () => {
-                        setDropdownCountry(true);
-                        await ensureCountriesLoaded();
-                      }}
-                      className="focus:ring-2 focus:ring-n-primary/20 focus:border-n-primary transition-all duration-300"
-                    />
-                    {dropdownCountry && filteredCountries.length > 0 && (
-                      <ul className="absolute bottom-full z-10 w-full max-h-60 overflow-auto ring-2 ring-n-primary/20 border-n-primary transition-all duration-300 bg-white border rounded shadow [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
-                        {filteredCountries.slice(0, 100).map((country) => (
-                          <li
-                            key={country.isoCode}
-                            onClick={() => handleSelectCountry(country)}
-                            className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-                          >
-                            {country.name}
-                          </li>
-                        ))}
-                      </ul>
+                  <div className="text-sm text-n-muted_foreground italic font-bold">
+                    {shippingOptions.length > 0 ? (
+                      <>Detailed shipping info will be provided at checkout.</>
+                    ) : (
+                      <>
+                        Select destination country to check available methods.
+                      </>
                     )}
                   </div>
-                </div>
-                <Button onClick={calculateShipping} className="w-full">
-                  Check Shipping Options
-                </Button>
-              </div>
 
-              <div className="text-sm text-n-muted_foreground italic font-bold">
-                {shippingOptions.length > 0 ? (
-                  <>Detailed shipping info will be provided at checkout.</>
-                ) : (
-                  <>Select destination country to check available methods.</>
-                )}
-              </div>
+                  {loadingShipping && (
+                    <p className="text-sm text-n-muted_foreground">
+                      Fetching shipping options...
+                    </p>
+                  )}
 
-              {loadingShipping && (
-                <p className="text-sm text-n-muted_foreground">
-                  Fetching shipping options...
-                </p>
-              )}
-
-              {shippingOptions.length > 0 ? (
-                <div className="mt-3 space-y-2">
-                  {shippingOptions.map((opt, idx) => (
-                    <div key={idx} className="p-2 border rounded-lg bg-white">
-                      <p className="font-medium text-n-foreground">
-                        {opt.logisticName === "CJPacket Asia Liquid Line"
-                          ? "Standard Shipping"
-                          : opt.logisticName}
-                      </p>
-                      <p className="text-sm text-n-muted_foreground">
-                        ${opt.logisticPrice} · {opt.logisticAging} days
-                      </p>
+                  {shippingOptions.length > 0 ? (
+                    <div className="mt-3 space-y-2">
+                      {shippingOptions.map((opt, idx) => (
+                        <div
+                          key={idx}
+                          className="p-2 border rounded-lg bg-white"
+                        >
+                          <p className="font-medium text-n-foreground">
+                            {opt.logisticName === "CJPacket Asia Liquid Line"
+                              ? "Standard Shipping"
+                              : opt.logisticName}
+                          </p>
+                          <p className="text-sm text-n-muted_foreground">
+                            ${opt.logisticPrice} · {opt.logisticAging} days
+                          </p>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              ) : (
-                !loadingShipping && (
-                  <p className="text-sm text-n-muted_foreground italic">
-                    No options found
-                  </p>
-                )
-              )}
-            </div>
-
-            {/* Cart Actions */}
-            <div className="flex items-center gap-3">
-              {selectedVariant?.id ? (
-                currentStock < 1 ? (
-                  <Button
-                    className="flex-1"
-                    onClick={() =>
-                      addToCart(productData.id, selectedVariant.id)
-                    }
-                    disabled
-                  >
-                    Out of Stock
-                  </Button>
-                ) : isSignedIn ? (
-                  !cartProduct ? (
-                    <Button
-                      className="flex-1"
-                      onClick={() =>
-                        addToCart(productData.id, selectedVariant.id)
-                      }
-                    >
-                      <ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart
-                    </Button>
                   ) : (
-                    <>
-                      <div className="flex items-center border rounded min-w-[80px] max-w-[120px] py-2 px-2 justify-between">
-                        <button
-                          onClick={() =>
-                            updateCartQuantity(
-                              selectedVariant.id,
-                              Math.max(0, cartQuantity - 1)
-                            )
-                          }
-                          aria-label="Decrease quantity"
-                        >
-                          -
-                        </button>
-                        <span>{cartQuantity}</span>
-                        <button
-                          onClick={() =>
-                            updateCartQuantity(
-                              selectedVariant.id,
-                              cartQuantity + 1
-                            )
-                          }
-                          aria-label="Increase quantity"
-                        >
-                          +
-                        </button>
-                      </div>
+                    !loadingShipping && (
+                      <p className="text-sm text-n-muted_foreground italic">
+                        No options found
+                      </p>
+                    )
+                  )}
+                </div>
+
+                {/* Cart Actions */}
+                <div className="flex items-center gap-3">
+                  {selectedVariant?.id ? (
+                    currentStock < 1 ? (
                       <Button
-                        className="flex-1 bg-n-lumira_coral text-white hover:bg-n-foreground"
-                        onClick={() => router.push("/cart")}
+                        className="flex-1"
+                        onClick={() =>
+                          addToCart(productData.id, selectedVariant.id)
+                        }
+                        disabled
                       >
-                        Buy Now
+                        Out of Stock
                       </Button>
-                    </>
-                  )
-                ) : !localCartProduct ? (
-                  <Button
-                    className="flex-1"
-                    onClick={() =>
-                      addToLocalCart(productData.id, selectedVariant.id)
-                    }
-                  >
-                    <ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart
-                  </Button>
-                ) : (
-                  <>
-                    <div className="flex items-center border rounded min-w-[120px] py-2 px-2 justify-between">
-                      <button
-                        onClick={() => removeFromLocalCart(selectedVariant.id)}
-                        aria-label="Decrease local quantity"
-                      >
-                        -
-                      </button>
-                      <span>{localCartQuantity}</span>
-                      <button
+                    ) : isSignedIn ? (
+                      !cartProduct ? (
+                        <Button
+                          className="flex-1"
+                          onClick={() =>
+                            addToCart(productData.id, selectedVariant.id)
+                          }
+                        >
+                          <ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart
+                        </Button>
+                      ) : (
+                        <>
+                          <div className="flex items-center border rounded min-w-[80px] max-w-[120px] py-2 px-2 justify-between">
+                            <button
+                              onClick={() =>
+                                updateCartQuantity(
+                                  selectedVariant.id,
+                                  Math.max(0, cartQuantity - 1)
+                                )
+                              }
+                              aria-label="Decrease quantity"
+                            >
+                              -
+                            </button>
+                            <span>{cartQuantity}</span>
+                            <button
+                              onClick={() =>
+                                updateCartQuantity(
+                                  selectedVariant.id,
+                                  cartQuantity + 1
+                                )
+                              }
+                              aria-label="Increase quantity"
+                            >
+                              +
+                            </button>
+                          </div>
+                          <Button
+                            className="flex-1 bg-n-lumira_coral text-white hover:bg-n-foreground"
+                            onClick={() => router.push("/cart")}
+                          >
+                            Buy Now
+                          </Button>
+                        </>
+                      )
+                    ) : !localCartProduct ? (
+                      <Button
+                        className="flex-1"
                         onClick={() =>
                           addToLocalCart(productData.id, selectedVariant.id)
                         }
-                        aria-label="Increase local quantity"
                       >
-                        +
-                      </button>
-                    </div>
-                    <Button
-                      className="flex-1 bg-n-foreground text-white hover:bg-n-spaceGradient"
-                      onClick={() => router.push("/cart")}
-                    >
-                      Buy Now
+                        <ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart
+                      </Button>
+                    ) : (
+                      <>
+                        <div className="flex items-center border rounded min-w-[120px] py-2 px-2 justify-between">
+                          <button
+                            onClick={() =>
+                              removeFromLocalCart(selectedVariant.id)
+                            }
+                            aria-label="Decrease local quantity"
+                          >
+                            -
+                          </button>
+                          <span>{localCartQuantity}</span>
+                          <button
+                            onClick={() =>
+                              addToLocalCart(productData.id, selectedVariant.id)
+                            }
+                            aria-label="Increase local quantity"
+                          >
+                            +
+                          </button>
+                        </div>
+                        <Button
+                          className="flex-1 bg-n-foreground text-white hover:bg-n-spaceGradient"
+                          onClick={() => router.push("/cart")}
+                        >
+                          Buy Now
+                        </Button>
+                      </>
+                    )
+                  ) : (
+                    <Button className="flex-1 opacity-50" disabled>
+                      <ShoppingCart className="mr-2 h-5 w-5" /> First Select A
+                      Variant
                     </Button>
-                  </>
-                )
-              ) : (
-                <Button className="flex-1 opacity-50" disabled>
-                  <ShoppingCart className="mr-2 h-5 w-5" /> First Select A
-                  Variant
-                </Button>
-              )}
-              <Button variant="outline" aria-label="Add to wishlist">
-                <Heart className="w-5 h-5" />
-              </Button>
-            </div>
-            {/* 
+                  )}
+                  <Button variant="outline" aria-label="Add to wishlist">
+                    <Heart className="w-5 h-5" />
+                  </Button>
+                </div>
+                {/* 
             <div className="text-sm text-n-muted_foreground">
               <div className="flex items-center gap-2 mb-1">
                 <span
@@ -836,25 +855,26 @@ export default function Product() {
                 </span>
               </div>
             </div> */}
-          </div>
+              </div>
 
-          {/* Description */}
-          <div>
-            <p className="text-xl text-n-muted_foreground font-bold mb-3">
-              Product Description
-            </p>
-            {productData?.description && (
-              <div
-                className="bg-n-background border border-n-foreground/20 rounded-xl p-4 space-y-2 max-h-[800px] overflow-y-auto scrollbar-thin scrollbar-thumb-n-muted_foreground scrollbar-track-transparent"
-                // ✅ ensure string only
-                dangerouslySetInnerHTML={{
-                  __html: String(productData.description),
-                }}
-              />
-            )}
-          </div>
-        </div>
-
+              {/* Description */}
+              <div>
+                <p className="text-xl text-n-muted_foreground font-bold mb-3">
+                  Product Description
+                </p>
+                {productData?.description && (
+                  <div
+                    className="bg-n-background border border-n-foreground/20 rounded-xl p-4 space-y-2 max-h-[800px] overflow-y-auto scrollbar-thin scrollbar-thumb-n-muted_foreground scrollbar-track-transparent"
+                    // ✅ ensure string only
+                    dangerouslySetInnerHTML={{
+                      __html: String(productData.description),
+                    }}
+                  />
+                )}
+              </div>
+            </div>
+          </>
+        )}
         {/* Other Sections (lazy) */}
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Specifications */}

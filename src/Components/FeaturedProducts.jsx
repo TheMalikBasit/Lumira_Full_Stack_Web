@@ -193,83 +193,14 @@ const FeaturedProducts = ({ id }) => {
                   )}
                 </div>
 
-                {/* Add to Cart */}
-                <div
-                  onClick={(e) => e.stopPropagation()}
-                  className="flex items-center gap-3"
+                {/* Add to Cart Button */}
+                <Button
+                  className="w-full"
+                  variant="coral"
+                  onClick={() => router.push(`/product/${product.id}`)}
                 >
-                  {isSignedIn ? (
-                    !cartProduct ? (
-                      <Button
-                        className="w-full"
-                        variant="coral"
-                        onClick={() =>
-                          addToCart(productData.id, selectedVariant.id)
-                        }
-                      >
-                        <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
-                      </Button>
-                    ) : (
-                      <>
-                        <div className="flex items-center border rounded min-w-[70px] max-w-[120px] py-2 px-2 justify-between">
-                          <button
-                            onClick={() =>
-                              updateCartQuantity(
-                                cartProduct.id,
-                                cartQuantity - 1
-                              )
-                            }
-                          >
-                            -
-                          </button>
-                          <span>{cartQuantity}</span>
-                          <button
-                            onClick={() =>
-                              updateCartQuantity(
-                                cartProduct.id,
-                                cartQuantity + 1
-                              )
-                            }
-                          >
-                            +
-                          </button>
-                        </div>
-                        <Button
-                          // className="w-full" variant="coral"
-                          className="flex-1 bg-n-lumira_coral text-white hover:bg-n-foreground"
-                          onClick={() => router.push("/cart")}
-                        >
-                          Buy Now
-                        </Button>
-                      </>
-                    )
-                  ) : !localCartProduct ? (
-                    <Button
-                      className="flex-1"
-                      onClick={() => addToLocalCart(product.id)}
-                    >
-                      <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
-                    </Button>
-                  ) : (
-                    <>
-                      <div className="flex items-center border rounded min-w-[120px] py-2 px-2 justify-between">
-                        <button onClick={() => removeFromLocalCart(product.id)}>
-                          -
-                        </button>
-                        <span>{localCartQuantity}</span>
-                        <button onClick={() => addToLocalCart(product.id)}>
-                          +
-                        </button>
-                      </div>
-                      <Button
-                        className="flex-1 bg-n-foreground text-white hover:bg-n-spaceGradient"
-                        onClick={() => router.push("/cart")}
-                      >
-                        Buy Now
-                      </Button>
-                    </>
-                  )}
-                </div>
+                  <ShoppingCart className="mr-2 h-4 w-4" /> Explore Product
+                </Button>
               </div>
             </CardContent>
           </Card>

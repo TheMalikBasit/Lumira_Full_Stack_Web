@@ -68,15 +68,13 @@ const cart = () => {
     setCART(tempCart);
   }, [cartItems, darkMode, isSignedIn]);
 
-  if (loading) return <LottieLoading />;
-
   return (
     <>
       <Navbar bgBlur />
       <div className="min-h-screen relative overflow-hidden mt-20">
         <BackLights L2 />
         <div className="container mx-auto px-4 py-8 relative z-10">
-          <div className="flex items-center gap-6 mb-16">
+          <div className="flex justify-between gap-6 mb-16">
             <div className="flex flex-col md:flex-row space-y-3 md:space-y-0">
               <div
                 onClick={() => {
@@ -92,7 +90,7 @@ const cart = () => {
                 </Button>
               </div>
 
-              <div className="flex-1 text-center md:text-start">
+              <div className="flex-1 text-center md:text-start md:ml-4">
                 <h1 className="text-5xl font-bold text-n-foreground mb-3 animate-fade-in">
                   Shopping Cart
                 </h1>
@@ -117,14 +115,23 @@ const cart = () => {
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-            <div className="lg:col-span-2 space-y-8 ">
-              <RenderCart />
-            </div>
-            <div className="lg:col-span-1">
-              <OrderSummaryClassic />
-            </div>
-          </div>
+          {loading ? (
+            <>
+              {" "}
+              <LottieLoading className={"min-h-screen relative"} />
+            </>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                <div className="lg:col-span-2 space-y-8 ">
+                  <RenderCart />
+                </div>
+                <div className="lg:col-span-1">
+                  <OrderSummaryClassic />
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
       <Footer />
