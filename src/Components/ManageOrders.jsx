@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/Components/UI/lumiraButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/UI/card";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/Components/UI/badge";
 import {
   Select,
   SelectContent,
@@ -32,9 +32,6 @@ import {
   ArrowBigDown,
   RefreshCw,
 } from "lucide-react";
-
-import Navbar from "@/Components/Navbar";
-import Footer from "@/Components/LumiraFooter";
 import { useAppContext } from "@/Context/AppContext";
 import { db } from "../../Config/firebase";
 import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
