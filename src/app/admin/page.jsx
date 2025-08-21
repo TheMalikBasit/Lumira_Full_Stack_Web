@@ -11,6 +11,7 @@ import Button from "@/Components/Button";
 import { updateExchangeRates } from "../../../models/updateExchangeRates";
 import { db } from "../../../Config/firebase";
 import { addDoc, collection } from "firebase/firestore";
+import ManageOrders from "@/Components/ManageOrders";
 import AddCJProduct from "@/Components/AddCJProduct";
 const page = () => {
   const { isAdmin, adminLoading } = useAppContext();
@@ -75,7 +76,9 @@ const page = () => {
           </button>
           {status && <p className="mt-4 text-gray-800">{status}</p>}
         </div>
-
+        <div>
+          <ManageOrders />
+        </div>
         <div className="flex flex-col lg:justify-around lg:flex-row justify-start">
           <AddCJProduct />
           {/* <StockAddForm /> */}

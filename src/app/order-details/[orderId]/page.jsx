@@ -53,10 +53,11 @@ const OrderConfirmation = () => {
 
   const trackingSteps = [
     { label: "Pending", completed: deliveryProgress >= 0 },
-    { label: "Order Confirmed", completed: deliveryProgress >= 25 },
-    { label: "Processing", completed: deliveryProgress >= 50 },
-    { label: "Dispatched", completed: deliveryProgress >= 75 },
-    { label: "Shipped", completed: deliveryProgress >= 95 },
+    { label: "Order Confirmed", completed: deliveryProgress >= 20 },
+    { label: "Processing", completed: deliveryProgress >= 40 },
+    { label: "Dispatched", completed: deliveryProgress >= 60 },
+    { label: "Shipped", completed: deliveryProgress >= 75 },
+    { label: "Out for Delivery", completed: deliveryProgress >= 90 },
     { label: "Delivered", completed: deliveryProgress >= 100 },
   ];
 
@@ -67,8 +68,9 @@ const OrderConfirmation = () => {
   ];
 
   const trackingStepsMobile2 = [
-    { label: "Dispatched", completed: deliveryProgress2 > 10 },
+    { label: "Dispatched", completed: deliveryProgress2 > 0 },
     { label: "Shipped", completed: deliveryProgress2 >= 50 },
+    { label: "Out for Delivery", completed: deliveryProgress2 >= 75 },
     { label: "Delivered", completed: deliveryProgress2 >= 100 },
   ];
 
@@ -108,25 +110,29 @@ const OrderConfirmation = () => {
         .filter(Boolean);
       const timeStamp = orderDetails.orderDate;
       if (orderDetails.deliveryStatus === "Pending") {
-        setDeliveryProgress(0);
+        setDeliveryProgress(10);
         setDeliveryProgress1(35);
         setDeliveryProgress2(0);
       } else if (orderDetails.deliveryStatus === "Order Confirmed") {
-        setDeliveryProgress(25);
+        setDeliveryProgress(20);
         setDeliveryProgress1(50);
         setDeliveryProgress2(0);
       } else if (orderDetails.deliveryStatus === "Processing") {
-        setDeliveryProgress(50);
+        setDeliveryProgress(40);
         setDeliveryProgress1(100);
         setDeliveryProgress2(0);
       } else if (orderDetails.deliveryStatus === "Dispatched") {
-        setDeliveryProgress(75);
+        setDeliveryProgress(60);
         setDeliveryProgress1(100);
         setDeliveryProgress2(35);
       } else if (orderDetails.deliveryStatus === "Shipped") {
-        setDeliveryProgress(95);
+        setDeliveryProgress(75);
         setDeliveryProgress1(100);
         setDeliveryProgress2(50);
+      } else if (orderDetails.deliveryStatus === "Out for Delivery") {
+        setDeliveryProgress(90);
+        setDeliveryProgress1(100);
+        setDeliveryProgress2(75);
       } else if (orderDetails.deliveryStatus === "Delivered") {
         setDeliveryProgress(100);
         setDeliveryProgress1(100);
@@ -172,7 +178,7 @@ const OrderConfirmation = () => {
     <>
       <Navbar bgBlur />
       <div className="min-h-screen backdrop-blur-3xl mt-20 overflow-hidden">
-        <div className="container mx-auto px-4 py-12 mt-10">
+        <div className="container mx-auto px-4 py-12">
           {/* <BackLights L2 L3 /> */}
           <div className="max-w-6xl mx-auto">
             <div className="flex items-start md:items-center flex-col md:flex-row gap-4 mb-8">

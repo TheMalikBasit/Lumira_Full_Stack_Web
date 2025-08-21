@@ -100,6 +100,7 @@ const OrderHistory = () => {
         return <CheckCircle className="h-4 w-4 text-white" />;
       case "processing":
       case "shipped":
+      case "out for delivery":
         return <Truck className="h-4 w-4 text-yellow-500" />;
       case "pending verification":
         return <Clock className="h-4 w-4 text-orange-500" />;
@@ -116,6 +117,7 @@ const OrderHistory = () => {
       case "paid":
         return "default";
       case "processing":
+      case "out for delivery":
       case "shipped":
         return "secondary";
       default:

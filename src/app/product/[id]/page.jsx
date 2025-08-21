@@ -184,16 +184,15 @@ export default function Product() {
       setVariantsLoading(true);
 
       try {
-        // 1. Check localStorage
+        // 1. Load from cache immediately
         const cached = localStorage.getItem("variantsCache");
         let cacheObj = cached ? JSON.parse(cached) : {};
 
         if (cacheObj[id]) {
           if (!cancelled) setAllVariants(cacheObj[id]);
-          return;
         }
 
-        // 2. If not in cache → fetch from Firestore
+        // 2. Always re-fetch from Firestore (to ensure up-to-date)
         const variantsRef = collection(db, "products", id, "variants");
         const snapshot = await getDocs(variantsRef);
         if (cancelled) return;
@@ -203,18 +202,23 @@ export default function Product() {
           ...d.data(),
         }));
 
-        // 3. Save to localStorage
-        cacheObj[id] = variantsData;
-        localStorage.setItem("variantsCache", JSON.stringify(cacheObj));
+        // 3. Compare with cache
+        const isDifferent =
+          JSON.stringify(cacheObj[id]) !== JSON.stringify(variantsData);
 
-        setAllVariants(variantsData || []);
+        if (isDifferent) {
+          cacheObj[id] = variantsData;
+          localStorage.setItem("variantsCache", JSON.stringify(cacheObj));
+          if (!cancelled) setAllVariants(variantsData);
+        }
       } catch (e) {
         console.error("Error fetching variants:", e);
-        setAllVariants([]);
+        if (!cancelled) setAllVariants([]);
       } finally {
         if (!cancelled) setVariantsLoading(false);
       }
     }
+
     fetchVariants();
     return () => {
       cancelled = true;
@@ -325,7 +329,7 @@ export default function Product() {
       setLoadingShipping(false);
     }
   };
-  console.log("Variants Data:", allVariants);
+  // console.log("Variants Data:", allVariants);
   // Early load guard
   // if (!productData) return <LottieLoading />;
 
@@ -467,11 +471,10 @@ export default function Product() {
                         </>
                       )
                     ) : !selectedVariant ? (
-                      <PriceTag
-                        basePrice={productData?.price ?? 0}
-                        userCurrency={Currency}
-                        symbol={Symbol}
-                      />
+                      <>
+                        {productData?.price ?? 0}
+                        {"$"}
+                      </>
                     ) : (
                       <PriceTag
                         basePrice={selectedVariant?.lumiraPrice ?? 0}
@@ -510,12 +513,14 @@ export default function Product() {
                         {Currency === "USD" ? (
                           <>
                             Save {Symbol}
-                            {(selectedVariant?.originalPrice ??
-                              productData?.originalPrice ??
-                              0) -
+                            {(
+                              (selectedVariant?.originalPrice ??
+                                productData?.originalPrice ??
+                                0) -
                               (selectedVariant?.lumiraPrice ??
                                 productData?.price ??
-                                0)}
+                                0)
+                            ).toFixed(2)}
                           </>
                         ) : (
                           <>
@@ -601,8 +606,8 @@ export default function Product() {
                         }}
                         className={`cursor-pointer w-16 h-16 sm:w-20 sm:h-20 border rounded overflow-hidden flex items-center justify-center bg-white ${
                           v.id === selectedVariant?.id
-                            ? "border-n-primary ring-2 ring-n-primary/20"
-                            : "border-n-border hover:border-n-primary/50"
+                            ? "border-n-primary ring-2 ring-n-primary/50"
+                            : "border-n-border hover:border-n-primary"
                         }`}
                       >
                         <Image
@@ -864,7 +869,7 @@ export default function Product() {
                 </p>
                 {productData?.description && (
                   <div
-                    className="bg-n-background border border-n-foreground/20 rounded-xl p-4 space-y-2 max-h-[800px] overflow-y-auto scrollbar-thin scrollbar-thumb-n-muted_foreground scrollbar-track-transparent"
+                    className="bg-n-background border border-n-foreground/20 rounded-xl p-4 space-y-2 max-h-[600px] md:max-h-[800px] overflow-y-auto scrollbar-thin scrollbar-thumb-n-muted_foreground scrollbar-track-transparent"
                     // ✅ ensure string only
                     dangerouslySetInnerHTML={{
                       __html: String(productData.description),
