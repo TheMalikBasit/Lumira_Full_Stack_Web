@@ -23,17 +23,17 @@ import { Badge } from "@/Components/UI/badge";
 import { Input } from "@/Components/UI/input";
 import PriceTag from "@/Components/PriceTag";
 const AllProducts = ({ hidden }) => {
-  const { products, router, Symbol, Currency } = useAppContext();
-  const [loading, setloading] = useState(true);
+  const { products, router, Symbol, Currency, loading, setLoading } =
+    useAppContext();
   const [supportModal, setSupportModal] = useState({
     isOpen: false,
     section: "",
   });
   useEffect(() => {
     if (!products || !Array.isArray(products)) {
-      setloading(true);
+      setLoading(true);
     } else {
-      setloading(false);
+      setLoading(false);
     }
   }, [products]);
 

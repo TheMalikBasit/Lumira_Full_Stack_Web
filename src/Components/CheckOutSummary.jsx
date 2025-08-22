@@ -189,55 +189,61 @@ const CheckOutSummary = ({
             <CardContent className="space-y-6 p-8">
               {/* Order Items */}
               <div className="space-y-4">
-                {checkedItems.map((ci, idx) => {
-                  const v = variantMap[ci.vid];
-                  if (!v) return null;
-                  return (
-                    <div
-                      key={ci.vid}
-                      className="flex gap-4 p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent hover:from-n-muted/50 transition-all duration-300 group/item animate-fade-in"
-                      style={{ animationDelay: `${700 + idx * 100}ms` }}
-                    >
-                      <div className="w-20 h-20 rounded-xl overflow-hidden bg-gradient-to-br from-n-muted to-n-muted/50 shadow-warm flex-shrink-0 group-hover/item:shadow-glow transition-shadow duration-300">
-                        <Image
-                          src={v.cjImage}
-                          alt={v.cjKey ?? v.cjName}
-                          width={80}
-                          height={80}
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover/item:scale-110"
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-n-foreground text-base mb-1">
-                          {v.cjKey ?? v.cjName}
-                        </h4>
-                        <div className="flex items-center gap-3 mb-2">
-                          <span className="text-xs text-n-muted_foreground">
-                            Qty: {ci.quantity}
-                          </span>
+                {checkedItems.length === 0 ? (
+                  <div className="text-orange-600 flex gap-4 p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent hover:from-n-muted/50 transition-all duration-300 group/item animate-fade-in">
+                    No items selected
+                  </div>
+                ) : (
+                  checkedItems.map((ci, idx) => {
+                    const v = variantMap[ci.vid];
+                    if (!v) return null;
+                    return (
+                      <div
+                        key={ci.vid}
+                        className="flex gap-4 p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent hover:from-n-muted/50 transition-all duration-300 group/item animate-fade-in"
+                        style={{ animationDelay: `${700 + idx * 100}ms` }}
+                      >
+                        <div className="w-20 h-20 rounded-xl overflow-hidden bg-gradient-to-br from-n-muted to-n-muted/50 shadow-warm flex-shrink-0 group-hover/item:shadow-glow transition-shadow duration-300">
+                          <Image
+                            src={v.cjImage}
+                            alt={v.cjKey ?? v.cjName}
+                            width={80}
+                            height={80}
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover/item:scale-110"
+                          />
                         </div>
-                        <div className="text-lg font-bold bg-text-gradient bg-clip-text text-transparent">
-                          {Currency === "USD" ? (
-                            <>
-                              {(
-                                (v.lumiraPrice ?? v.price) * ci.quantity
-                              ).toFixed(2)}{" "}
-                              {Symbol}
-                            </>
-                          ) : (
-                            <PriceTag
-                              basePrice={
-                                (v.lumiraPrice ?? v.price) * ci.quantity
-                              }
-                              userCurrency={Currency}
-                              symbol={Symbol}
-                            />
-                          )}
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-bold text-n-foreground text-base mb-1">
+                            {v.cjKey ?? v.cjName}
+                          </h4>
+                          <div className="flex items-center gap-3 mb-2">
+                            <span className="text-xs text-n-muted_foreground">
+                              Qty: {ci.quantity}
+                            </span>
+                          </div>
+                          <div className="text-lg font-bold bg-text-gradient bg-clip-text text-transparent">
+                            {Currency === "USD" ? (
+                              <>
+                                {(
+                                  (v.lumiraPrice ?? v.price) * ci.quantity
+                                ).toFixed(2)}{" "}
+                                {Symbol}
+                              </>
+                            ) : (
+                              <PriceTag
+                                basePrice={
+                                  (v.lumiraPrice ?? v.price) * ci.quantity
+                                }
+                                userCurrency={Currency}
+                                symbol={Symbol}
+                              />
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })
+                )}
               </div>
 
               <Separator className="my-6" />
@@ -302,7 +308,10 @@ const CheckOutSummary = ({
               </div>
 
               {/* Checkout button */}
-              {user && selectedShippingData && selectedPaymentData ? (
+              {user &&
+              selectedShippingData &&
+              selectedPaymentData &&
+              checkedItems.length > 0 ? (
                 <Button
                   onClick={handleCheckout}
                   className="w-full bg-gradient-warm hover:shadow-glow transition-all duration-500 text-lg py-8 rounded-xl font-bold tracking-wide hover-lift relative overflow-hidden group"

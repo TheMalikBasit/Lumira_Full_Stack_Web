@@ -23,7 +23,7 @@ export const AppContextProvider = (props) => {
   // const currency = process.env.NEXT_PUBLIC_CURRENCY;
   const router = useRouter();
 
-  const { user } = useUser();
+  const { user, isSignedIn } = useUser();
 
   const [products, setProducts] = useState([]);
   const [userData, setUserData] = useState(false);
@@ -37,7 +37,6 @@ export const AppContextProvider = (props) => {
   const [Currency, setCurrency] = useState("");
   const [Symbol, setSymbol] = useState("");
   const [CurrencyRates, setCurrencyRates] = useState({});
-
   //console.log("Curency from App Context", Currency);
 
   useEffect(() => {
@@ -163,10 +162,36 @@ export const AppContextProvider = (props) => {
   };
 
   useEffect(() => {
-    const syncCart = () => setLocalCart(fetchLocalCart());
-    window.addEventListener("storage", syncCart);
-    return () => window.removeEventListener("storage", syncCart);
-  }, [products, user]);
+    const cartUpdater = async () => {
+      const tempLocalCartv1 = fetchLocalCart();
+      if (loading === false && isSignedIn && tempLocalCartv1.length > 0) {
+        const tempLocalCart = fetchLocalCart();
+        const tempDbCart = cartItems;
+        const mergedCart = [...tempLocalCart, ...tempDbCart].reduce(
+          (acc, item) => {
+            const existingItem = acc.find(
+              (i) => i.vid === item.vid && i.id === item.id
+            );
+            if (existingItem) {
+              existingItem.checked == item.checked;
+            } else {
+              acc.push({ ...item });
+            }
+            return acc;
+          },
+          []
+        );
+        await UpdateCart({ userId: user.id, cartDataProp: mergedCart });
+        setCartItems(mergedCart);
+        clearLocalCartData();
+      } else {
+        const syncCart = () => setLocalCart(fetchLocalCart());
+        window.addEventListener("storage", syncCart);
+        return () => window.removeEventListener("storage", syncCart);
+      }
+    };
+    cartUpdater();
+  }, [loading]);
 
   const addToLocalCart = (id, variantId) => {
     addLocalProducts({ ID: id, variantId: variantId });

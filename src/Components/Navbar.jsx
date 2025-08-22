@@ -105,7 +105,7 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
   const handleClick = (url) => {
     if (url != undefined) {
       setLoading(true);
-      window.location.href = url;
+      router.push(url);
     } else {
       return;
     }

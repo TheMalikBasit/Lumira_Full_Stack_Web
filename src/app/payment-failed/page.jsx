@@ -27,8 +27,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Footer from "@/Components/LumiraFooter";
 export default function PaymentFailed() {
   const [order, setOrder] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const { products, router } = useAppContext();
+  const { products, router, loading, setLoading } = useAppContext();
   const [orderedProducts, setOrderedProducts] = useState([]);
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");

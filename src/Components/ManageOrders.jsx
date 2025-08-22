@@ -38,9 +38,8 @@ import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
 import toast from "react-hot-toast";
 
 const ManageOrders = () => {
-  const { router } = useAppContext();
+  const { router, loading, setLoading } = useAppContext();
   const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   // 🔹 Fetch placedOrders from Firestore
   useEffect(() => {

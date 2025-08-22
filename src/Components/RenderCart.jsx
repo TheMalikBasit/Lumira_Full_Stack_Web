@@ -217,7 +217,11 @@ const RenderCart = () => {
 
   const cartToRender = isSignedIn ? cartItems : localCart;
   if (!cartToRender?.length)
-    return <p className="text-2xl ml-10">Your cart is empty.</p>;
+    return (
+      <p className="text-2xl ml-10 text-center md:text-start">
+        Your cart is empty.
+      </p>
+    );
 
   return (
     <div className="lg:col-span-2 space-y-8">

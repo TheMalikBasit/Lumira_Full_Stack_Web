@@ -45,17 +45,17 @@ const cart = () => {
     addToLocalCart,
     removeFromLocalCart,
     deleteFromLocalCart,
+    loading,
+    setLoading,
   } = useAppContext();
   const { isSignedIn } = useUser();
-  const [loading, setloading] = useState(true);
-  const [addAddressPopUp, setaddAddressPopUp] = useState(false);
   const [CART, setCART] = useState([]);
 
   useEffect(() => {
     if (cartItems === undefined || cartItems === null) {
-      setloading(true);
+      setLoading(true);
     } else {
-      setloading(false);
+      setLoading(false);
     }
 
     if (darkMode) {
@@ -75,11 +75,12 @@ const cart = () => {
         <BackLights L2 />
         <div className="container mx-auto px-4 py-8 relative z-10">
           <div className="flex justify-between gap-6 mb-16">
-            <div className="flex flex-col md:flex-row space-y-3 md:space-y-0">
+            <div className="flex flex-col w-full text-center md:text-start md:flex-row space-y-3 md:space-y-0">
               <div
                 onClick={() => {
                   router.push("/my-products");
                 }}
+                className="text-left"
               >
                 <Button
                   variant="ghost"
@@ -90,7 +91,7 @@ const cart = () => {
                 </Button>
               </div>
 
-              <div className="flex-1 text-center md:text-start md:ml-4">
+              <div className="flex-1 mx-auto md:ml-4">
                 <h1 className="text-5xl font-bold text-n-foreground mb-3 animate-fade-in">
                   Shopping Cart
                 </h1>

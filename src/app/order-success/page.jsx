@@ -22,6 +22,7 @@ import BackLights from "@/Components/BackLights";
 import { useUser } from "@clerk/nextjs";
 import toast from "react-hot-toast";
 import Footer from "@/Components/LumiraFooter";
+import { useAppContext } from "@/Context/AppContext";
 
 // ✅ helper to resolve variants from Firestore
 async function resolveOrderItems(order) {
@@ -69,9 +70,9 @@ async function resolveOrderItems(order) {
 }
 
 export default function PaymentSuccess() {
+  const { loading, setLoading } = useAppContext();
   const [order, setOrder] = useState(null);
   const [orderedProducts, setOrderedProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
   const method = searchParams.get("method");

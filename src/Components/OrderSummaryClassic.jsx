@@ -17,7 +17,6 @@ import { LottieLoading } from "./Loading";
 import PriceTag from "./PriceTag";
 import { db } from "../../Config/firebase";
 import { collection, getDocs } from "firebase/firestore";
-
 const OrderSummaryClassic = () => {
   const {
     Currency,
@@ -27,6 +26,7 @@ const OrderSummaryClassic = () => {
     cartItems,
     localCart,
     loading,
+    router,
   } = useAppContext();
   const { isSignedIn } = useUser();
 
@@ -34,7 +34,6 @@ const OrderSummaryClassic = () => {
 
   const currentCart = isSignedIn ? cartItems : localCart;
   const checkedItems = currentCart.filter((item) => item.checked);
-
   // 🔥 Fetch all variants used in cart
   useEffect(() => {
     const fetchVariants = async () => {
@@ -60,8 +59,9 @@ const OrderSummaryClassic = () => {
       }
     };
 
+    console.log("Checked items:", checkedItems);
     if (checkedItems.length > 0) fetchVariants();
-  }, [checkedItems]);
+  }, [currentCart]);
 
   // ✅ Subtotal using variant prices
   const subtotal = checkedItems.reduce((sum, item) => {
@@ -151,20 +151,34 @@ const OrderSummaryClassic = () => {
       )}
 
       <CardFooter className="flex flex-col gap-5 p-8 pt-0">
-        <Link href="/my-checkout" className="w-full">
-          <Button className="w-full bg-gradient-warm hover:shadow-glow transition-all duration-200 text-lg py-8 rounded-xl font-bold tracking-wide hover-lift relative overflow-hidden group">
-            <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-            <span className="relative z-10">Proceed to Checkout</span>
-          </Button>
-        </Link>
-        <Link href="/all-products" className="w-full">
+        {checkedItems?.length < 1 ? (
+          <>
+            <div className="w-full pointer-events-none">
+              <Button className="w-full opacity-25 bg-gradient-warm transition-all duration-200 text-lg py-8 rounded-xl font-bold tracking-wide relative overflow-hidden group">
+                <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                <span className="relative z-10">Proceed to Checkout</span>
+              </Button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div onClick={() => router.push("/my-checkout")} className="w-full">
+              <Button className="w-full bg-gradient-warm hover:shadow-glow transition-all duration-200 text-lg py-8 rounded-xl font-bold tracking-wide hover-lift relative overflow-hidden group">
+                <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                <span className="relative z-10">Proceed to Checkout</span>
+              </Button>
+            </div>
+          </>
+        )}
+
+        <div href="/all-products" className="w-full">
           <Button
             variant="outline"
             className="w-full hover-scale py-4 rounded-xl border-n-primary/20 hover:border-n-primary/40 hover:bg-n-primary/5 transition-all duration-300"
           >
             Continue Shopping
           </Button>
-        </Link>
+        </div>
       </CardFooter>
     </Card>
   );

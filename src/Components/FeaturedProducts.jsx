@@ -24,10 +24,11 @@ const FeaturedProducts = ({ id }) => {
     cartItems,
     addToLocalCart,
     removeFromLocalCart,
+    loading,
+    setLoading,
   } = useAppContext();
 
   const { isSignedIn } = useUser();
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!products || !Array.isArray(products)) {

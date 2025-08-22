@@ -117,12 +117,12 @@ const Checkout = () => {
   }, [selectedShippingData]);
 
   useEffect(() => {
-    if (!user) {
+    if (!user && !loading) {
       toast.error("Login to complete your order");
     }
   }, [user]);
 
-  if (loading) return <LottieLoading />;
+  // if (loading) return <LottieLoading />;
   return (
     <>
       <Navbar relative />
@@ -171,12 +171,6 @@ const Checkout = () => {
               <h1 className="text-5xl font-bold bg-text-gradient bg-clip-text text-transparent mb-3 animate-fade-in">
                 Secure Checkout
               </h1>
-              {/* <p
-                className="text-n-muted_foreground text-lg animate-fade-in"
-                style={{ animationDelay: "200ms" }}
-              >
-                Complete your order with confidence
-              </p> */}
             </div>
             <div
               className="hidden md:flex items-center gap-4 animate-fade-in"
@@ -212,65 +206,72 @@ const Checkout = () => {
               </AlertDescription>
             </Alert>
           )}
+          {loading ? (
+            <>
+              <LottieLoading className={"min-h-screen relative"} />
+            </>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                {/* Checkout Form */}
+                <div className="space-y-8">
+                  <div key={reloadKey}>
+                    {/* user shipment Information */}
+                    {shipmentData && (
+                      <div className="mb-4">
+                        <ShipmentInfoDB
+                          data={shipmentData}
+                          selectedAddress={handleAddressSelection}
+                          onReload={handleReload}
+                        />
+                      </div>
+                    )}
+                    {/* Shipping Information */}
+                    {toggleNewAddress == true ? (
+                      <>
+                        <div onClick={handleToggle} className="cursor-pointer">
+                          <Card className=" border-n-border/50 backdrop-blur-sm bg-n-card/80 hover:bg-n-card/90 hover:shadow-elegant transition-all duration-500 hover-lift animate-fade-in relative overflow-hidden group">
+                            {/* Card decoration */}
+                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-n-lumira_coral via-n-primary to-n-lumira_salmon"></div>
+                            <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-n-lumira_coral/5 to-transparent rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            {/* Checkout Form */}
-            <div className="space-y-8">
-              <div key={reloadKey}>
-                {/* user shipment Information */}
-                {shipmentData && (
-                  <div className="mb-4">
-                    <ShipmentInfoDB
-                      data={shipmentData}
-                      selectedAddress={handleAddressSelection}
-                      onReload={handleReload}
-                    />
+                            <CardHeader className="flex flex-row items-center gap-4 bg-gradient-to-r from-n-lumira_coral/5 via-transparent to-n-primary/5 relative">
+                              <div className="p-3 rounded-xl bg-n-lumira_coral/20 group-hover:bg-n-lumira_coral/30 transition-colors duration-300">
+                                <PlusCircleIcon className="h-6 w-6 text-n-lumira_coral" />
+                              </div>
+                              <CardTitle className="text-n-foreground text-2xl font-bold">
+                                Add A new Address
+                              </CardTitle>
+                            </CardHeader>
+                          </Card>
+                        </div>
+                      </>
+                    ) : (
+                      <ShipmentForm
+                        onReload={handleReload}
+                        handleToggle={handleToggle}
+                      />
+                    )}
                   </div>
-                )}
-                {/* Shipping Information */}
-                {toggleNewAddress == true ? (
-                  <>
-                    <div onClick={handleToggle} className="cursor-pointer">
-                      <Card className=" border-n-border/50 backdrop-blur-sm bg-n-card/80 hover:bg-n-card/90 hover:shadow-elegant transition-all duration-500 hover-lift animate-fade-in relative overflow-hidden group">
-                        {/* Card decoration */}
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-n-lumira_coral via-n-primary to-n-lumira_salmon"></div>
-                        <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-n-lumira_coral/5 to-transparent rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-                        <CardHeader className="flex flex-row items-center gap-4 bg-gradient-to-r from-n-lumira_coral/5 via-transparent to-n-primary/5 relative">
-                          <div className="p-3 rounded-xl bg-n-lumira_coral/20 group-hover:bg-n-lumira_coral/30 transition-colors duration-300">
-                            <PlusCircleIcon className="h-6 w-6 text-n-lumira_coral" />
-                          </div>
-                          <CardTitle className="text-n-foreground text-2xl font-bold">
-                            Add A new Address
-                          </CardTitle>
-                        </CardHeader>
-                      </Card>
-                    </div>
-                  </>
-                ) : (
-                  <ShipmentForm
-                    onReload={handleReload}
-                    handleToggle={handleToggle}
+                  {/* Payment Information */}
+                  <Payment
+                    paymentSelection={handlePaymentSelection}
+                    CountryData={selectedShippingData.Country}
+                    setTransactionId={setTransactionId}
                   />
-                )}
+                </div>
+
+                {/* Order Summary */}
+                <CheckOutSummary
+                  shipmentCharge={shipmentCharges}
+                  totalCharged={handleTotal}
+                  selectedShippingData={selectedShippingData}
+                  selectedPaymentData={paymentOption}
+                />
               </div>
-
-              {/* Payment Information */}
-              <Payment
-                paymentSelection={handlePaymentSelection}
-                CountryData={selectedShippingData.Country}
-                setTransactionId={setTransactionId}
-              />
-            </div>
-
-            {/* Order Summary */}
-            <CheckOutSummary
-              shipmentCharge={shipmentCharges}
-              totalCharged={handleTotal}
-              selectedShippingData={selectedShippingData}
-              selectedPaymentData={paymentOption}
-            />
-          </div>
+            </>
+          )}
         </div>
       </div>
     </>

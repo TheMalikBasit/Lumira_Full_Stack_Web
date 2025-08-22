@@ -21,7 +21,7 @@ export default function ProductsFetcher() {
         setProducts(products);
         //console.log("Products fetched successfully:", products);
       } catch (error) {
-        toast.error("We are facing issues 🤦‍♀️🤦");
+        toast.error("Network Issue 🐒🐒");
       }
     };
     fetchProducts();

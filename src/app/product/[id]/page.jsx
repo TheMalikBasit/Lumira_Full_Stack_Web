@@ -703,7 +703,7 @@ export default function Product() {
                   )}
 
                   {shippingOptions.length > 0 ? (
-                    <div className="mt-3 space-y-2">
+                    <div className="mt-3 space-y-2 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-n-muted_foreground scrollbar-track-transparent">
                       {shippingOptions.map((opt, idx) => (
                         <div
                           key={idx}

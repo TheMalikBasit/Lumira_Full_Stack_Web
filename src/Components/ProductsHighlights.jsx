@@ -21,15 +21,15 @@ const ProductHighlights = () => {
     cartItems,
     addToLocalCart,
     removeFromLocalCart,
+    loading,
+    setLoading,
   } = useAppContext();
-
-  const [loading, setloading] = useState(true);
 
   useEffect(() => {
     if (!products || !Array.isArray(products)) {
-      setloading(true);
+      setLoading(true);
     } else {
-      setloading(false);
+      setLoading(false);
     }
   }, [products]);
 
