@@ -36,12 +36,13 @@ import Image from "next/image";
 import { Loading, LottieLoading } from "@/Components/Loading";
 import { useUser } from "@clerk/nextjs";
 const OrderHistory = () => {
-  const { orderHistory, router, loading, products } = useAppContext();
+  const { orderHistory, router, loading, products, setLoading } =
+    useAppContext();
   const { user } = useUser();
   const [orders, setOrders] = useState([]);
-  const [toPay, setToPay] = useState(null);
+  const [toPay, setToPay] = useState(0);
   const [unsorted, setUnsorted] = useState([]);
-
+  const [paid, setPaid] = useState(0);
   const [supportModal, setSupportModal] = useState({
     isOpen: false,
     section: "",
@@ -71,6 +72,7 @@ const OrderHistory = () => {
           const results = await Promise.all(orderPromises);
           const validOrders = results.filter((order) => order !== null);
           setUnsorted(validOrders);
+          setLoading(false);
         } catch (error) {}
       };
 
@@ -85,10 +87,15 @@ const OrderHistory = () => {
       (a, b) => new Date(b.orderDate) - new Date(a.orderDate)
     );
     const totalUnpaid = unsorted
-      .filter((item) => item.paymentStatus !== "Paid")
+      .filter((item) => item.paymentStatus.toLowerCase() === "pending")
+      .reduce((acc, item) => acc + item.total, 0);
+
+    const paidCount = unsorted
+      .filter((item) => item.paymentStatus.toLowerCase() === "paid")
       .reduce((acc, item) => acc + item.total, 0);
 
     setOrders(sortedOrders);
+    setPaid(paidCount);
     setToPay(totalUnpaid);
   }, [unsorted]);
 
@@ -194,11 +201,7 @@ const OrderHistory = () => {
                               <div className="mr-5 flex flex-row items-center">
                                 <CreditCard className="h-8 w-8 text-green-600 mr-5" />
                                 <p className="text-2xl font-bold text-n-foreground mr-2">
-                                  $
-                                  {orders.reduce(
-                                    (sum, order) => sum + order.total,
-                                    0
-                                  ) - toPay.toFixed(1)}
+                                  ${paid.toFixed(2)}
                                 </p>
                                 <p className="text-sm text-n-muted_foreground">
                                   Total Spent
@@ -208,7 +211,7 @@ const OrderHistory = () => {
                                 <Wallet2 className="h-8 w-8 text-green-600 mr-5" />
                                 <p className="text-2xl font-bold text-n-foreground mr-2">
                                   {"$"}
-                                  {toPay.toFixed(1)}
+                                  {toPay.toFixed(2)}
                                   {""}
                                 </p>
                                 <p className="text-sm text-n-muted_foreground">
@@ -332,13 +335,13 @@ const OrderHistory = () => {
                                   <TableCell>
                                     <div className="space-y-1">
                                       <div className="flex items-center gap-2">
-                                        <Package className="min-h-4 min-w-4 max-h-4 max-w-4 text-n-primary" />
+                                        <Package className="min-h-4 min-w-4 max-h-4 max-w-4  text-orange-600" />
                                         <span className="font-medium text-n-foreground">
                                           #{order.orderId}
                                         </span>
                                       </div>
                                       <div className="flex flex-wrap items-center gap-1 text-sm text-n-muted_foreground">
-                                        <Calendar className="min-h-4 min-w-4 max-h-4 max-w-4" />
+                                        <Calendar className="min-h-4 min-w-4 max-h-4 max-w-4  text-orange-600" />
                                         {formattedDate}
                                       </div>
                                     </div>

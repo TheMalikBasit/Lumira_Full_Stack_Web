@@ -11,7 +11,7 @@ import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
 import PriceTag from "./PriceTag";
 import Image from "next/image";
-import { addDoc, collection, doc, getDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../../Config/firebase";
 import toast from "react-hot-toast";
 import SupportModal from "./SupportModal";
@@ -154,10 +154,20 @@ const CheckOutSummary = ({
           estimatedDelivery: "3-12 Business days",
         };
 
-        const docRef = await addDoc(collection(db, "placedOrders"), orderData);
+        // ✅ Generate custom LUM ID
+        const randomPart = Math.random()
+          .toString(36)
+          .substring(2, 8)
+          .toUpperCase();
+        const timePart = Date.now().toString().slice(-6);
+        const orderId = `LUM-${randomPart}${timePart}`;
+
+        const orderRef = doc(db, "placedOrders", orderId);
+
+        await setDoc(orderRef, orderData);
 
         toast.success("Order placed with Cash on Delivery.");
-        router.push(`/order-success?orderId=${docRef.id}&method=cod`);
+        router.push(`/order-success?orderId=${orderId}&method=cod`);
       }
     } catch (error) {
       console.error("Checkout error:", error);

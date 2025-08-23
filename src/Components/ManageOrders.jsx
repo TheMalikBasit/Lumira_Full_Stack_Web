@@ -31,6 +31,7 @@ import {
   Eye,
   ArrowBigDown,
   RefreshCw,
+  AlertOctagon,
 } from "lucide-react";
 import { useAppContext } from "@/Context/AppContext";
 import { db } from "../../Config/firebase";
@@ -114,6 +115,7 @@ const ManageOrders = () => {
         return "default";
       case "shipped":
       case "in_transit":
+      case "cancelled":
       case "out_for_delivery":
         return "outline";
       case "delivered":
@@ -122,7 +124,6 @@ const ManageOrders = () => {
       case "refunded":
         return "default";
       case "failed":
-      case "cancelled":
         return "destructive";
       default:
         return "secondary";
@@ -131,11 +132,34 @@ const ManageOrders = () => {
 
   // 🔹 Separate Active vs Completed Orders
   const activeOrders = orders.filter(
-    (o) => o.orderStatus?.toLowerCase() !== "completed"
+    (o) =>
+      o.orderStatus?.toLowerCase() !== "completed" &&
+      o.orderStatus?.toLowerCase() !== "cancelled"
   );
   const completedOrders = orders.filter(
     (o) => o.orderStatus?.toLowerCase() === "completed"
   );
+
+  const cancelledOrders = orders
+    .filter((o) => o.orderStatus?.toLowerCase() === "cancelled")
+    .sort((a, b) => {
+      // If a is not refunded and b is refunded, a comes first
+      if (
+        a.paymentStatus?.toLowerCase() !== "refunded" &&
+        b.paymentStatus?.toLowerCase() === "refunded"
+      ) {
+        return -1;
+      }
+      // If a is refunded and b is not refunded, b comes first
+      if (
+        a.paymentStatus?.toLowerCase() === "refunded" &&
+        b.paymentStatus?.toLowerCase() !== "refunded"
+      ) {
+        return 1;
+      }
+      // Otherwise, keep original order
+      return 0;
+    });
 
   const paymentDropdownOptions = [
     { label: "Paid", value: "paid" },
@@ -179,7 +203,29 @@ const ManageOrders = () => {
           ) : (
             <>
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+                <Card className="gradient-n-card">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      All Orders
+                    </CardTitle>
+                    <Package className="h-4 w-4 text-n-muted_foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold flex-wrap flex items-center gap-5">
+                      {orders.length}
+                      {orders.length !=
+                        activeOrders.length +
+                          completedOrders.length +
+                          cancelledOrders.length && (
+                        <AlertOctagon className="h-5 w-5 text-n-muted_foreground" />
+                      )}
+                    </div>
+                    <p className="text-xs text-n-muted_foreground">
+                      Total Orders Placed
+                    </p>
+                  </CardContent>
+                </Card>
                 <Card className="gradient-n-card">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
@@ -271,12 +317,15 @@ const ManageOrders = () => {
                 </CardHeader>
                 <CardContent>
                   <Tabs defaultValue="active" className="w-full">
-                    <TabsList className="grid w-full gap-4 grid-cols-1 bg-transparent md:bg-n-muted md:grid-cols-2 mb-10 md:mb-0">
+                    <TabsList className="grid w-full gap-4 grid-cols-1 bg-transparent md:bg-n-muted md:grid-cols-3 mb-10 md:mb-0">
                       <TabsTrigger value="active">
                         Active Orders ({activeOrders.length})
                       </TabsTrigger>
                       <TabsTrigger value="completed">
                         Completed Orders ({completedOrders.length})
+                      </TabsTrigger>
+                      <TabsTrigger value="cancelled">
+                        Cancelled Orders ({cancelledOrders.length})
                       </TabsTrigger>
                     </TabsList>
 
@@ -450,6 +499,9 @@ const ManageOrders = () => {
                                         <SelectItem value="Delivered">
                                           Delivered
                                         </SelectItem>
+                                        <SelectItem value="Cancelled">
+                                          Cancelled
+                                        </SelectItem>
                                       </SelectContent>
                                     </Select>
                                   </div>
@@ -498,6 +550,139 @@ const ManageOrders = () => {
                           </TableHeader>
                           <TableBody>
                             {completedOrders.map((order) => (
+                              <TableRow key={order.id}>
+                                <TableCell>{order.id}</TableCell>
+                                <TableCell>
+                                  {order.shippingInfo?.FirstName}{" "}
+                                  {order.shippingInfo?.LastName}
+                                </TableCell>
+                                <TableCell>
+                                  {order.cartItems?.map((item, i) => (
+                                    <div key={i} className="text-sm">
+                                      {item.quantity}x {item.name}
+                                    </div>
+                                  ))}
+                                </TableCell>
+                                <TableCell>${order.total}</TableCell>
+                                <TableCell>
+                                  <div className="flex items-center gap-2">
+                                    <Badge
+                                      variant={getStatusVariant(
+                                        order.orderStatus
+                                      )}
+                                    >
+                                      {getStatusIcon(order.orderStatus)}
+                                      {order.orderStatus}
+                                    </Badge>
+                                    <Select
+                                      value={order.orderStatus}
+                                      onValueChange={(value) =>
+                                        updateOrderStatus(
+                                          order.id,
+                                          "orderStatus",
+                                          value
+                                        )
+                                      }
+                                    >
+                                      <SelectTrigger2></SelectTrigger2>
+                                      <SelectContent>
+                                        <SelectItem value="Pending Verification">
+                                          Pending Verification
+                                        </SelectItem>
+                                        <SelectItem value="Confirmed">
+                                          Confirmed
+                                        </SelectItem>
+                                        <SelectItem value="Completed">
+                                          Completed
+                                        </SelectItem>
+                                        <SelectItem value="Cancelled">
+                                          Cancelled
+                                        </SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex items-center gap-2">
+                                    <Badge
+                                      variant={getStatusVariant(
+                                        order.paymentStatus
+                                      )}
+                                    >
+                                      {getStatusIcon(order.paymentStatus)}
+                                      {order.paymentStatus}
+                                    </Badge>
+                                    <Select
+                                      value={order.paymentStatus}
+                                      onValueChange={(value) =>
+                                        updateOrderStatus(
+                                          order.id,
+                                          "paymentStatus",
+                                          value
+                                        )
+                                      }
+                                    >
+                                      <SelectTrigger2></SelectTrigger2>
+                                      <SelectContent>
+                                        <SelectItem value="Pending">
+                                          Pending
+                                        </SelectItem>
+                                        <SelectItem value="Paid">
+                                          Paid
+                                        </SelectItem>
+                                        <SelectItem value="Refunded">
+                                          Refunded
+                                        </SelectItem>
+                                        <SelectItem value="Failed">
+                                          Failed
+                                        </SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  {order.orderDate?.toDate
+                                    ? order.orderDate
+                                        .toDate()
+                                        .toLocaleDateString()
+                                    : ""}
+                                </TableCell>
+                                <TableCell>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() =>
+                                      router.push("/order-details/" + order.id)
+                                    }
+                                  >
+                                    <Eye className="h-4 w-4" /> View
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </TabsContent>
+
+                    {/* Cancelled Orders */}
+                    <TabsContent value="cancelled" className="mt-6">
+                      <div className="overflow-x-auto">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Order ID</TableHead>
+                              <TableHead>Customer</TableHead>
+                              <TableHead>Items</TableHead>
+                              <TableHead>Total</TableHead>
+                              <TableHead>Status</TableHead>
+                              <TableHead>Payment</TableHead>
+                              <TableHead>Date</TableHead>
+                              <TableHead>Actions</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {cancelledOrders.map((order) => (
                               <TableRow key={order.id}>
                                 <TableCell>{order.id}</TableCell>
                                 <TableCell>

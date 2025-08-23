@@ -126,7 +126,6 @@ export default function PaymentSuccess() {
           if (!orderExists) {
             const newOrder = {
               id: orderId,
-              status: order.orderStatus || "Pending Verification",
               orderedAt: new Date(),
             };
 

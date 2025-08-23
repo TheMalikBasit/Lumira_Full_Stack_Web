@@ -109,31 +109,35 @@ const OrderConfirmation = () => {
         })
         .filter(Boolean);
       const timeStamp = orderDetails.orderDate;
-      if (orderDetails.deliveryStatus === "Pending") {
+      if (orderDetails.deliveryStatus.toLowerCase() === "pending") {
         setDeliveryProgress(10);
         setDeliveryProgress1(35);
         setDeliveryProgress2(0);
-      } else if (orderDetails.deliveryStatus === "Order Confirmed") {
+      } else if (
+        orderDetails.deliveryStatus.toLowerCase() === "order confirmed"
+      ) {
         setDeliveryProgress(20);
         setDeliveryProgress1(50);
         setDeliveryProgress2(0);
-      } else if (orderDetails.deliveryStatus === "Processing") {
+      } else if (orderDetails.deliveryStatus.toLowerCase() === "processing") {
         setDeliveryProgress(40);
         setDeliveryProgress1(100);
         setDeliveryProgress2(0);
-      } else if (orderDetails.deliveryStatus === "Dispatched") {
+      } else if (orderDetails.deliveryStatus.toLowerCase() === "dispatched") {
         setDeliveryProgress(60);
         setDeliveryProgress1(100);
         setDeliveryProgress2(35);
-      } else if (orderDetails.deliveryStatus === "Shipped") {
+      } else if (orderDetails.deliveryStatus.toLowerCase() === "shipped") {
         setDeliveryProgress(75);
         setDeliveryProgress1(100);
         setDeliveryProgress2(50);
-      } else if (orderDetails.deliveryStatus === "Out for Delivery") {
+      } else if (
+        orderDetails.deliveryStatus.toLowerCase() === "out for delivery"
+      ) {
         setDeliveryProgress(90);
         setDeliveryProgress1(100);
         setDeliveryProgress2(75);
-      } else if (orderDetails.deliveryStatus === "Delivered") {
+      } else if (orderDetails.deliveryStatus.toLowerCase() === "delivered") {
         setDeliveryProgress(100);
         setDeliveryProgress1(100);
         setDeliveryProgress2(100);
@@ -205,6 +209,12 @@ const OrderConfirmation = () => {
                     <CardTitle className="flex items-center gap-2 text-n-foreground">
                       <Truck className="h-5 w-5" />
                       Delivery Progress
+                      {orderDetails.deliveryStatus.toLowerCase() ===
+                        "cancelled" && (
+                        <p className="text-lg text-red-500">
+                          Your order has been cancelled.
+                        </p>
+                      )}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -514,6 +524,16 @@ const OrderConfirmation = () => {
                   >
                     Shop Again
                   </Button>
+                  {deliveryProgress < 20 &&
+                    deliveryProgress1 < 50 &&
+                    orderDetails.orderStatus.toLowerCase() !== "cancelled" && (
+                      <Button
+                        className="w-full"
+                        // onClick={() => router.push("/all-products")}
+                      >
+                        Cancel Order
+                      </Button>
+                    )}
                 </div>
               </div>
             </div>

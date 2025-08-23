@@ -162,36 +162,10 @@ export const AppContextProvider = (props) => {
   };
 
   useEffect(() => {
-    const cartUpdater = async () => {
-      const tempLocalCartv1 = fetchLocalCart();
-      if (loading === false && isSignedIn && tempLocalCartv1.length > 0) {
-        const tempLocalCart = fetchLocalCart();
-        const tempDbCart = cartItems;
-        const mergedCart = [...tempLocalCart, ...tempDbCart].reduce(
-          (acc, item) => {
-            const existingItem = acc.find(
-              (i) => i.vid === item.vid && i.id === item.id
-            );
-            if (existingItem) {
-              existingItem.checked == item.checked;
-            } else {
-              acc.push({ ...item });
-            }
-            return acc;
-          },
-          []
-        );
-        await UpdateCart({ userId: user.id, cartDataProp: mergedCart });
-        setCartItems(mergedCart);
-        clearLocalCartData();
-      } else {
-        const syncCart = () => setLocalCart(fetchLocalCart());
-        window.addEventListener("storage", syncCart);
-        return () => window.removeEventListener("storage", syncCart);
-      }
-    };
-    cartUpdater();
-  }, [loading]);
+    const syncCart = () => setLocalCart(fetchLocalCart());
+    window.addEventListener("storage", syncCart);
+    return () => window.removeEventListener("storage", syncCart);
+  }, [products, user]);
 
   const addToLocalCart = (id, variantId) => {
     addLocalProducts({ ID: id, variantId: variantId });
