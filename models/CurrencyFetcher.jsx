@@ -28,7 +28,7 @@ export default function CurrencyFetcher() {
         // console.log("Fetched Currency Rates ✅", currencyData);
       } catch (error) {
         console.error("Currency Fetch Error:", error);
-        toast.error("We are facing issues 🤦‍♀️");
+        toast.error("Network Issue 🐒🐒");
         setLoading(false);
       }
     };

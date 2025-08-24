@@ -211,7 +211,6 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
               {navigation.map((item) => (
                 <a
                   key={item.id}
-                  href={item.url}
                   onClick={(e) => {
                     e.preventDefault();
                     handleClick(item.url);

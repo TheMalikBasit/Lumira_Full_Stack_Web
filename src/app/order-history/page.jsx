@@ -72,7 +72,6 @@ const OrderHistory = () => {
           const results = await Promise.all(orderPromises);
           const validOrders = results.filter((order) => order !== null);
           setUnsorted(validOrders);
-          setLoading(false);
         } catch (error) {}
       };
 
@@ -80,6 +79,7 @@ const OrderHistory = () => {
         fetchAllOrders();
       }
     }
+    setLoading(false);
   }, [orderHistory, user]);
 
   useEffect(() => {
@@ -131,7 +131,6 @@ const OrderHistory = () => {
         return "outline";
     }
   };
-
   return (
     <>
       <Navbar bgBlur />

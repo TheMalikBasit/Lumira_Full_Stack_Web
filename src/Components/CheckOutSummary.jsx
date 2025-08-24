@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useAppContext } from "@/Context/AppContext";
 import { useUser } from "@clerk/nextjs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/UI/card";
-import { CreditCard, Lock, Repeat } from "lucide-react";
+import { CreditCard, Lock, RefreshCw, Repeat } from "lucide-react";
 import { Button } from "@/Components/UI/lumiraButton";
 import { LottieLoading } from "./Loading";
 import { Separator } from "@/Components/UI/separator";
@@ -15,7 +15,7 @@ import { addDoc, collection, doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../../Config/firebase";
 import toast from "react-hot-toast";
 import SupportModal from "./SupportModal";
-
+import { Country } from "country-state-city";
 const CheckOutSummary = ({
   shipmentCharge,
   totalCharged,
@@ -35,7 +35,8 @@ const CheckOutSummary = ({
 
   const currentCart = isSignedIn ? cartItems : localCart;
   const checkedItems = currentCart.filter((item) => item.checked);
-
+  const [loadingShipping, setLoadingShipping] = useState(false);
+  const [selectedShippingOption, setSelectedShippingOption] = useState(null);
   const [supportModal, setSupportModal] = useState({
     isOpen: false,
     section: "",
@@ -43,6 +44,69 @@ const CheckOutSummary = ({
 
   // ✅ Store fetched variant details
   const [variantMap, setVariantMap] = useState({});
+  console.log("Variants Map:", variantMap);
+  const [shipmentOptions, setShipmentOptions] = useState([]);
+  const selectedCountry = selectedShippingData?.Country;
+  const filtered = Country.getAllCountries().filter((country) =>
+    country.name.toLowerCase().startsWith(selectedCountry?.toLowerCase())
+  );
+  console.log("Filtered Country:", filtered);
+  const isoCode = filtered.length > 0 ? filtered[0].isoCode : null;
+  console.log("ISO Code:", isoCode);
+
+  const extracted = checkedItems.reduce((acc, item) => {
+    const detail = variantMap[item.vid];
+    if (detail) {
+      acc[item.vid] = {
+        ...detail,
+        quantity: item.quantity,
+        checked: item.checked,
+      };
+    }
+    return acc;
+  }, {});
+
+  const minimizedData = Object.values(extracted).map((item) => ({
+    vid: item.vid,
+    quantity: 1, // set your quantity dynamically here
+  }));
+
+  console.log("Minimized Data:", minimizedData);
+  useEffect(() => {
+    const fetchShippingOptions = async () => {
+      if (!isoCode || checkedItems.length === 0) {
+        setShipmentOptions([]);
+        return;
+      }
+      setLoadingShipping(true);
+      try {
+        const res = await fetch("/api/getShippingOptions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            code: isoCode,
+            items: minimizedData,
+          }),
+        });
+
+        const data = await res.json();
+        console.log("Shipping Options Response:", data);
+
+        if (Array.isArray(data.common)) {
+          setShipmentOptions(data.common);
+        } else {
+          setShipmentOptions([]);
+        }
+      } catch (error) {
+        toast.error("Error fetching shipping options");
+      } finally {
+        setLoadingShipping(false);
+      }
+    };
+    fetchShippingOptions();
+  }, [isoCode]);
+
+  // console.log("Shipping Options:", shipmentOptions);
 
   // 🔥 Fetch variant data for all checked items
   useEffect(() => {
@@ -81,10 +145,10 @@ const CheckOutSummary = ({
 
   const [total, setTotal] = useState(0);
   useEffect(() => {
-    const t = subtotal + (shipmentCharge || 0);
+    const t = subtotal + (selectedShippingOption?.logisticPrice || 0);
     setTotal(t);
     totalCharged(t);
-  }, [subtotal, shipmentCharge]);
+  }, [subtotal, selectedShippingOption]);
 
   // ✅ Checkout Logic
   const handleCheckout = async () => {
@@ -176,6 +240,8 @@ const CheckOutSummary = ({
       setLoading(false);
     }
   };
+
+  console.log("Selected Shipping Option:", selectedShippingOption);
   return (
     <>
       <div className="lg:sticky lg:top-8 lg:h-fit">
@@ -279,16 +345,76 @@ const CheckOutSummary = ({
               </div>
 
               {/* Shipping Placeholder */}
-              <div className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent">
+              {/* <div className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent">
                 <span className="text-n-muted_foreground font-medium">
                   Shipping
                 </span>
-                <span className="text-xs text-emerald-700 py-1 text-end">
+                <span className="text-sm text-emerald-700 py-1 text-end">
                   {shipmentCharge
                     ? `${shipmentCharge} ${Symbol}`
                     : "Depends on Shipment Location"}
                 </span>
+              </div> */}
+
+              <div className="p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent">
+                {shipmentOptions.length > 0 ? (
+                  <>
+                    <span className="text-n-muted_foreground font-medium flex justify-between">
+                      Select A Shipping Option
+                      {loadingShipping && (
+                        <RefreshCw className="h-5 w-5 animate-spin ml-2 text-n-foreground" />
+                      )}
+                    </span>
+                    <br />
+                  </>
+                ) : (
+                  <>
+                    <span className="text-n-muted_foreground font-medium flex justify-between">
+                      Select An Address to Fetch Options{" "}
+                      {loadingShipping && (
+                        <RefreshCw className="h-5 w-5 animate-spin ml-2 text-n-foreground" />
+                      )}
+                    </span>
+                  </>
+                )}
               </div>
+              {shipmentOptions.length > 0 ? (
+                <div className="mt-3 space-y-2 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-n-muted_foreground scrollbar-track-transparent p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent">
+                  {shipmentOptions.map((opt, idx) => (
+                    <div
+                      className="flex flex-row w-full items-center"
+                      key={idx}
+                    >
+                      <p className="text-orange-600">{idx + 1}</p>
+                      <div
+                        className={`ml-2 p-2 w-full border rounded-lg bg-white cursor-pointer hover:bg-n-primary/10 transition-colors duration-300 ${
+                          selectedShippingOption === opt
+                            ? "ring-2 ring-n-primary bg-n-primary/10"
+                            : ""
+                        }`}
+                        onClick={() => setSelectedShippingOption(opt)}
+                      >
+                        <p className="font-medium text-n-foreground">
+                          {opt.logisticName === "CJPacket Asia Liquid Line"
+                            ? "Standard Shipping"
+                            : opt.logisticName}
+                        </p>
+                        <p className="text-sm text-n-muted_foreground">
+                          ${opt.logisticPrice} · {opt.logisticAging} days
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : loadingShipping ? (
+                <p className="text-sm text-n-muted_foreground">
+                  Fetching shipping options...
+                </p>
+              ) : (
+                <p className="text-sm text-n-muted_foreground">
+                  No options found
+                </p>
+              )}
 
               <Separator className="my-6" />
 
