@@ -37,6 +37,7 @@ import { useAppContext } from "@/Context/AppContext";
 import { db } from "../../Config/firebase";
 import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
 import toast from "react-hot-toast";
+import { Separator } from "./UI/separator";
 
 const ManageOrders = () => {
   const { router, loading, setLoading } = useAppContext();
@@ -187,7 +188,7 @@ const ManageOrders = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-n-background via-n-background to-n-accent/5">
+      <div className="bg-gradient-to-br from-n-background via-n-background to-n-accent/5">
         <main className="container mx-auto px-4 py-8 space-y-8">
           {/* Page Header */}
           <div className="text-center space-y-4">
@@ -317,16 +318,19 @@ const ManageOrders = () => {
                 </CardHeader>
                 <CardContent>
                   <Tabs defaultValue="active" className="w-full">
-                    <TabsList className="grid w-full gap-4 grid-cols-1 bg-transparent md:bg-n-muted md:grid-cols-3 mb-10 md:mb-0">
+                    <TabsList className="grid w-full gap-4 grid-cols-1 bg-transparent md:bg-n-muted md:grid-cols-3 mb-40 md:mb-0">
                       <TabsTrigger value="active">
                         Active Orders ({activeOrders.length})
                       </TabsTrigger>
+                      <Separator className="flex md:hidden" />
                       <TabsTrigger value="completed">
                         Completed Orders ({completedOrders.length})
                       </TabsTrigger>
+                      <Separator className="flex md:hidden" />
                       <TabsTrigger value="cancelled">
                         Cancelled Orders ({cancelledOrders.length})
                       </TabsTrigger>
+                      <Separator className="flex md:hidden" />
                     </TabsList>
 
                     {/* Active Orders */}
@@ -544,6 +548,7 @@ const ManageOrders = () => {
                               <TableHead>Total</TableHead>
                               <TableHead>Status</TableHead>
                               <TableHead>Payment</TableHead>
+                              <TableHead>Delivery</TableHead>
                               <TableHead>Date</TableHead>
                               <TableHead>Actions</TableHead>
                             </TableRow>
@@ -640,6 +645,60 @@ const ManageOrders = () => {
                                     </Select>
                                   </div>
                                 </TableCell>
+                                {/* Delivery */}
+                                <TableCell>
+                                  <div className="flex items-center gap-2">
+                                    <Badge
+                                      variant={getStatusVariant(
+                                        order.deliveryStatus
+                                      )}
+                                      className="gap-1"
+                                    >
+                                      {getStatusIcon(order.deliveryStatus)}
+                                      {order.deliveryStatus}
+                                    </Badge>
+
+                                    <Select
+                                      value={order.deliveryStatus}
+                                      onValueChange={(value) =>
+                                        updateOrderStatus(
+                                          order.id,
+                                          "deliveryStatus",
+                                          value
+                                        )
+                                      }
+                                    >
+                                      <SelectTrigger2></SelectTrigger2>
+                                      <SelectContent>
+                                        <SelectItem value="Pending">
+                                          Pending
+                                        </SelectItem>
+                                        <SelectItem value="Order Confirmed">
+                                          Order Confirmed
+                                        </SelectItem>
+                                        <SelectItem value="Processing">
+                                          Processing
+                                        </SelectItem>
+                                        <SelectItem value="Dispatched">
+                                          Dispatched
+                                        </SelectItem>
+                                        <SelectItem value="Shipped">
+                                          Shipped
+                                        </SelectItem>
+                                        <SelectItem value="Out for Delivery">
+                                          Out for Delivery
+                                        </SelectItem>
+                                        <SelectItem value="Delivered">
+                                          Delivered
+                                        </SelectItem>
+                                        <SelectItem value="Cancelled">
+                                          Cancelled
+                                        </SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                </TableCell>
+
                                 <TableCell>
                                   {order.orderDate?.toDate
                                     ? order.orderDate
@@ -677,6 +736,7 @@ const ManageOrders = () => {
                               <TableHead>Total</TableHead>
                               <TableHead>Status</TableHead>
                               <TableHead>Payment</TableHead>
+                              <TableHead>Delivery</TableHead>
                               <TableHead>Date</TableHead>
                               <TableHead>Actions</TableHead>
                             </TableRow>
@@ -773,6 +833,61 @@ const ManageOrders = () => {
                                     </Select>
                                   </div>
                                 </TableCell>
+
+                                {/*Delivery*/}
+                                <TableCell>
+                                  <div className="flex items-center gap-2">
+                                    <Badge
+                                      variant={getStatusVariant(
+                                        order.deliveryStatus
+                                      )}
+                                      className="gap-1"
+                                    >
+                                      {getStatusIcon(order.deliveryStatus)}
+                                      {order.deliveryStatus}
+                                    </Badge>
+
+                                    <Select
+                                      value={order.deliveryStatus}
+                                      onValueChange={(value) =>
+                                        updateOrderStatus(
+                                          order.id,
+                                          "deliveryStatus",
+                                          value
+                                        )
+                                      }
+                                    >
+                                      <SelectTrigger2></SelectTrigger2>
+                                      <SelectContent>
+                                        <SelectItem value="Pending">
+                                          Pending
+                                        </SelectItem>
+                                        <SelectItem value="Order Confirmed">
+                                          Order Confirmed
+                                        </SelectItem>
+                                        <SelectItem value="Processing">
+                                          Processing
+                                        </SelectItem>
+                                        <SelectItem value="Dispatched">
+                                          Dispatched
+                                        </SelectItem>
+                                        <SelectItem value="Shipped">
+                                          Shipped
+                                        </SelectItem>
+                                        <SelectItem value="Out for Delivery">
+                                          Out for Delivery
+                                        </SelectItem>
+                                        <SelectItem value="Delivered">
+                                          Delivered
+                                        </SelectItem>
+                                        <SelectItem value="Cancelled">
+                                          Cancelled
+                                        </SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                </TableCell>
+
                                 <TableCell>
                                   {order.orderDate?.toDate
                                     ? order.orderDate

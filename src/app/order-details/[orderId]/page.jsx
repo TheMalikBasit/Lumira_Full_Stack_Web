@@ -38,6 +38,7 @@ const OrderConfirmation = () => {
   const [deliveryProgress2, setDeliveryProgress2] = useState(null);
   const [orderedProducts, setOrderedProducts] = useState([]);
   const [newDateVar, setNewDateVar] = useState(null);
+  const [customLoader, setCustomLoader] = useState(true);
   const [width, setWidth] = useState(0); // safe default for SSR
 
   useEffect(() => {
@@ -90,6 +91,7 @@ const OrderConfirmation = () => {
             trackingNumber: "Available After Dispached",
           });
         }
+        setCustomLoader(false);
       } catch (err) {
         console.error("Error fetching order:", err);
       }
@@ -171,8 +173,26 @@ const OrderConfirmation = () => {
     return (
       <div className="min-h-screen bg-n-background flex items-center justify-center">
         <div className="text-center">
-          <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-n-foreground" />
-          <p>Loading Order Details....</p>
+          {customLoader ? (
+            <>
+              <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-n-foreground" />
+              <p>Loading Order Details....</p>
+            </>
+          ) : (
+            <>
+              <p>
+                Order Not Found {"("}Incorrect ID{")"}
+              </p>
+              <Button
+                size="sm"
+                onClick={() => router.push("/order-history")}
+                className="flex items-center gap-2 mx-auto"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Your Order History
+              </Button>
+            </>
+          )}
         </div>
       </div>
     );

@@ -61,7 +61,7 @@ import {
   faPiedPiperHat,
 } from "@fortawesome/free-brands-svg-icons";
 import BackLights from "./BackLights";
-import { Loading, LottieLoading } from "./Loading"; // Import your loading animation
+import { Loading, LottieLoading } from "./Loading";
 const Navbar = ({ relative, hidden, classic, bgBlur }) => {
   const navRef = useRef(null);
   const pathname = usePathname();
@@ -73,16 +73,16 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
   const [showCurrency, setshowCurrency] = useState(false);
   const { isSignedIn } = useUser();
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("isToggled");
-      if (stored) {
-        setshowCurrency(false);
-      } else {
-        setshowCurrency(true);
-      }
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     const stored = localStorage.getItem("isToggled");
+  //     if (stored) {
+  //       setshowCurrency(false);
+  //     } else {
+  //       setshowCurrency(true);
+  //     }
+  //   }
+  // }, []);
 
   const toggleNavigation = () => {
     if (openNavigation) {
