@@ -70,7 +70,7 @@ async function resolveOrderItems(order) {
 }
 
 export default function PaymentSuccess() {
-  const { loading, setLoading } = useAppContext();
+  const { loading, setLoading, router } = useAppContext();
   const [order, setOrder] = useState(null);
   const [orderedProducts, setOrderedProducts] = useState([]);
   const searchParams = useSearchParams();
@@ -167,6 +167,7 @@ export default function PaymentSuccess() {
         <p className="mt-2 text-n-muted_foreground">
           Loading your order summary...
         </p>
+        <p className="mt-2 text-n-muted_foreground">Please be patient 🦥🦥.</p>
       </div>
     );
   }
@@ -196,7 +197,8 @@ export default function PaymentSuccess() {
                   </h1>
                   <p className="text-lg text-n-muted_foreground">
                     Thank you for your order. Your payment has been processed
-                    successfully.
+                    successfully. You will be asked for order confirmation
+                    shortly!
                   </p>
                 </>
               ) : (
@@ -244,7 +246,7 @@ export default function PaymentSuccess() {
                           Estimated Delivery:
                         </span>
                         <span className="text-n-foreground">
-                          {order.estimatedDelivery}
+                          {order.estimatedDelivery} Days
                         </span>
                       </div>
                     </div>
@@ -389,16 +391,22 @@ export default function PaymentSuccess() {
                 {/* ✅ Action Buttons */}
                 <div className="space-y-3">
                   <Button
-                    onClick={() => (window.location.href = "/order-history")}
+                    variant="outline"
+                    onClick={() => {
+                      router.push("/order-details/" + orderId);
+                    }}
+                    className="w-full"
+                  >
+                    Order Details
+                  </Button>
+                  <Button
+                    onClick={() => router.push("/order-history")}
                     className="w-full"
                     variant="outline"
                   >
                     View Order History
                   </Button>
-                  <Button
-                    onClick={() => (window.location.href = "/")}
-                    className="w-full"
-                  >
+                  <Button onClick={() => router.push("/")} className="w-full">
                     Continue Shopping
                   </Button>
                 </div>

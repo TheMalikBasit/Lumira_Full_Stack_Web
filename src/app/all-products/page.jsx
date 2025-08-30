@@ -224,40 +224,18 @@ const AllProducts = ({ hidden }) => {
 
                           <div className="flex items-center gap-2 mb-4">
                             <span className="text-lg font-bold text-n-foreground">
-                              {Currency === "USD" ? (
-                                <>
-                                  {product.price}
-                                  {Symbol}
-                                </>
-                              ) : (
-                                <PriceTag
-                                  basePrice={product.price}
-                                  userCurrency={Currency}
-                                  symbol={Symbol}
-                                />
-                              )}
+                              {product.price}$
                             </span>
-                            {product.originalPrice != product.price && (
+                            {product.originalPrice !== "0000" && (
                               <span className="text-sm text-n-muted_foreground line-through">
-                                {Currency === "USD" ? (
-                                  <>
-                                    {product.originalPrice}
-                                    {Symbol}
-                                  </>
-                                ) : (
-                                  <PriceTag
-                                    basePrice={product.originalPrice}
-                                    userCurrency={Currency}
-                                    symbol={Symbol}
-                                  />
-                                )}
+                                {product.originalPrice}$
                               </span>
                             )}
                           </div>
 
                           <Button className="w-full" variant="coral">
                             <ShoppingCart className="mr-2 h-4 w-4" />
-                            Add to Cart
+                            Explore Product
                           </Button>
                         </div>
                       </CardContent>

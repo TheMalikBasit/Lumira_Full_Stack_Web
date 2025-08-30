@@ -16,12 +16,7 @@ import { db } from "../../Config/firebase";
 import toast from "react-hot-toast";
 import SupportModal from "./SupportModal";
 import { Country } from "country-state-city";
-const CheckOutSummary = ({
-  shipmentCharge,
-  totalCharged,
-  selectedShippingData,
-  selectedPaymentData,
-}) => {
+const CheckOutSummary = ({ selectedShippingData, selectedPaymentData }) => {
   const { user, isSignedIn } = useUser();
   const {
     router,
@@ -68,7 +63,7 @@ const CheckOutSummary = ({
 
   const minimizedData = Object.values(extracted).map((item) => ({
     vid: item.vid,
-    quantity: 1, // set your quantity dynamically here
+    quantity: item.quantity,
   }));
 
   console.log("Minimized Data:", minimizedData);
@@ -144,10 +139,10 @@ const CheckOutSummary = ({
   }, 0);
 
   const [total, setTotal] = useState(0);
+
   useEffect(() => {
     const t = subtotal + (selectedShippingOption?.logisticPrice || 0);
     setTotal(t);
-    totalCharged(t);
   }, [subtotal, selectedShippingOption]);
 
   // ✅ Checkout Logic
@@ -182,7 +177,7 @@ const CheckOutSummary = ({
         };
       });
 
-      const totalAmount = subtotal + shipmentCharge;
+      const totalAmount = subtotal + selectedShippingOption?.logisticPrice;
       if (selectedPaymentData === "stripe") {
         const res = await fetch("/api/create-checkout-session", {
           method: "POST",
@@ -191,7 +186,8 @@ const CheckOutSummary = ({
             items: itemsToSend,
             userId: user.id,
             shippingInfo: selectedShippingData,
-            shippingCost: shipmentCharge,
+            shippingCost: selectedShippingOption?.logisticPrice,
+            shippingMethod: selectedShippingOption || [],
           }),
         });
 
@@ -212,10 +208,11 @@ const CheckOutSummary = ({
           paymentStatus: "Pending",
           paymentType: "cod",
           total: totalAmount,
-          shippingCost: shipmentCharge,
+          shippingCost: selectedShippingOption?.logisticPrice,
           shippingInfo: selectedShippingData,
+          shippingMethod: selectedShippingOption,
           cartItems: itemsToSend,
-          estimatedDelivery: "3-12 Business days",
+          estimatedDelivery: selectedShippingOption?.logisticAging,
         };
 
         // ✅ Generate custom LUM ID
@@ -241,7 +238,10 @@ const CheckOutSummary = ({
     }
   };
 
-  console.log("Selected Shipping Option:", selectedShippingOption);
+  console.log(
+    "Selected Shipping Option:",
+    selectedShippingOption?.logisticAging
+  );
   return (
     <>
       <div className="lg:sticky lg:top-8 lg:h-fit">
@@ -343,18 +343,6 @@ const CheckOutSummary = ({
                   )}
                 </span>
               </div>
-
-              {/* Shipping Placeholder */}
-              {/* <div className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent">
-                <span className="text-n-muted_foreground font-medium">
-                  Shipping
-                </span>
-                <span className="text-sm text-emerald-700 py-1 text-end">
-                  {shipmentCharge
-                    ? `${shipmentCharge} ${Symbol}`
-                    : "Depends on Shipment Location"}
-                </span>
-              </div> */}
 
               <div className="p-4 rounded-xl bg-gradient-to-r from-n-muted/30 to-transparent">
                 {shipmentOptions.length > 0 ? (

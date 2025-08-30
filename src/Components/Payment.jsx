@@ -22,7 +22,7 @@ import "react-tooltip/dist/react-tooltip.css";
 // }
 
 // const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
-const Payment = ({ paymentSelection, CountryData, setTransactionId }) => {
+const Payment = ({ paymentSelection, CountryData }) => {
   const [PaymentMethod, setPaymentMethod] = useState("");
   const [CodChecked, setCodChecked] = useState(false);
   const [bankCheck, setBankCheck] = useState(Boolean);
@@ -71,10 +71,6 @@ const Payment = ({ paymentSelection, CountryData, setTransactionId }) => {
       paymentSelection(PaymentMethod);
     }
   }, [PaymentMethod, CountryData]);
-
-  useEffect(() => {
-    setTransactionId(ID);
-  }, [ID]);
 
   return (
     <Card

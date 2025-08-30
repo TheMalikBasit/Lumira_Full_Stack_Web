@@ -126,7 +126,6 @@ const Navbar = ({ relative, hidden, classic, bgBlur }) => {
     }
   }, [darkMode]);
 
-  if (loading) <LottieLoading />;
   return (
     <>
       {showCurrency && <SelectCurrency toggleCurrency={showCurrency} />}

@@ -7,9 +7,15 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { items, userId, shippingInfo, shippingCost } = body;
+    const { items, userId, shippingInfo, shippingCost, shippingMethod } = body;
 
-    if (!userId || !items?.length || !shippingInfo || shippingCost == null) {
+    if (
+      !userId ||
+      !items?.length ||
+      !shippingInfo ||
+      shippingCost == null ||
+      !shippingMethod
+    ) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -25,6 +31,7 @@ export async function POST(req) {
       items,
       shippingInfo,
       shippingCost,
+      shippingMethod,
       createdAt: new Date(),
     });
 

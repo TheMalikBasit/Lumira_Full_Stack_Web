@@ -22,7 +22,12 @@ export async function GET(req) {
 
     if (!cartSnap.exists) throw new Error("Temp cart not found");
 
-    const { shippingInfo, items: cartItems, shippingCost } = cartSnap.data();
+    const {
+      shippingInfo,
+      items: cartItems,
+      shippingCost,
+      shippingMethod,
+    } = cartSnap.data();
 
     // ❌ If not paid → fail order (cleanup temp cart too!)
     if (session.payment_status !== "paid") {
@@ -56,19 +61,23 @@ export async function GET(req) {
     const orderId = `LUM-${randomPart}${timePart}`;
 
     // ✅ Save order
-    await adminDB.collection("placedOrders").doc(orderId).set({
-      userId,
-      shippingInfo,
-      cartItems,
-      total,
-      paymentStatus: "Paid",
-      orderStatus: "Pending Verification",
-      deliveryStatus: "Processing",
-      paymentType: "Card/Stripe",
-      estimatedDelivery: "International Shipping 12–28 Days",
-      shippingCost,
-      orderDate: new Date(),
-    });
+    await adminDB
+      .collection("placedOrders")
+      .doc(orderId)
+      .set({
+        userId,
+        shippingInfo,
+        cartItems,
+        total,
+        paymentStatus: "Paid",
+        orderStatus: "Pending Verification",
+        deliveryStatus: "Pending",
+        paymentType: "Card/Stripe",
+        estimatedDelivery: shippingMethod?.logisticAging || "Updating Shortly",
+        shippingCost,
+        shippingMethod,
+        orderDate: new Date(),
+      });
 
     // 🧹 Cleanup temp cart
     await cartRef.delete();

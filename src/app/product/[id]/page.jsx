@@ -89,7 +89,7 @@ export default function Product() {
 
   // shipping calc
   const [shippingOptions, setShippingOptions] = useState([]);
-  const [loadingShipping, setLoadingShipping] = useState(false);
+  const [loadingShipping, setLoadingShipping] = useState(null);
 
   // Countries
   const [allCountries, setAllCountries] = useState([]);
@@ -329,9 +329,6 @@ export default function Product() {
       setLoadingShipping(false);
     }
   };
-  // console.log("Variants Data:", allVariants);
-  // Early load guard
-  // if (!productData) return <LottieLoading />;
 
   return (
     <>
@@ -512,7 +509,7 @@ export default function Product() {
                       <Badge variant="destructive">
                         {Currency === "USD" ? (
                           <>
-                            Save {Symbol}
+                            Save {Symbol}{" "}
                             {(
                               (selectedVariant?.originalPrice ??
                                 productData?.originalPrice ??
@@ -525,6 +522,7 @@ export default function Product() {
                         ) : (
                           <>
                             Save {Symbol}
+                            {"   "}
                             <PriceTag
                               basePrice={
                                 (selectedVariant?.originalPrice ??
@@ -696,12 +694,6 @@ export default function Product() {
                     )}
                   </div>
 
-                  {loadingShipping && (
-                    <p className="text-sm text-n-muted_foreground">
-                      Fetching shipping options...
-                    </p>
-                  )}
-
                   {shippingOptions.length > 0 ? (
                     <div className="mt-3 space-y-2 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-n-muted_foreground scrollbar-track-transparent">
                       {shippingOptions.map((opt, idx) => (
@@ -720,12 +712,27 @@ export default function Product() {
                         </div>
                       ))}
                     </div>
-                  ) : (
-                    !loadingShipping && (
-                      <p className="text-sm text-n-muted_foreground italic">
-                        No options found
+                  ) : loadingShipping ? (
+                    <p className="text-sm text-n-muted_foreground">
+                      Fetching shipping options...
+                    </p>
+                  ) : loadingShipping === null ? (
+                    <>
+                      <p className="text-sm text-n-muted_foreground">
+                        Check your shipping options.
                       </p>
-                    )
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-sm text-n-muted_foreground">
+                        No options found{" "}
+                        <span className="text-red-700">
+                          {" "}
+                          {"( "}Selected Item cannot be shipped to Selected
+                          Country {queryCountry} {" )"}
+                        </span>
+                      </p>
+                    </>
                   )}
                 </div>
 

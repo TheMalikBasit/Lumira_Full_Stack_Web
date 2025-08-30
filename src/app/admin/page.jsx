@@ -41,6 +41,7 @@ const page = () => {
     if (res) {
       setAccessTokenData(data);
     }
+    console.log(data);
   };
 
   if (adminLoading) return <LottieLoading />;
@@ -144,7 +145,6 @@ const page = () => {
           >
             Get Access Token
           </button>
-          <div>{accessTokenData}</div>
         </div>
         <div className="container w-full border-t border-gray-700 mt-8 mb-8" />
       </div>

@@ -47,15 +47,7 @@ const Checkout = () => {
   const [reloadKey, setReloadKey] = useState(0);
 
   const [selectedShippingData, setSelectedShippingData] = useState({});
-  const [Subtotal, setSubtotal] = useState(null);
-  const [shipmentCharges, setShipmentCharges] = useState(null);
   const [paymentOption, setpaymentOption] = useState("");
-  const [transactionId, setTransactionId] = useState("");
-
-  //Summarized info that will be used for checkout
-  const [AllComponentInfo, setAllComponentInfo] = useState({
-    shippingInfo: selectedShippingData,
-  });
 
   const handleAddressSelection = (index) => {
     const selectedAddress = shipmentData.at(index);
@@ -86,35 +78,12 @@ const Checkout = () => {
     setToggleNewAddress(!toggleNewAddress);
   };
 
-  const handleTotal = (total) => {
-    setSubtotal(total);
-  };
-
   useEffect(() => {
     if (userData && Array.isArray(userData.ShippingInfo)) {
       setShipmentData(userData.ShippingInfo);
       setToggleNewAddress(true);
     }
   }, [userData]);
-
-  useEffect(() => {
-    if (selectedShippingData) {
-      const country = selectedShippingData.Country;
-      const city = selectedShippingData.City;
-
-      if (!country) {
-        setShipmentCharges(null);
-      } else if (country === "Pakistan") {
-        if (city === "Lahore") {
-          setShipmentCharges(5);
-        } else {
-          setShipmentCharges(12);
-        }
-      } else {
-        setShipmentCharges(20);
-      }
-    }
-  }, [selectedShippingData]);
 
   useEffect(() => {
     if (!user && !loading) {
@@ -258,14 +227,11 @@ const Checkout = () => {
                   <Payment
                     paymentSelection={handlePaymentSelection}
                     CountryData={selectedShippingData.Country}
-                    setTransactionId={setTransactionId}
                   />
                 </div>
 
                 {/* Order Summary */}
                 <CheckOutSummary
-                  shipmentCharge={shipmentCharges}
-                  totalCharged={handleTotal}
                   selectedShippingData={selectedShippingData}
                   selectedPaymentData={paymentOption}
                 />

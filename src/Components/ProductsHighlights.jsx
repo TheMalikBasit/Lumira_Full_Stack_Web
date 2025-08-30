@@ -1,4 +1,11 @@
-import { Star, Heart, ShoppingCart, RefreshCcw, RefreshCw } from "lucide-react";
+import {
+  Star,
+  Heart,
+  ShoppingCart,
+  RefreshCcw,
+  RefreshCw,
+  Loader2,
+} from "lucide-react";
 import { Button } from "@/Components/UI/lumiraButton";
 import { Card, CardContent } from "@/Components/UI/card";
 import { Badge } from "@/Components/UI/badge";
@@ -55,8 +62,12 @@ const ProductHighlights = () => {
         </div>
         {loading ? (
           <>
-            <div className="relative py-8 min-h-[300px]">
-              <RefreshCw className="h-10 w-10 animate-spin mx-auto mb-4 text-n-foreground" />
+            <div className="relative text-center py-8 min-h-[300px]">
+              <Loader2 className="h-10 w-10 mx-auto animate-spin mb-4 text-orange-500" />
+              <p className="text-orange-500 text-sm font-bold">
+                Loading Products...
+              </p>
+
               {/* <LottieLoading
                 className={"min-h-[300px] z-20"}
                 className2={"!top-1/2 !left-1/2"}
@@ -184,34 +195,11 @@ const ProductHighlights = () => {
                         {/* Price */}
                         <div className="flex items-center gap-2 mb-4">
                           <span className="text-lg font-bold text-n-foreground">
-                            {Currency === "USD" ? (
-                              <>
-                                {product.price}
-                                {Symbol}
-                              </>
-                            ) : (
-                              <PriceTag
-                                basePrice={product.price}
-                                userCurrency={Currency}
-                                symbol={Symbol}
-                              />
-                            )}
-                            {/* {Currency} */}
+                            {product.price}${/* {Currency} */}
                           </span>
-                          {product.originalPrice != product.price && (
+                          {product.originalPrice != "0000" && (
                             <span className="text-sm text-n-muted_foreground line-through">
-                              {Currency === "USD" ? (
-                                <>
-                                  {product.originalPrice}
-                                  {Symbol}
-                                </>
-                              ) : (
-                                <PriceTag
-                                  basePrice={product.originalPrice}
-                                  userCurrency={Currency}
-                                  symbol={Symbol}
-                                />
-                              )}
+                              {product.originalPrice}$
                             </span>
                           )}
                         </div>
@@ -222,7 +210,8 @@ const ProductHighlights = () => {
                           variant="coral"
                           onClick={() => router.push(`/product/${product.id}`)}
                         >
-                          <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
+                          <ShoppingCart className="mr-2 h-4 w-4" /> Explore
+                          Product
                         </Button>
                       </div>
                     </CardContent>
